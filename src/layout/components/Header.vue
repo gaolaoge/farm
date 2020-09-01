@@ -318,7 +318,6 @@
       this.getList()
       this.getUserInfo()
       this.getIdentify()
-      this.getBulletinF()   // 获取公告
     },
     watch: {
       login: {
@@ -357,6 +356,7 @@
       zoneId: {
         handler: function (val) {
           if (!val || val == this.workBenchVal) return false
+          this.getBulletinF()   // 获取公告
           putNewZoneID({"zoneUuid": val})   // 传达切换分区事件
           this.workBenchVal = val
           this.changeIsGpu()
@@ -366,6 +366,7 @@
       'user.account': {
         handler: function (val) {
           if (!val || this.socket_backS) return false
+          this.getBulletinF()   // 获取公告
           this.$store.commit('WEBSOCKET_PLUGIN_INIT')
           this.$store.commit('WEBSOCKET_BACKS_INIT', val)
         },

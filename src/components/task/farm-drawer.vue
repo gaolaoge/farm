@@ -1501,11 +1501,10 @@
       rangeChange(e, index, val, row) {
         row['rangeEdit'] = false
         row['range'] = val
-        // 暂时关闭验证
-        // if (!val) {
-        //   this.rangeChangeErr('empty', index);
-        //   return false
-        // }
+        if (!val) {
+          this.rangeChangeErr('empty', index);
+          return false
+        }
         // if (!val.includes('-')) {
         //   this.rangeChangeErr('err', index);
         //   return false
@@ -2219,7 +2218,6 @@
   .farm-table-td-input {
     position: absolute;
     left: 0px;
-    top: 14px;
     width: calc(100% - 10px);
     padding-left: 10px;
     height: 23px;

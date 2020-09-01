@@ -160,7 +160,7 @@ export default {
       upload_ing: '上传中...',
       upload_timeOut: '上传暂停',
       upload_err: '上传失败',
-      analysis_ing: '分析中',
+      analysis_ing: '分析中...',
       render_ing: '渲染中',
       render_timeOut: '渲染暂停',
       render_timeOut_t: '渲染暂停（超时）',

@@ -59,7 +59,10 @@ export default new Vuex.Store({
     // 创建与后台的websocket
     WEBSOCKET_BACKS_INIT(state, account) {
       state.socket_backS = new WebSocket(`${process.env.BACK_WS_API}${account}`)
-      state.socket_backS.addEventListener('open', () => console.log('--与后台连接成功--'))
+      state.socket_backS.addEventListener('open', () => {
+        console.log('--与后台连接成功--')
+        this.commit('toZore', 'socket_backS_time')
+      })
       state.socket_backS.addEventListener('error', () => {
         if (state.socket_backS_time >= 5) {
           console.log('--与后台连接失败--')
@@ -71,7 +74,12 @@ export default new Vuex.Store({
         }
       })
       state.socket_backS.addEventListener('message', data => state.socket_backS_msg = data)
+      state.socket_backS.addEventListener('close', e => {
+        console.log(`--与后台连接断开，code码为${e.code},尝试重新连接--` + new Date().toLocaleString())
+        this.WEBSOCKET_BACKS_INIT(state, account)
+      })
     },
+
     // 对与后台的websocket发送消息
     WEBSOCKET_BACKS_SEND(state, data) {
       if (!state.socket_backS) return false
@@ -80,7 +88,10 @@ export default new Vuex.Store({
     // 创建与插件的websocket
     WEBSOCKET_PLUGIN_INIT(state) {
       state.socket_plugin = new WebSocket(process.env.PLUGIN_WS_API)
-      state.socket_plugin.addEventListener('open', () => console.log('--与插件连接成功--'))
+      state.socket_plugin.addEventListener('open', () => {
+        console.log('--与插件连接成功--')
+        this.commit('toZore', 'socket_plugin_time')
+      })
       state.socket_plugin.addEventListener('error', () => {
         if (state.socket_plugin_time >= 5) {
           console.log('--与插件连接失败--')
@@ -123,6 +134,9 @@ export default new Vuex.Store({
     },
     addOne(s, val) {
       s[val] ++
+    },
+    toZore(s, val) {
+      s[val] = 0
     },
     changeTaskType(s, val) {
       s.taskType = val

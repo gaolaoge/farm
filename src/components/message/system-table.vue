@@ -30,9 +30,17 @@
           width="55"/>
         <!--消息-->
         <el-table-column
-          prop="noticeDetail"
           label="消息详情"
-          show-overflow-tooltip/>
+          show-overflow-tooltip>
+          <template slot-scope="scope">
+            <div class="s">
+              <span>
+                {{ scope.row.noticeDetail }}
+                <div v-show="scope.row.isRead == 0" class="unread" />
+              </span>
+            </div>
+          </template>
+        </el-table-column>
         <!--日期-->
         <el-table-column
           label="日期"
@@ -93,7 +101,7 @@
           'isRead': 1,
           'noticeUuidList': this.selectionList.map(item => item.noticeUuid)
         })
-        if(data.data.code == 201){
+        if (data.data.code == 201) {
           messageFun('success', '操作成功')
           this.getList()
         }
@@ -213,6 +221,22 @@
 
     &:hover {
       color: rgba(22, 29, 37, 1);
+    }
+  }
+
+  .s {
+    span {
+      position: relative;
+      font-size: 14px;
+      .unread {
+        position: absolute;
+        right: 0px;
+        top: -1px;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background-color: rgba(255, 62, 77, 0.8);
+      }
     }
   }
 

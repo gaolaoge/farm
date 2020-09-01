@@ -59,10 +59,11 @@
     <!--弹窗 新建任务-->
     <el-dialog :visible.sync="createTaskDialog"
                :show-close=false
+               :destroy-on-close=true
                top="8vh"
                @opened="r()"
                width="862px">
-      <newTask @closeDialogFun="closeDialogFun" ref="dialog" />
+      <newTask @closeDialogFun="closeDialogFun" ref="dialog"/>
     </el-dialog>
   </div>
 </template>
@@ -125,7 +126,7 @@
       newTask
     },
     methods: {
-      r(){
+      r() {
         this.$refs.dialog.readyToWork()
       },
       jump(index, url) {
@@ -308,7 +309,7 @@
   }
 
 
-  /deep/.el-dialog {
+  /deep/ .el-dialog {
     border-radius: 8px;
     overflow: hidden;
 

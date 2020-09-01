@@ -453,7 +453,7 @@
           <span>{{ btn.next }}</span>
         </div>
         <!--确定-->
-        <div class="btnGroup-btn confirm" @click.once="confirmFun" v-show="taskType == 'profession'">
+        <div class="btnGroup-btn confirm" @click="confirmFun" v-show="taskType == 'profession'">
           <span>{{ btn.confirm }}</span>
         </div>
       </div>
@@ -464,7 +464,7 @@
           <span>{{ btn.previous }}</span>
         </div>
         <!--确定-->
-        <div class="btnGroup-btn confirm" @click.once="confirmFun">
+        <div class="btnGroup-btn confirm" @click="confirmFun">
           <span>{{ btn.confirm }}</span>
         </div>
       </div>
@@ -616,7 +616,8 @@
   import {
     getFileType,
     savePath,
-    newTaskProfession
+    newTaskProfession,
+    getHistoryPath
   } from '@/api/newTask-api'
   import {
     mapState
@@ -871,6 +872,8 @@
         },
         infoMessageShow: false,     // 选择渲染文件 - 我的电脑 - 工程路径 - 问号
         renderFileTypeList: [],     // 可用的场景文件格式
+        confirmLock: true,          // 提交锁 关闭5秒后开启
+        initialAcquV: true,         // 首次获取场景文件tree
       }
     },
     props: {},
@@ -896,8 +899,6 @@
               return {
                 id: index,
                 label: type == 'file' ? item : item.slice(0, item.length - 1),
-                // label: '',
-                // icon: 'el-icon-success',
                 size: item.size ? item.size : null,
                 updateTime: item.updateTime ? item.updateTime : null,
                 format: type == 'file' ? item.split('.')[1] : null,
@@ -910,6 +911,7 @@
             path_.pop()   // 删除最后一位空元素
             this.stepOneBase.netdisc.sceneFilePath = path_
             this.stepOneBase.netdisc.pathV = data.data.resourcePath
+
           } else if (data.msg == '612') {
             // 工程路径的tree
             let list = data.data.map((item, index) => {
@@ -1380,6 +1382,9 @@
       },
       // 4.提交
       async confirmFun() {
+        if(!this.confirmLock) return
+        this.confirmLock = false
+        setTimeout(() => this.confirmLock = true, 5000)
         let fir = this.stepOneBase,
           sec = this.stepTwoBase,
           thi = this.stepThreeBase
@@ -1560,12 +1565,26 @@
         }
       },
       // 0.预备事件
-      readyToWork() {
-        if (this.socket_backS) this.$store.commit('WEBSOCKET_BACKS_SEND', {
-          'code': 602,
-          'customerUuid': this.user.id,
-          'path': ''
-        })  // 向后台获取网盘目录 场景路径
+      async readyToWork() {
+        // if (this.socket_backS) this.$store.commit('WEBSOCKET_BACKS_SEND', {
+        //   'code': 602,
+        //   'customerUuid': this.user.id,
+        //   'path': ''
+        // })
+        // 向后台获取网盘目录 场景路径
+        let data = await getHistoryPath(`account=${this.user.account}`)
+        if(data.data.code == 208) {
+          // scenePath 场景文件导航Path / resourcePath 工程路径Path
+          let path_ = data.data.data.scenePath.split('/')
+          path_.pop()   // 删除最后一位空元素
+          this.stepOneBase.netdisc.sceneFilePath = path_
+          this.stepOneBase.netdisc.pathV = data.data.data.resourcePath
+          this.$store.commit('WEBSOCKET_BACKS_SEND', {
+            'code': 602,
+            'customerUuid': this.user.id,
+            'path': data.data.data.scenePath
+          })
+        }
       }
     },
     mounted() {

@@ -27,6 +27,14 @@ export function savePath(data){
   })
 }
 
+// 准备工作 - 获取路径历史记录
+export function getHistoryPath(data){
+  return businessServer({
+    url: `/file/assets/upload/getCustomerDefaultFile?${data}`,
+    method: 'GET'
+  })
+}
+
 // 提交
 export function newTaskProfession(data){
   return businessServer({

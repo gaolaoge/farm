@@ -6,27 +6,6 @@
         <span class="name fc">{{ $t('statistics_mainM.taskStatus.name') }}</span>
       </div>
       <div class="c filter">
-        <!--时间区间-->
-        <div class="filter-item">
-          <el-date-picker
-            v-model="date"
-            type="daterange"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期">
-          </el-date-picker>
-        </div>
-        <!--下拉框-->
-        <div class="select bl">
-          <el-select v-model="dateInterval" placeholder="请选择" @change="changeDateInterval">
-            <el-option
-              v-for="item in dateIntervalList"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value">
-            </el-option>
-          </el-select>
-        </div>
         <!--全屏-->
         <span class="bigger fc bl" v-show="fullBtn">
           <img src="@/icons/bigger.png" alt="" @click="f">
@@ -72,36 +51,7 @@
     name: '',
     data() {
       return {
-        navIndex: 0,
         ec: null,
-        dateIntervalList: [
-          {
-            value: 'nearlySevenDays',
-            label: '近7天'
-          },
-          {
-            value: 'nearlyThirtyDays',
-            label: '近30天'
-          },
-          {
-            value: 'customize',
-            label: '自定义'
-          }
-        ],
-        itemList: [
-          {
-            value: '选项1',
-            label: '近7天'
-          },
-          {
-            value: '近30天',
-            label: '近30天'
-          },
-          {
-            value: '自定义',
-            label: '自定义'
-          }
-        ],
         statusList: {
           'daiquanbuxuanran': '待全部渲染',
           'fenxizhong': '分析中',
@@ -117,7 +67,6 @@
         },
         dateInterval: 'nearlySevenDays',
         taskV: [],
-        date: [],
         fullBtn: true,
         chartsSeries: [],
         lock: false,
@@ -132,12 +81,6 @@
       }
     },
     watch: {
-      date(val) {
-        let {year, month, day} = createCalendar(val[0])
-        let {year: year2, month: month2, day: day2} = createCalendar(val[1])
-        this.$emit('monitorVal', [`${year}-${month}-${day}`, `${year2}-${month2}-${day2}`, 'taskData'])
-        this.aisle()
-      },
       taskV(v) {
         this.aisle()
       },
@@ -164,22 +107,6 @@
       ...mapState(['zoneId'])
     },
     methods: {
-      // 日期区间下拉框修改
-      changeDateInterval(val) {
-        switch (val) {
-          case 'nearlySevenDays':   // 近7天
-            this.date = [this.getDateE(6), new Date()]
-            break
-          case 'nearlyThirtyDays':   // 近30天
-            this.date = [this.getDateE(29), new Date()]
-            break
-        }
-      },
-      // 获取指定日期date
-      getDateE(num) {
-        let date = new Date().getTime() - num * 1000 * 60 * 60 * 24
-        return new Date(date)
-      },
       // echarts 初始化
       init() {
         this.ec = this.$echarts.init(this.$refs.ec)
@@ -195,15 +122,10 @@
             bottom: 20,
             data: ['待全部渲染', '分析中', '分析警告', '待设置参数', '上传暂停', '分析失败', '渲染暂停', '渲染中', '上传中', '上传失败', '渲染完成']
           },
-          calculable: true,//手柄拖拽调整选中的范围
+          calculable: true,   //手柄拖拽调整选中的范围
 
           series: this.chartsSeries
         })
-      },
-      // 日期选择模块选择结果
-      changeSelectDate([startDate, endDate]) {
-        this.startDate = startDate
-        this.endDate = endDate
       },
       // 全屏
       f() {
@@ -267,16 +189,6 @@
 </script>
 
 <style lang="less" scoped>
-  .el-date-editor {
-    border: 0px;
-
-    .el-range__icon,
-    .el-range-separator,
-    .el-input__icon.el-range__close-icon {
-      line-height: 22px;
-    }
-  }
-
   .taskStatusEchart-wrapper {
     /deep/ .el-tag.el-tag--info.el-tag--small.el-tag--light {
       display: flex;
