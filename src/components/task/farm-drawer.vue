@@ -542,7 +542,7 @@
                  :src="result.miniImgHref"
                  class="img"
                  @click="$store.commit('setShowThumb', true)">
-            <img src="@/assets/no_thumb.png" v-show="!result.miniImgHref" >
+            <img src="@/assets/no_thumb.png" v-show="!result.miniImgHref">
           </div>
           <div class="dataList">
 
@@ -968,7 +968,8 @@
     renderingRange,
     exportDownloadFun,
     messageFun,
-    itemDownloadStatus
+    itemDownloadStatus,
+    sortF
   } from '@/assets/common.js'
   import elTableInfiniteScroll from 'el-table-infinite-scroll'
   import {mapState} from 'vuex'
@@ -1364,8 +1365,8 @@
           this.result.statusData = row['status']
           let t = `frameTaskUuid=${row.frameTaskUuid}&layerTaskUuid=${row.layerTaskUuid}&size=240`,
             data = await getThumbnail(t)
-          if(data.data.code == 1000) this.result.miniImgHref = null
-          else if(data.data.code == 200){
+          if (data.data.code == 1000) this.result.miniImgHref = null
+          else if (data.data.code == 200) {
             this.result.miniImgHref = data.data.data == ''
             let a = await getThumbnail(`frameTaskUuid=${row.frameTaskUuid}&layerTaskUuid=${row.layerTaskUuid}&size=900`)
             this.$store.commit('setThumbURL', a.data.data)
@@ -1502,32 +1503,34 @@
         row['rangeEdit'] = false
         row['range'] = val
         if (!val) {
-          this.rangeChangeErr('empty', index);
+          this.rangeChangeErr('empty', index)
           return false
         }
-        // if (!val.includes('-')) {
-        //   this.rangeChangeErr('err', index);
-        //   return false
-        // }
-        // let h = Number(val.split('-')[0]),
-        //   f = Number(val.split('-')[1])
-        // if (!/^[0-9]+$/.test(h) || !/^[0-9]+$/.test(f)) {
-        //   this.rangeChangeErr('err', index);
-        //   return false
-        // }
-        // if (h >= 999 || f > 999) {
-        //   this.rangeChangeErr('max', index);
-        //   return false
-        // }
-        // if (h >= f) {
-        //   this.rangeChangeErr('err', index);
-        //   return false
-        // }
-
+        let str = val.replace(/\s+/g, ''),   // 去空格
+          list = str.split(',').reduce((total, item) => total.concat(item.split('，')), []).filter(item => !!item)    // 参数列表
+        // 判断带有区间符号的元素
+        if (list.some(item => (item.match(/[-_]+?/g) && item.match(/[-_]+?/g).length) && (item.match(/[-_]+?/g).length > 1 || !/^\d[\d_-]*\d$/.test(item)))) {
+          this.rangeChangeErr('err', index)
+          return
+        }
+        // 判断不带区间符号的元素
+        if (list.some(item => (!/[-_]+?/.test(item)) && !/^\d+$/.test(item))) {
+          this.rangeChangeErr('err', index)
+          return
+        }
+        if (list.some(item => (!/[-_]+?/.test(item)) && (item.indexOf(".") != -1 || item < 1 || item > 999))) {
+          this.rangeChangeErr('max', index)
+          return
+        }
+        let numList = list.reduce((l, it) => l.concat(it.split('-').reduce((total, item) => total.concat(item.split('_')), [])), [])  // 参数内数值集合列表
+        if (numList.some(item => item.indexOf(".") != -1 || item < 1 || item > 999)) {
+          this.rangeChangeErr('max', index)
+          return
+        }
         row['rangeErr'] = false
         if (this.setting.num.tableData.every(curr => !curr.rangeErr)) this.setting.num.randerError = false
         // 检查当前行【间隔帧】
-        this.numChange(null, index, row)
+        // this.numChange(null, index, row)
       },
       // 帧范围修改报错
       rangeChangeErr(type, index) {
@@ -1539,7 +1542,7 @@
             messageFun('error', '输入格式错误，帧范围为1-999')
             break
           case 'err':
-            messageFun('error', '输入格式错误，请输入,例:1-10')
+            messageFun('error', '输入格式错误，请输入数字索引,例:1-10')
         }
         this.setting.num.tableData[index]['rangeErr'] = true
         this.setting.num.randerError = true
@@ -1663,7 +1666,7 @@
         })
           .then(
             ({value}) => {
-              if(!value) messageFun('info', '项目名为必填项')
+              if (!value) messageFun('info', '项目名为必填项')
               else {
                 newItemName = value.value
                 return addNewItem({
@@ -1704,7 +1707,7 @@
           return false
         }
 
-        if(!tt.num.selected.length) {
+        if (!tt.num.selected.length) {
           messageFun('info', '未选中层')
           return false
         }
@@ -1985,37 +1988,50 @@
         s.selected = []
         s.singleChoiceVal == 1 ? s.tableData = s.tableDataAll : s.tableData = [s.tableDataAll[0]]
       },
-      // 验证 自定义帧格式
+      // 设置参数 - 优先渲染 - 验证自定义帧格式
       verifFormat() {
         let val = this.setting.priority.customize
         if (!val) {
-          this.setting.priority.customizeInputError = false;
+          this.setting.priority.customizeInputError = false
           return false
         }
 
         let valList = val.replace(/，/g, ',').split(',').filter(curr => curr != '')          // 输入帧
 
         if (valList.length > 3) {
-          this.errFun('最多优先测试3帧');
+          this.errFun('最多优先测试3帧')
           return false
         }
         if (!valList.every(curr => /^[0-9]+$/.test(Number(curr)))) {
-          this.errFun('输入格式不正确，请重新输入');
+          this.errFun('输入格式不正确，请重新输入')
           return false
         }
 
-        let range = this.setting.num.tableData[0].range,         // 帧范围
-          rangeH = Number(range.split('-')[0]),                  // 首帧
-          rangeF = Number(range.split('-')[1]),                  // 尾帧
+        let str = this.setting.num.tableData[0].range.replace(/\s+/g, ''),   // 去空格
+          list = str.split(',').reduce((total, item) => total.concat(item.split('，')), []),  // 帧范围参数
           interval = Number(this.setting.num.tableData[0].num),  // 帧间隔
-          result = renderingRange(rangeH, rangeF, interval),     // 遍历帧范围
-          r = valList.every(curr => result.includes(Number(curr)))        // 【帧范围】是否完全包含【输入帧】
-
-        if (!r) {
-          this.errFun('优先帧超出帧范围，请重新输入');
+          result = new Set()   // 遍历出渲染帧
+        if(list.some(item => !item)){
+          this.errFun('输入格式不正确，请重新输入')
           return false
         }
-        if (r) this.setting.priority.customizeInputError = false
+        list.forEach(item => {
+          if (/[-_]+?/.test(item)) {
+            let t = item.match(/\d+/g)
+            if(t[0] == t[1]) {
+              result.add(t[0])
+              return
+            }
+            sortF(t[0], t[1])
+            do {
+              result.add(t[0])
+              t[0] += interval
+            } while (t[0] < t[1])
+          } else result.add(item)
+        })
+
+        if (valList.some(item => !result.has(item))) this.errFun('优先帧超出帧范围，请重新输入')
+        else this.setting.priority.customizeInputError = false
       },
       // 验证报错
       errFun(text) {
@@ -2217,6 +2233,7 @@
 
   .farm-table-td-input {
     position: absolute;
+    top: 6px;
     left: 0px;
     width: calc(100% - 10px);
     padding-left: 10px;
@@ -2616,4 +2633,19 @@
       }
     }
   }
+
+  /deep/ .cell {
+    height: 23px;
+
+    .el-input.el-input--suffix {
+      height: 23px;
+
+      .el-input__inner,
+      .el-input__icon {
+        height: 23px;
+        line-height: 23px;
+      }
+    }
+  }
+
 </style>

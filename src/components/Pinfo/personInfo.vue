@@ -38,7 +38,7 @@
           <el-radio :label=1>{{ info.sexRadio[0] }}</el-radio>
           <el-radio :label=0>{{ info.sexRadio[1] }}</el-radio>
         </el-radio-group>
-        <span class="remarks">{{ info.sexRemarks }}</span>
+        <span class="remarks" v-show="info.sexVal == null">{{ info.sexRemarks }}</span>
       </div>
       <!--生日-->
       <div class="form-item">

@@ -85,6 +85,14 @@ const exportDownloadFun = (data, name, type, isProtocal) => {
   }
 }
 
+// 2位排序
+const sortF = function(a, b){
+  if(a < b) return
+  a += b
+  b = a - b
+  a -= b
+}
+
 // table 筛选icon样式
 const createTableIconList = function () {
   setTimeout(() => {
@@ -284,7 +292,8 @@ export {
   setInfo,
   IEVersion,
   clearUserCookie,
-  getFileSize
+  getFileSize,
+  sortF
 }
 
 
