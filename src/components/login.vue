@@ -124,6 +124,8 @@
               </div>
               <!--5天内自动登录-->
               <el-switch
+                active-color="RGBA(27, 83, 244, 1)"
+                inactive-color="rgba(230, 230, 230, 1)"
                 v-model="login.accountForm.isAutoLogin">
               </el-switch>
               <span class="switchLabel">{{ $t('login_page.account_verif.auto_login') }}</span>
@@ -277,9 +279,13 @@
             </div>
             <!--帐号-->
             <div class="u">
-              <input v-model="registered.form.account" :placeholder="$t('login_page.register.ac_placeholder')"
-                     @blur="accouVerif('register')" @focus="inputGetFocus('account')" ref="accountRegister"
-                     class="farm-input"/>
+              <input v-model="registered.form.account"
+                     :placeholder="$t('login_page.register.ac_placeholder')"
+                     @blur="accouVerif('register')"
+                     @focus="inputGetFocus('account')"
+                     ref="accountRegister"
+                     class="farm-input"
+                     :class="[{'inputError': registered.status.account === false && !registered.status.accountInit}]"/>
               <span class="warnInfo" v-show="registered.status.account === false && !registered.status.accountInit">{{ registered.warnInfo.account }}</span>
               <img src="@/icons/login-success.png" class="i"
                    v-show="registered.status.account === true && !registered.status.accountInit">
@@ -294,7 +300,8 @@
                      @blur="passwVerif('register')"
                      @focus="inputGetFocus('password')"
                      ref="passwordRegister"
-                     class="farm-input"/>
+                     class="farm-input"
+                     :class="[{'inputError': registered.status.password === false && !registered.status.passwordInit}]"/>
               <div class="swicthPWI">
                 <img src="@/icons/openPW.png" alt="" v-show="registered.passwordEye" @click="changePSType(false)">
                 <img src="@/icons/shuPW.png" alt="" v-show="!registered.passwordEye" @click="changePSType(true)">
@@ -308,8 +315,13 @@
             </div>
             <!--手机号-->
             <div class="u">
-              <input v-model="registered.form.phone" :placeholder="$t('login_page.register.ph_placeholder')"
-                     @blur="phoneVerif" @focus="inputGetFocus('phone')" ref="phoneRegister" class="farm-input"/>
+              <input v-model="registered.form.phone"
+                     :placeholder="$t('login_page.register.ph_placeholder')"
+                     @blur="phoneVerif"
+                     @focus="inputGetFocus('phone')"
+                     ref="phoneRegister"
+                     class="farm-input"
+                     :class="[{'inputError': registered.status.phone === false && !registered.status.phoneInit}]"/>
               <span class="warnInfo" v-show="registered.status.phone === false && !registered.status.phoneInit">{{ registered.warnInfo.phone }}</span>
               <img src="@/icons/login-success.png" class="i"
                    v-show="registered.status.phone === true && !registered.status.phoneInit">
@@ -324,7 +336,8 @@
                      @blur="codeVerif"
                      @focus="registered.status.code = null"
                      ref="codeRegister"
-                     class="farm-input"/>
+                     class="farm-input"
+                     :class="[{'inputError': registered.status.code === false}]"/>
               <span class="warnInfo" v-show="registered.status.code === false">{{ registered.warnInfo.code }}</span>
               <img src="@/icons/login-success.png" class="i" v-show="registered.status.code === true">
               <img src="@/icons/login-error .png" class="i canClick" v-show="registered.status.code === false"
@@ -1278,12 +1291,12 @@
         .warnInfo {
           user-select: none;
           position: absolute;
-          left: 0px;
+          left: 20px;
           bottom: 9px;
           font-size: 11px;
           color: rgba(255, 62, 77, 0.79);
           line-height: 16px;
-          width: 400px;
+          width: 300px;
         }
       }
 
@@ -1342,7 +1355,7 @@
             .warnInfo {
               user-select: none;
               position: absolute;
-              left: 0px;
+              left: 20px;
               bottom: 9px;
               font-size: 11px;
               color: rgba(255, 62, 77, 0.79);
@@ -1609,7 +1622,7 @@
   }
 
   .inputError {
-    color: #f40 !important;
+    border: 1px solid rgba(255, 62, 77, 1) !important;
   }
 
   input:-webkit-autofill {

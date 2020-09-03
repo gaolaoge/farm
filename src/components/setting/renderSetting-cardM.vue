@@ -106,21 +106,21 @@
       veriRemind(){
         let n = Number(this.reminderVal)
         if(!n) this.reminderVal = 12
-        else if(n > 72) this.reminderVal = 72
+        else if(n > 72) this.reminderVal = 12
         else if(n < 1) this.reminderVal = 1
         else this.reminderVal = n
         this.editData()
       },
-      // 修改单帧超时提醒
+      // 修改单帧超时停止
       veriStop(){
         let n = Number(this.stopVal)
         if(!n) this.stopVal = 24
-        else if(n > 72) this.stopVal = 72
+        else if(n > 72) this.stopVal = 24
         else if(n < 1) this.stopVal = 1
         else this.stopVal = n
         this.editData()
       },
-      // 修改单帧超时提醒
+      // 修改单个任务预警
       veriWarning(){
         let n = Number(this.warningVal)
         if(!n) this.warningVal = 99999

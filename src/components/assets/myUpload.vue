@@ -238,9 +238,6 @@
           if (data.code == 100 || data.code == 101) this.getAssetsCatalog(this.path, this.searchInputVal)
         }
       }
-      // 'dialogVisible': function(val){
-      //   if(val) this.dlGetTreeData()
-      // }
     },
     methods: {
       // 解压 输入密码
@@ -341,13 +338,9 @@
       },
       // 下载
       downloadFile() {
-        if (!this.table.selectionList.length) return false
-        let result = this.table.selectionList.find(item => item['ing'])
-        if (result) {
-          messageFun('info', '一个或多个目标正在上传中，无法进行此操作')
-          return false
-        }
-        this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
+        if (!this.table.selectionList.length) return
+        else if (this.table.selectionList.some(item => item['ing'])) messageFun('info', '一个或多个目标正在上传中，无法进行此操作')
+        else this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
           transferType: 2,
           userID: this.user.id,
           isRender: 0,
@@ -356,47 +349,34 @@
       },
       // 移动到
       moveFile() {
-        let result = this.table.selectionList.find(item => item['ing'])
-        if (result) {
-          messageFun('info', '一个或多个目标正在上传中，无法进行此操作')
-          return false
+        if (this.table.selectionList.some(item => item['ing'])) messageFun('info', '一个或多个目标正在上传中，无法进行此操作')
+        else {
+          this.dialogVisible = true
+          this.dl.dlType = 'move'
         }
-        this.dialogVisible = true
-        this.dl.dlType = 'move'
       },
       // 确认 - 移动/复制
       configF(type) {
-        if (!this.dl.checkPath) return
-        this.$store.commit('WEBSOCKET_BACKS_SEND', {
+        if (this.dl.checkPath) this.$store.commit('WEBSOCKET_BACKS_SEND', {
           'code': type == 'move' ? 605 : 606,
           'customerUuid': this.user.id,
           'targetFolderPath': this.dl.checkPath,
           'filePathList': this.table.selectionList.map(item => item.position)
-          // 'filePathList': this.table.selectionList.map(item => {
-          //   let p = item.position,
-          //     r = p.slice(p.length - 1) == '/'
-          //   if (r) return p.slice(0, p.length - 1)
-          //   else return p
-          // })
         })
       },
       // 复制到
       copyFile() {
         let result = this.table.selectionList.find(item => item['ing'])
-        if(result) {
-          messageFun('info', '一个或多个目标正在上传中，无法进行此操作')
-          return false
+        if (result) messageFun('info', '一个或多个目标正在上传中，无法进行此操作')
+        else {
+          this.dialogVisible = true
+          this.dl.dlType = 'copy'
         }
-        this.dialogVisible = true
-        this.dl.dlType = 'copy'
       },
       // 重命名
       rename() {
-        if (this.table.selectionList[0]['ing']) {
-          messageFun('info', '目标正在上传中，无法操作')
-          return false
-        }
-        this.$prompt('请输入新名称', '提示', {
+        if (this.table.selectionList[0]['ing']) messageFun('info', '目标正在上传中，无法操作')
+        else this.$prompt('请输入新名称', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
         })
@@ -412,20 +392,11 @@
       },
       // 解压
       unzip(password) {
-        if (this.table.selectionList.length != 1) {
-          messageFun('info', '压缩动作只能针对单一文件，操作失败')
-          return false
-        }
-        if (this.table.selectionList[0]['ing']) {
-          messageFun('info', '目标正在上传中，无法操作')
-          return false
-        }
         let type = ['zip', 'rar', 'tar', 'tar.gz', 'tar.bz2', 'tar.Z']
-        if (type.find(curr => curr == this.table.selectionList[0]['type']) == -1) {
-          messageFun('info', '非压缩文件，无法操作')
-          return false
-        }
-        this.unzipAction(this.table.selectionList[0]['position'], password)
+        if (this.table.selectionList.length != 1) messageFun('info', '压缩动作只能针对单一文件，操作失败')
+        else if (this.table.selectionList[0]['ing']) messageFun('info', '目标正在上传中，无法操作')
+        else if (!type.some(curr => curr == this.table.selectionList[0]['type'])) messageFun('info', '非压缩文件，无法操作')
+        else this.unzipAction(this.table.selectionList[0]['position'], password)
       },
       unzipAction(unzipFilePath, password) {
         this.$store.commit('WEBSOCKET_BACKS_SEND', {
@@ -437,12 +408,8 @@
       },
       // 删除
       deleteFile() {
-        let result = this.table.selectionList.find(item => item['ing'])
-        if (!result) {
-          messageFun('info', '一个或多个目标正在上传中，无法进行此操作')
-          return false
-        }
-        this.$store.commit('WEBSOCKET_BACKS_SEND', {
+        if (this.table.selectionList.some(item => item['ing'])) messageFun('info', '一个或多个目标正在上传中，无法进行此操作')
+        else this.$store.commit('WEBSOCKET_BACKS_SEND', {
           'code': 604,
           'customerUuid': this.user.id,
           filePathList: this.table.selectionList.map(item => this.path + item.fileName)

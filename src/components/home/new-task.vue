@@ -1836,6 +1836,8 @@
 
                     .tree {
                       margin-top: 36px;
+                      max-height: 384px;
+                      overflow: scroll;
                     }
 
                     .null {
@@ -1895,7 +1897,7 @@
                   box-shadow: 0px 0px 0px 1px rgba(22, 29, 37, 0);
                   background-color: rgba(255, 255, 255, 1);
                   transition: all 0.2s;
-                  overflow: hidden;
+                  overflow: scroll;
 
                   &.active {
                     height: 320px;
