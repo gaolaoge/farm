@@ -1393,6 +1393,7 @@
         let parameter = `taskUuid=${this.taskData.FatherTaskUuId}&layerTaskUuid=${this.taskData.taskUuid}&keyword=${this.result.searchInpVal}&pageIndex=1&pageSize=999`,
           data = await getRenderTSeeMore(parameter),
           data_ = data.data.data
+        console.log(data_)
         this.result.tableData = data_.frameList.map(curr => {
           let s = null
           switch (curr.frameTaskStatus) {
@@ -1432,7 +1433,8 @@
             outFilePath: curr.outFilePath,
             layerName: data_.taskInfo.layerName,
             fileName: curr.fileName,
-            taskID: data_.taskInfo.taskNo
+            taskID: data_.taskInfo.taskNo,
+            sceneName: data_.taskInfo.fileName
           }
         })
         this.result.happen[0]['num'] = data_.frameCount['running']
@@ -1866,14 +1868,16 @@
       },
       // 渲染结果 - 主 - 操作 - 下载完成帧
       async operateDownloadFrame() {
+        console.log('fileList')
         if (this.result.operateBtnList[2]['classState']) return false
         if (!this.result.selectionResult.length) return false
-        let data = await seeBalance()
-        if (data.data.code == 1001) {
-          messageFun('error', `当前账户余额为${data.data.data}，请先进行充值！`);
-          return false
-        }
+        // let data = await seeBalance()
+        // if (data.data.code == 1001) {
+        //   messageFun('error', `当前账户余额为${data.data.data}，请先进行充值！`);
+        //   return false
+        // }
         let fileList = this.result.selectionResult.map(item => {
+          console.log(item)
           let index = item['outFilePath'].indexOf(item.taskTaskUuid)
           return {
             path: '\\' + item['outFilePath'].slice(index) + item['fileName'],
