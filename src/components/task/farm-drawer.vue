@@ -1474,8 +1474,9 @@
           selfVal: '0',
           customize: ''
         })
-        this.setting.mode.mode = '2002'        // 渲染模式初始化
-        Object.assign(this.setting.other, {     // 其它设置初始化
+        this.setting.mode.mode = '2002'               // 渲染模式初始化
+        this.setting.num.singleChoiceVal = '0'        // 启动分层渲染
+        Object.assign(this.setting.other, {    // 其它设置初始化
           remindVal: 12,
           stopVal: 24,
           view: ''

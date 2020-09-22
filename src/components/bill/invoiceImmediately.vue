@@ -384,6 +384,11 @@
       async getInvoiceHeaderList() {
         let data = await getInvoiceHeaderListF()
         if (data.data.code == 200) {
+          let index = data.data.data.findIndex(item => item.isDefault == 1)
+          if(index) {
+            data.data.data.unshift(data.data.data[index])
+            data.data.data.splice(index + 1, 1)
+          }
           this.invoiceTableData = data.data.data
         }
       },
@@ -510,7 +515,7 @@
           messageFun('info', '未选中充值记录')
           return false
         }
-        if (!this.checked) {
+        if (this.checked == null) {
           messageFun('info', '未选中发票抬头')
           return false
         }

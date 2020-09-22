@@ -213,18 +213,18 @@
           list: [
             {
               ChineseYuan: '100',
-              remark: '充值100元送100金币 实际到账200金币',
-              gold: 200
-            },
-            {
-              ChineseYuan: '200',
-              remark: '充值200元送200金币 实际到账400金币',
-              gold: 400
+              remark: '充值100元送60金币 实际到账160金币',
+              gold: 160
             },
             {
               ChineseYuan: '500',
-              remark: '充值500元送500金币 实际到账1000金币',
-              gold: 1000
+              remark: '充值500元送400金币 实际到账900金币',
+              gold: 900
+            },
+            {
+              ChineseYuan: '2000',
+              remark: '充值2000元送1800金币 实际到账3800金币',
+              gold: 3800
             }
           ],
           placeholder: '输入其他金额',
@@ -341,23 +341,12 @@
     watch: {
       'form.ChineseYuan': function (val) {
         this.canBeUpTop = true
-        if (val == 100) {
-          this.form.realVal = '200.000'
-          return false
-        }
-        if (val == 200) {
-          this.form.realVal = '400.000'
-          return false
-        }
-        if (val == 500) {
-          this.form.realVal = '1000.000'
-          return false
-        }
-        this.computeFun()
+        if (val == 100) this.form.realVal = '160.000'
+        else if (val == 500) this.form.realVal = '900.000'
+        else if (val == 2000) this.form.realVal = '3800.000'
+        else if (val == 5000) this.form.realVal = '10000.000'
+        else this.computeFun()
       },
-      '$route': function (val) {
-        // console.log(val)
-      }
     },
     methods: {
       // 计算金币

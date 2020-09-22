@@ -170,7 +170,8 @@
                       <div class="f"
                            @click="$store.commit('WEBSOCKET_PLUGIN_SEND', {
                           transferType: 4,              // 传输类型
-                          sceneFile: scope.$index
+                          sceneFile: scope.$index,
+                          originalPath: scope.row.address
                         })">
                         <span :title="scope.row.address">{{ scope.row.address }}</span>
                         <img src="@/icons/more-btn.png">
