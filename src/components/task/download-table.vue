@@ -542,21 +542,11 @@
         //打开抽屉
         this.showDrawer = true
         this.$refs.drawer.turnPage('result')
-        console.log(row)
         this.drawerTaskData = row.secretChild ? row.secretChild[0] : row
         let tableDomList = this.$refs.downLoadTable.getElementsByClassName('el-table__row'),
           d = this.$refs.downLoadTable.getElementsByClassName('farmTableSelected')[0]
         if (d) d.classList.remove('farmTableSelected')
-        // 计算选中行
-        let n = 0
-        this.table.RenderDownloadData.find((curr, inde) => {
-          n++
-          return -1 < curr.children.findIndex((c, i) => {
-            n++
-            return c.taskUuid == row.taskUuid
-          })
-        })
-        tableDomList[--n].classList.add('farmTableSelected')
+        event.path.find(item => item.classList.contains('el-table__row')).classList.add('farmTableSelected')
       },
       // 渲染下载关闭详情
       closeDrawer() {

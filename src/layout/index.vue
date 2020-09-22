@@ -92,7 +92,7 @@
       triggerPlugin() {
         let son = document.createElement('IFRAME')
         document.body.appendChild(son)
-        son.src = 'walter://'
+        son.src = 'jhzy://'
         son.contentDocument.open()
       },
       // 打开【传输列表】
