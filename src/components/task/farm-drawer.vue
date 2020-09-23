@@ -48,15 +48,11 @@
           </div>
         </div>
         <div class="farm-drawer-body-item two">
-          <!--分析进度-->
-          <!--<div class="farm-drawer-item">-->
-          <!--<span class="farm-drawer-item-label">-->
-          <!--{{ details.labelProgress }}：-->
-          <!--</span>-->
-          <!--<span class="farm-drawer-item-val">-->
-          <!--{{ details.valProgress }}-->
-          <!--</span>-->
-          <!--</div>-->
+          <!--当前进度-->
+          <div class="farm-drawer-item">
+            <span class="farm-drawer-item-label">{{ details.labelProgress }}：</span>
+            <span class="farm-drawer-item-val">{{ details.valProgress }}</span>
+          </div>
           <!--分析日志-->
           <!--<div class="farm-drawer-item">-->
           <!--<span class="farm-drawer-item-label">-->
@@ -66,6 +62,7 @@
           <!--{{ details.valLog }}-->
           <!--</span>-->
           <!--</div>-->
+
           <div class="errorList" v-show="details.errorList[0]">
             <div class="farm-drawer-list-item" v-for="(item,index) in details.errorList">
               <div class="icon">
@@ -388,8 +385,11 @@
             </span>
           </div>
           <div class="farm-drawer-body-item-d">
-            <el-radio-group v-model="setting.mode.mode">
-              <el-radio :label="item.val" v-for="(item,index) in setting.mode.modeList" :key="index">{{ item.label }}
+            <el-radio-group v-model="setting.mode.selectedPart.mode">
+              <el-radio :label="item.val"
+                        v-for="(item,index) in setting.mode.selectedPart.modeList"
+                        :key="index">
+                {{ item.label }}
               </el-radio>
             </el-radio-group>
           </div>
@@ -992,8 +992,9 @@
           valCreateTime: '',
           labelState: '当前状态',
           valState: '',
-          labelProgress: '分析进度',
-          valProgress: '正在分析文件贴图',
+          labelProgress: '当前进度',
+          valProgress: '',
+          showProgress: false,              // 显示当前进度
           labelLog: '分析日志',
           valLog: '正在全力加速分析中，请您稍等片刻～',
           errorList: [
@@ -1082,23 +1083,47 @@
             miniTitO: '（',
             miniTitT: '）',
             rule: '计费规则说明',
-            mode: '2002',
-            modeList: [
-              {
-                val: '2002',
-                label: '16核32G【标准模式1】',
-                id: '224',
-              },
-              {
-                val: '32核64G【标准模式2】',
-                label: '32核64G【标准模式2】',
-                id: ''
-              }
-              // {
-              //   val: '32核128G【标准模式3】',
-              //   label: '32核128G【标准模式3】'
-              // }
-            ]
+            renderCPUPart: {
+              mode: '2002',
+              modeList: [
+                {
+                  val: '2002',
+                  label: '16核32G【标准模式】',
+                  id: '224',
+                },
+              ]
+            },
+            renderGPUPart: {
+              mode: '2002',
+              modeList: [
+                {
+                  val: '2002',
+                  label: '丽台_RTX8000显卡【标准】',
+                  id: '224',
+                },
+                {
+                  val: '32核64G【标准模式2】',
+                  label: '丽台_RTX8000显卡【加速】（加速20%）',
+                  id: ''
+                }
+              ]
+            },
+            picCPUPart: {
+              mode: '2002',
+              modeList: [
+                {
+                  val: '2002',
+                  label: `丽台_RTX8000显卡【标准】`,
+                  id: '224',
+                },
+                {
+                  val: '32核64G【标准模式2】',
+                  label: '丽台_RTX8000显卡【加速】（加速20%）',
+                  id: ''
+                }
+              ]
+            },
+            selectedPart: null,
           },
           // 其它设置
           other: {
@@ -1293,10 +1318,21 @@
       'socket_plugin_msg': {
         handler: function (e) {
           let data = JSON.parse(e.data)
-          if(data.code != 852 || this.typeInfo != 'result' || this.result.showDetails) return false
+          if (data.code != 852 || this.typeInfo != 'result' || this.result.showDetails) return false
           let {taskUuid, layerUuid} = data
-          if(this.taskData.FatherTaskUuId == taskUuid && this.taskData.taskUuid == layerUuid) this.getRenderItemMoreTableF()
+          if (this.taskData.FatherTaskUuId == taskUuid && this.taskData.taskUuid == layerUuid) this.getRenderItemMoreTableF()
         }
+      },
+      'zoneSpecific': {
+        handler: function(id){
+          let m = this.setting.mode
+          console.log(id)
+          if(id == '影视版GPU') m.selectedPart = m.renderGPUPart
+          else if(id == '影视版CPU') m.selectedPart = m.renderCPUPart
+          // else if(id == '影视版GPU') ''
+          else if(id == '效果图CPU') m.selectedPart = m.picCPUPart
+        },
+        immediate: true
       }
     },
     methods: {
@@ -1317,43 +1353,49 @@
           spinner: 'el-icon-loading',
           background: 'rgba(0, 0, 0, 0.7)'
         })
-        if (this.typeInfo == 'upload-table') {
-          this.getUpTopItemMore()
-        } else {
-          this.getRenderItemMoreF()
-        }
+        if (this.typeInfo == 'upload-table') this.getUpTopItemMore()
+        else this.getRenderItemMoreF()
       },
       // 上传分析 -  获取详情
       async getUpTopItemMore() {
+        this.details.errorList = []
+        this.details.warningList = []
+        this.details.status = null
+
         Object.assign(this.details, {
           valId: this.taskData.id,
           valName: this.taskData.scenesName,
           valCreateTime: this.taskData.creationTime,
           valState: this.taskData.status
         })
-        let data = await upTopTableSeeMore(`taskUuid=${this.taskData.taskUuid}`)
-        this.loading.close()
-        this.details.status = data.data.data.status
-        this.getItemList()
-        if (data.data.data.warningMessage) {
-          this.details.warningList = data.data.data.warningMessage.map(curr => {
-            return {
-              title: curr,
-              content: ''
-            }
-          })
+        if (this.taskData.status.match('上传')) {
+          // 上传状态
+          this.details.showProgress = true
+          if(this.taskData.status == '上传中...') this.details.valProgress = '上传中，请稍后……'
+          else if(this.taskData.status == '上传暂停') this.details.valProgress = '上传暂停，您可点击下方【传输插件】，启动插件后，查看详情。'
+          else if(this.taskData.status == '上传失败') this.details.valProgress = '上传失败，您可点击下方【传输插件】，启动插件后，查看详情。'
+          this.loading.close()
         } else {
-          this.details.warningList = []
-        }
-        if (data.data.data.errorMessage) {
-          this.details.errorList = data.data.data.errorMessage.map(curr => {
-            return {
-              title: curr,
-              content: ''
-            }
-          })
-        } else {
-          this.details.errorList = []
+          // 分析状态
+          this.details.showProgress = false
+          let data = await upTopTableSeeMore(`taskUuid=${this.taskData.taskUuid}`)
+          this.loading.close()
+          this.details.status = data.data.data.status
+          this.getItemList()
+          if (data.data.data.warningMessage)
+            this.details.warningList = data.data.data.warningMessage.map(curr => {
+              return {
+                title: curr,
+                content: ''
+              }
+            })
+          if (data.data.data.errorMessage)
+            this.details.errorList = data.data.data.errorMessage.map(curr => {
+              return {
+                title: curr,
+                content: ''
+              }
+            })
         }
       },
       // 渲染下载 - 获取详情 - 渲染结果
@@ -1464,7 +1506,7 @@
         })
         this.showMiniImg(this.result.tableData[0])
       },
-      //关闭抽屉
+      //关闭抽屉 复位
       closeDrawer() {
         this.settingBack()
         Object.assign(this.setting.priority, {  // 优先渲染初始化
@@ -1556,7 +1598,7 @@
             messageFun('error', '输入格式错误，帧范围为1-999')
             break
           case 'err':
-            messageFun('error', '输入格式错误，请输入数字索引,例:1-10')
+            messageFun('error', '输入格式错误，请输入1,2,4,5-10')
         }
         this.setting.num.tableData[index]['rangeErr'] = true
         this.setting.num.randerError = true
@@ -2094,7 +2136,7 @@
       }
     },
     computed: {
-      ...mapState(['zone', 'isGup', 'user', 'socket_plugin_msg', 'zoneId'])
+      ...mapState(['zone', 'isGup', 'user', 'socket_plugin_msg', 'zoneId', 'zoneSpecific'])
     }
   }
 </script>

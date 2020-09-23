@@ -251,7 +251,7 @@
       },
       // 上传分析 - 打开详情
       showDetails(row, column, event) {
-        if (row.status == '分析中...' || row.status == '等待' || !row.status) {
+        if (row.status == '等待' || !row.status) {
           this.showDrawer = false
           return false
         }

@@ -32,7 +32,8 @@
                @click.self="showMessageList = !showMessageList"
                v-operating3>
             <img src="@/icons/messageIconheaderM2.png" v-show="!showMessageList" @click.self="showMessageList = true">
-            <img src="@/icons/messageIconheaderM-hover.png" v-show="showMessageList" @click.self="showMessageList = false">
+            <img src="@/icons/messageIconheaderM-hover.png" v-show="showMessageList"
+                 @click.self="showMessageList = false">
             <!--下拉框-->
             <div class="messageBase" :class="[{'inHome': !inHome}]">
               <message-table v-show="showMessageList"/>
@@ -242,8 +243,13 @@
     getMessageList,
     getBulletin
   } from '@/api/header-api'
-  import {setInfo} from '@/assets/common'
-  import {mapState} from 'vuex'
+  import {
+    setInfo,
+    setSpecific
+  } from '@/assets/common'
+  import {
+    mapState
+  } from 'vuex'
   import messageTable from '@/components/headerM/message-table'
 
   export default {
@@ -336,6 +342,7 @@
           this.$store.commit('changeZoneId', val)
           sessionStorage.setItem('zoneUuid', val)
           this.$store.commit('changeZone', this.workBenchList.find(item => item.val == val).zone)
+          setSpecific(val)
         },
         immediate: true,
         deep: true
@@ -365,7 +372,7 @@
         immediate: true
       },
       'socket_plugin_msg': {
-        handler: function(e){
+        handler: function (e) {
           // 站内信有新消息
           let data = JSON.parse(e.data)
           if (data.code == 851 && !this.haveNewMS) this.haveNewMS = true
@@ -374,22 +381,22 @@
     },
     methods: {
       // 是否有未读
-      async haveUnread(){
+      async haveUnread() {
         let v = `isRead=0&noticeType=1&keyword=&pageIndex=1&pageSize=10`,
           vv = `isRead=0&noticeType=2&keyword=&pageIndex=1&pageSize=10`,
           data2,
           data = await getMessageList(v)
-        if(data.data.data.length) {
+        if (data.data.data.length) {
           this.haveNewMS = true
           return false
         } else data2 = await getMessageList(vv)
-        if(data2.data.data.length) this.haveNewMS = true
+        if (data2.data.data.length) this.haveNewMS = true
       },
       // 公告滚动
       top() {
-        if(!this.bulletinRealLength) return false
-        this.bulletinIndex ++
-        if(this.bulletinIndex == this.bulletinRealLength) this.bulletinIndex = 0
+        if (!this.bulletinRealLength) return false
+        this.bulletinIndex++
+        if (this.bulletinIndex == this.bulletinRealLength) this.bulletinIndex = 0
         setTimeout(() => this.top(), 10000)
       },
       // 获取公告
@@ -404,7 +411,7 @@
             }
           })
           this.bulletinRealLength = this.bulletin.length
-          if(this.bulletinRealLength) this.bulletin.push(this.bulletin[0])
+          if (this.bulletinRealLength) this.bulletin.push(this.bulletin[0])
           this.top()
         }
       },

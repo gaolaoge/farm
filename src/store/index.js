@@ -43,6 +43,7 @@ export default new Vuex.Store({
     login: false,
     zoneId: null,           // 所在区ID
     zone: null,             // 分区 1影视区 2效果图区
+    zoneSpecific: null,     // 具体所在分区
     taskType: null,         // 渲染模式 「profession」专业版 「easy」一键版
     isGup: null,
     socket_plugin: null,    // 与插件关联的websocket
@@ -118,6 +119,10 @@ export default new Vuex.Store({
       if (!state.socket_plugin) return false
       state.socket_plugin.close()
       state.socket_plugin = null
+    },
+    // 具体分区
+    setSpecific(s, zone){
+      s.zoneSpecific = zone
     },
     // 总容量
     changeTotalCapacity(s, num){

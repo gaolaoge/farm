@@ -572,7 +572,7 @@
         this.$emit('renderTableTotalItem', data.data.total)  // 【渲染下载】标签后显示长度
         this.$emit('archiveNum', data.data.other)             // 【归档记录】长度
         this.table.RenderDownloadData = this.zone == 1 ? data.data.data.map((curr, fatherIndex) => {
-          let children = null,
+          let children = [],
             downloadStatusS = [],
             downloadStatus = '部分下载'
           // 兼容数据结构错误 生产时删除判断
@@ -779,7 +779,6 @@
         this.table.usersList = [...usersList].map(curr => {
           return {'text': curr, 'value': curr}
         })  // 创建人列表
-        console.log(this.table.RenderDownloadData)
       },
       // 操作 - 开始
       startFun() {

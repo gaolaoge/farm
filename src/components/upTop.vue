@@ -58,7 +58,10 @@
                   </div>
                 </div>
               </div>
-              <input type="text" class="farm-form-item-input in" :placeholder="form.placeholder"
+              <input type="text"
+                     class="farm-form-item-input in"
+                     :class="[{'error': form.ChineseYuanVerif === false}]"
+                     :placeholder="form.placeholder"
                      v-model="form.ChineseYuan">
             </div>
           </div>
@@ -102,7 +105,7 @@
             <div class="farm-form-item-label">
             </div>
             <div class="farm-form-item-val">
-              <div class="btn" :class="[{'cannotBeGo': !canBeUpTop}]" @click="payFun">
+              <div class="btn" :class="[{'cannotBeGo': !form.ChineseYuanVerif}]" @click="payFun">
                 {{ btn.upTopNow }}
               </div>
             </div>
@@ -190,7 +193,6 @@
     name: 'upTop',
     data() {
       return {
-        canBeUpTop: true,
         navListActiveIndex: 0,
         form: {
           navList: [
@@ -241,6 +243,7 @@
             }
           ],
           ChineseYuan: 100,
+          ChineseYuanVerif: true,
           unit: '￥',
           unitPrice: '/核时',
           unitPrice2: '/机时',
@@ -340,7 +343,10 @@
     },
     watch: {
       'form.ChineseYuan': function (val) {
-        this.canBeUpTop = true
+        let reg = /^\d+$/,
+          num = this.form.ChineseYuan
+        if(!num) this.form.ChineseYuanVerif = null
+        else this.form.ChineseYuanVerif = reg.test(num)
         if (val == 100) this.form.realVal = '160.000'
         else if (val == 500) this.form.realVal = '900.000'
         else if (val == 2000) this.form.realVal = '3800.000'
@@ -351,17 +357,15 @@
     methods: {
       // 计算金币
       async computeFun() {
-        if (!this.form.ChineseYuan) {
-          this.form.realVal = '0.000'
-          this.canBeUpTop = false
-          return false
+        if (!this.form.ChineseYuan) this.form.realVal = '0.000'
+        else {
+          let data = await computeGold(this.form.ChineseYuan)
+          this.form.realVal = data.data.data.toFixed(3)
         }
-        let data = await computeGold(this.form.ChineseYuan)
-        this.form.realVal = data.data.data.toFixed(3)
       },
       // 立即充值
       payFun() {
-        if(!this.canBeUpTop) return false
+        if(!this.form.ChineseYuanVerif) return false
         if (this.payMethods == 'zfb') this.aLiPayFun()
         if (this.payMethods == 'wx') this.wxPayFun()
       },
@@ -482,6 +486,9 @@
       .in {
         width: 460px;
         margin-top: 30px;
+        &.error {
+          color: rgba(255, 62, 77, 1);
+        }
       }
 
       .pay-base {

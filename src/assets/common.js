@@ -238,15 +238,24 @@ const setInfo = function (data) {
   store.commit('changeSex', data.sex)                                                            // 性别
   store.commit('changeZone', data.zone)                                                          // 分区 1影视区 2效果图区
   store.commit('changeZoneId', data.zoneUuid)                                                    // 所在区ID
-  store.commit('changeTotalInvoiceAmount', data.totalInvoiceAmount)                              // 已开票金额
-  store.commit('changeTotalInvoiceAble', data.totalInvoiceAble)                                  // 可开票金额
+  store.commit('changeTotalInvoiceAmount', data.totalInvoiceAmount.toFixed(3))        // 已开票金额
+  store.commit('changeTotalInvoiceAble', data.totalInvoiceAble.toFixed(3))            // 可开票金额
   store.commit('changeUserBalance', data.goldBalance.toFixed(3))                      // 金币余额
-  store.commit('changeTotalCapacity', (data.capacity / 1073741824).toFixed(3))                       // 总容量
-  store.commit('changeUsedCapacity', (data.haveCapacity / 1073741824).toFixed(3))                    // 已用容量
+  store.commit('changeTotalCapacity', (data.capacity / 1073741824).toFixed(3))        // 总容量
+  store.commit('changeUsedCapacity', (data.haveCapacity / 1073741824).toFixed(3))     // 已用容量
   store.commit('changeHaveCapacity', ((data.capacity - data.haveCapacity) / 1073741824).toFixed(3))     // 剩余容量
   store.commit('changePayAmount', data.cumulativeRecharge.toFixed(3))                 // 累计支付金额
   store.commit('changeGoldCoins', data.totalArrival.toFixed(3))                       // 累计到账金币
-  store.commit('changeConsumption', data.cumulativeConsume.toFixed(2))                // 累计消费金币
+  store.commit('changeConsumption', data.cumulativeConsume.toFixed(3))                // 累计消费金币
+  setSpecific(data.zoneUuid)
+}
+
+// 具体选中分区
+const setSpecific = function(id){
+  if(id == '932132cd-82bb-44e7-9bc4-d6d046b5dff1') store.commit('setSpecific', '影视版GPU')
+  else if(id == '932132cd-82bb-44e7-9bc4-d6d046b5dff2') store.commit('setSpecific', '影视版CPU')
+  else if(id == '932132cd-82bb-44e7-9bc4-d6d046b5dff4') store.commit('setSpecific', '效果图GPU')
+  else if(id == '932132cd-82bb-44e7-9bc4-d6d046b5dff3') store.commit('setSpecific', '效果图CPU')
 }
 
 // 判断是否为IE等版本
@@ -351,6 +360,7 @@ export {
   sortF,
   simplify,
   sortDateF,
+  setSpecific,
 }
 
 

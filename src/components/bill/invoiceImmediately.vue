@@ -40,7 +40,7 @@
                 label="支付方式"
                 width="100">
                 <template slot-scope="scope">
-                  <span>{{ scope.paymentTitle == 1 ? '支付宝' : '微信' }}</span>
+                  <span>{{ scope.row.paymentTitle == 1 ? '支付宝' : '微信' }}</span>
                 </template>
               </el-table-column>
 
@@ -107,6 +107,7 @@
               <el-table-column
                 prop="email"
                 width="220"
+                show-overflow-tooltip
                 label="邮箱"/>
 
               <el-table-column
