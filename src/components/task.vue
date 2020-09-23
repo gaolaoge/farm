@@ -348,6 +348,7 @@
           t.downloadTableBtnRenderAll = false    // 渲染下载 - 全部渲染
           t.downloadTableBtnRenderAgain = false  // 渲染下载 - 重新渲染
           t.downloadTableBtnArchive = false      // 渲染下载 - 归档
+          t.downloadTableBtnCopy = false         // 渲染下载 - 拷贝
           return false
         }
         t.downloadTableBtnStart = false      // 渲染下载 - 开始
@@ -355,7 +356,7 @@
         t.downloadTableBtnDelete = true      // 渲染下载 - 删除
         t.downloadTableBtnDownload = true    // 渲染下载 - 下载完成帧
         t.downloadTableBtnRenderAll = true   // 渲染下载 - 全部渲染
-        t.downloadTableBtnRenderAgain = true// 渲染下载 - 重新渲染
+        t.downloadTableBtnRenderAgain = true // 渲染下载 - 重新渲染
         t.downloadTableBtnArchive = true     // 渲染下载 - 归档
         if (val.includes(this.$t('task.status.render_ing'))) {                    // 渲染中
           t.downloadTableBtnDelete = false

@@ -469,24 +469,24 @@
         if (!('FatherId' in row) && result) {
           selectionList.push(row)
           // 勾选全部子项
-          tableData[row.selfIndex]['children'].forEach(son => {
+          tableData[row.selfIndex]['children'] ? tableData[row.selfIndex]['children'].forEach(son => {
             // 将此子项勾选
             if (!selection.some(item => item.rowId == son.rowId)) {
               table.toggleRowSelection(son, true)
               selectionList.push(son)
             }
-          })
+          }) : null
         }
         if (!('FatherId' in row) && !result) {
           // 取消勾选全部子项
-          tableData[row.selfIndex]['children'].forEach(son => {
+          tableData[row.selfIndex]['children'] ? tableData[row.selfIndex]['children'].forEach(son => {
             // 将此子项取消勾选
             let sonDefault = selection.some(item => item.rowId == son.rowId)
             if (sonDefault != -1) {
               table.toggleRowSelection(son, false)
               selectionList.splice(sonDefault, 1)
             }
-          })
+          }) : null
           // 取消自身勾选
           selectionList.splice(selection.findIndex(curr => curr.rowId == row.rowId), 1)
           table.toggleRowSelection(row, false)
@@ -1070,7 +1070,7 @@
         handler: function (val) {
           let r = new Set()
           val.forEach(curr => {
-            if ('children' in curr) curr['children'].forEach(item => r.add(item.status))
+            if (curr['children']) curr['children'].forEach(item => r.add(item.status))
             r.add(curr.status)
           })
           this.$emit('j', [...r])

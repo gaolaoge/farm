@@ -385,9 +385,9 @@
             </span>
           </div>
           <div class="farm-drawer-body-item-d">
-            <el-radio-group v-model="setting.mode.selectedPart.mode">
+            <el-radio-group v-model="setting.mode.mode">
               <el-radio :label="item.val"
-                        v-for="(item,index) in setting.mode.selectedPart.modeList"
+                        v-for="(item,index) in setting.mode.modeList"
                         :key="index">
                 {{ item.label }}
               </el-radio>
@@ -960,8 +960,11 @@
   } from '@/api/api'
   import {
     getThumbnail,
-    setCopySetData
+    setCopySetData,
   } from '@/api/task-api'
+  import {
+    getRenderMode
+  } from '@/api/newTask-api'
   import {
     createDateFun,
     consum,
@@ -1083,47 +1086,14 @@
             miniTitO: '（',
             miniTitT: '）',
             rule: '计费规则说明',
-            renderCPUPart: {
-              mode: '2002',
-              modeList: [
-                {
-                  val: '2002',
-                  label: '16核32G【标准模式】',
-                  id: '224',
-                },
-              ]
-            },
-            renderGPUPart: {
-              mode: '2002',
-              modeList: [
-                {
-                  val: '2002',
-                  label: '丽台_RTX8000显卡【标准】',
-                  id: '224',
-                },
-                {
-                  val: '32核64G【标准模式2】',
-                  label: '丽台_RTX8000显卡【加速】（加速20%）',
-                  id: ''
-                }
-              ]
-            },
-            picCPUPart: {
-              mode: '2002',
-              modeList: [
-                {
-                  val: '2002',
-                  label: `丽台_RTX8000显卡【标准】`,
-                  id: '224',
-                },
-                {
-                  val: '32核64G【标准模式2】',
-                  label: '丽台_RTX8000显卡【加速】（加速20%）',
-                  id: ''
-                }
-              ]
-            },
-            selectedPart: null,
+            mode: null,
+            modeList: [
+              // {
+              //   val: '2002',
+              //   label: `丽台_RTX8000显卡【标准】`,
+              //   id: '224',
+              // },
+            ],
           },
           // 其它设置
           other: {
@@ -1323,19 +1293,26 @@
           if (this.taskData.FatherTaskUuId == taskUuid && this.taskData.taskUuid == layerUuid) this.getRenderItemMoreTableF()
         }
       },
-      'zoneSpecific': {
-        handler: function(id){
-          let m = this.setting.mode
-          console.log(id)
-          if(id == '影视版GPU') m.selectedPart = m.renderGPUPart
-          else if(id == '影视版CPU') m.selectedPart = m.renderCPUPart
-          // else if(id == '影视版GPU') ''
-          else if(id == '效果图CPU') m.selectedPart = m.picCPUPart
+      'zoneId': {
+        handler: function (id) {
+          this.getRenderModeF(id)
         },
         immediate: true
       }
     },
     methods: {
+      // 获取渲染模式
+      async getRenderModeF(id) {
+        let data = await getRenderMode(id)
+        this.setting.mode.modeList = data.data.data.map(item => {
+          return {
+            val: item.patternCode,
+            label: item.patternName,
+            id: item.patternUuid
+          }
+        })
+        this.setting.mode.mode = this.setting.mode.modeList[0]['val']
+      },
       // 上传分析 - 重新分析BTN
       async renderAgainBtnFun() {
         let data = await analyseAgain([this.taskData.taskUuid])
@@ -1371,9 +1348,9 @@
         if (this.taskData.status.match('上传')) {
           // 上传状态
           this.details.showProgress = true
-          if(this.taskData.status == '上传中...') this.details.valProgress = '上传中，请稍后……'
-          else if(this.taskData.status == '上传暂停') this.details.valProgress = '上传暂停，您可点击下方【传输插件】，启动插件后，查看详情。'
-          else if(this.taskData.status == '上传失败') this.details.valProgress = '上传失败，您可点击下方【传输插件】，启动插件后，查看详情。'
+          if (this.taskData.status == '上传中...') this.details.valProgress = '上传中，请稍后……'
+          else if (this.taskData.status == '上传暂停') this.details.valProgress = '上传暂停，您可点击下方【传输插件】，启动插件后，查看详情。'
+          else if (this.taskData.status == '上传失败') this.details.valProgress = '上传失败，您可点击下方【传输插件】，启动插件后，查看详情。'
           this.loading.close()
         } else {
           // 分析状态
@@ -1435,7 +1412,6 @@
         let parameter = `taskUuid=${this.taskData.FatherTaskUuId}&layerTaskUuid=${this.taskData.taskUuid}&keyword=${this.result.searchInpVal}&pageIndex=1&pageSize=999`,
           data = await getRenderTSeeMore(parameter),
           data_ = data.data.data
-        console.log(data_)
         this.result.tableData = data_.frameList.map(curr => {
           let s = null
           switch (curr.frameTaskStatus) {
@@ -1516,7 +1492,6 @@
           selfVal: '0',
           customize: ''
         })
-        this.setting.mode.mode = '2002'               // 渲染模式初始化
         this.setting.num.singleChoiceVal = '0'        // 启动分层渲染
         Object.assign(this.setting.other, {    // 其它设置初始化
           remindVal: 12,
@@ -1924,7 +1899,7 @@
           let index = item['outFilePath'].indexOf(item.taskTaskUuid)
           return {
             path: '\\' + item['outFilePath'].slice(index) + item['fileName'],
-            taskID: item['rowId'],          // 任务ID
+            taskID: item['taskID'],          // 任务ID
             fileName: item['sceneName']     // 场景名
           }
         })
@@ -2136,7 +2111,7 @@
       }
     },
     computed: {
-      ...mapState(['zone', 'isGup', 'user', 'socket_plugin_msg', 'zoneId', 'zoneSpecific'])
+      ...mapState(['zone', 'isGup', 'user', 'socket_plugin_msg', 'zoneId'])
     }
   }
 </script>

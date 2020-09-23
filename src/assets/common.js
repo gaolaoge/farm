@@ -247,15 +247,6 @@ const setInfo = function (data) {
   store.commit('changePayAmount', data.cumulativeRecharge.toFixed(3))                 // 累计支付金额
   store.commit('changeGoldCoins', data.totalArrival.toFixed(3))                       // 累计到账金币
   store.commit('changeConsumption', data.cumulativeConsume.toFixed(3))                // 累计消费金币
-  setSpecific(data.zoneUuid)
-}
-
-// 具体选中分区
-const setSpecific = function(id){
-  if(id == '932132cd-82bb-44e7-9bc4-d6d046b5dff1') store.commit('setSpecific', '影视版GPU')
-  else if(id == '932132cd-82bb-44e7-9bc4-d6d046b5dff2') store.commit('setSpecific', '影视版CPU')
-  else if(id == '932132cd-82bb-44e7-9bc4-d6d046b5dff4') store.commit('setSpecific', '效果图GPU')
-  else if(id == '932132cd-82bb-44e7-9bc4-d6d046b5dff3') store.commit('setSpecific', '效果图CPU')
 }
 
 // 判断是否为IE等版本

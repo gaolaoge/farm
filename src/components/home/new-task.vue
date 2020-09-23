@@ -627,7 +627,8 @@
     savePath,
     newTaskProfession,
     getHistoryPath,
-    pushTaskID
+    pushTaskID,
+    getRenderMode
   } from '@/api/newTask-api'
   import {
     mapState
@@ -781,24 +782,14 @@
             miniTitO: '（',
             miniTitT: '）',
             rule: '计费规则说明',
-            mode: '2002',
+            mode: null,
             modeList: [
-              {
-                val: '2002',
-                label: '16核32G',
-                supplement: '【标准模式1】',
-                id: '224'
-              },
-              {
-                val: '32核64G【标准模式2】',
-                label: '32核64G',
-                supplement: '【标准模式2】',
-                id: null
-              }
               // {
-              //   val: '32核128G【标准模式3】',
-              //   label: '32核128G【标准模式3】'
-              // }
+              //   val: '2002',
+              //   label: '16核32G',
+              //   supplement: '【标准模式1】',
+              //   id: '224'
+              // },
             ]
           },
           // 其它设置
@@ -960,6 +951,20 @@
           if (data.code == 102) data.fileList.forEach(curr => this.pluginFilterFile(curr))  // 场景文件
           else if (data.code == 103) this.pluginEditProjectPath(data)  // 工程路径
           else if (data.code == 104 && data.result == 0) this.createSuc()
+        },
+        immediate: true
+      },
+      'zoneId': {
+        handler: async function (id) {
+          let data = await getRenderMode(id)
+          this.stepThreeBase.mode.modeList = data.data.data.map(item => {
+            return {
+              val: item.patternCode,
+              label: item.patternName,
+              id: item.patternUuid
+            }
+          })
+          this.setting.mode.mode = this.setting.mode.modeList[0]['val']
         },
         immediate: true
       }

@@ -342,7 +342,6 @@
           this.$store.commit('changeZoneId', val)
           sessionStorage.setItem('zoneUuid', val)
           this.$store.commit('changeZone', this.workBenchList.find(item => item.val == val).zone)
-          setSpecific(val)
         },
         immediate: true,
         deep: true

@@ -52,3 +52,11 @@ export function pushTaskID(data){
     data
   })
 }
+
+// 发送场景文件与ID映射关系
+export function getRenderMode(id){
+  return businessServer({
+    url: `/professional/soft/getRenderPattern?zoneUuid=${id}`,
+    method: 'GET'
+  })
+}
