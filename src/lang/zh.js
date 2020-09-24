@@ -114,7 +114,7 @@ export default {
       label: '数据统计',
       list: {
         text: ['累计消费', '累计渲染用时'],
-        unit: ['金币', '小时']
+        unit: ['金币', '小时', '（万）金币']
       }
     },
     pastWeek: {

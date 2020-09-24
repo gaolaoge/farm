@@ -86,11 +86,13 @@
           <div class="occlusion"></div>
           <div class="btnList" v-show="recentList.length > 3">
             <div class="btnL btn">
-              <img src="@/icons/recentLeftA.png" alt="" class="c" v-show="recentShowIndex > 0" @click="recentShowIndex --">
+              <img src="@/icons/recentLeftA.png" alt="" class="c" v-show="recentShowIndex > 0"
+                   @click="recentShowIndex --">
               <img src="@/icons/recentLeft.png" alt="" v-show="recentShowIndex == 0">
             </div>
             <div class="btnR btn">
-              <img src="@/icons/recentRightA.png" alt="" class="c" v-show="recentList.length - 4 > recentShowIndex" @click="recentShowIndex ++">
+              <img src="@/icons/recentRightA.png" alt="" class="c" v-show="recentList.length - 4 > recentShowIndex"
+                   @click="recentShowIndex ++">
               <img src="@/icons/recentRight.png" alt="" v-show="recentList.length - 4 == recentShowIndex">
             </div>
           </div>
@@ -188,7 +190,16 @@
       },
       'user': {
         handler: function (val) {
-          this.statistics['list'][0]['num'] = val.consumption   //数据统计-累计消费
+          let num = val.consumption
+          if(num > 10000) this.statistics['list'][0]['unit'] = this.$t('home.statistics.list.unit')[2]
+          else this.statistics['list'][0]['unit'] = this.$t('home.statistics.list.unit')[0]
+          if (num < 100) num = Number(num).toFixed(3)
+          else if (100 <= num && num < 1000) num = Number(num).toFixed(2)
+          else if (1000 <= num && num < 10000) num = Number(num).toFixed(1)
+          else if (100000 > num && num >= 10000) num = (num / 10000).toFixed(4)
+          else if (1000000 > num && num >= 100000) num = (num / 10000).toFixed(3)
+          else if (num >= 1000000) num = (num / 10000).toFixed(2)
+          this.statistics['list'][0]['num'] = num   //数据统计-累计消费
         },
         immediate: true,
         deep: true
@@ -205,7 +216,7 @@
       newTask
     },
     methods: {
-      async getTaskList(){
+      async getTaskList() {
         let data = await getRecentTaskList(`zoneUuid=${this.zoneId}`)
         this.recentList = data.data.data.map(item => {
           return Object.assign(item, {

@@ -546,7 +546,10 @@
       }
     },
     mounted() {
-      this.$store.commit('changeLogin', true)
+      if(localStorage.getItem('lastLoginPhone')) this.login.phoneForm.phone = localStorage.getItem('lastLoginPhone')
+      if(localStorage.getItem('lastLoginAccount')) this.login.accountForm.account = localStorage.getItem('lastLoginAccount')
+
+        this.$store.commit('changeLogin', true)
 
       this.screenWidth = document.body.clientWidth
       this.screenHeight = document.body.clientHeight
@@ -1100,9 +1103,11 @@
         let data = await getProtocal()
         exportDownloadFun(data, '《用户服务协议》', 'pdf', true)
       },
-      // 5天自动登录
+      // 5天自动登录 保留账号登录记录
       autoLogin(boolean, phone, account, token) {
         // 勾选
+        if(phone) localStorage.setItem('lastLoginPhone', phone)
+        if(account) localStorage.setItem('lastLoginAccount', account)
         if (boolean) {
           document.cookie = `token=${token};max-age=432000`
           if (phone) document.cookie = `phone=${phone};max-age=432000`

@@ -369,10 +369,9 @@
                 if(type == 1) path = item['itemUuid'] + '\\'
                 else if(type == 2) path = item['mainUuid'] + '\\' + item['fileName'] + '\\'
                 else path = item['itemUuid'] + '\\' + item['outFilePath'].split(item['itemUuid'])[1] + item['fileName']
+                console.log(item)
                 return {
-                  path,
-                  taskID: item['rowId'],          // 任务ID
-                  fileName: item['sceneName']     // 场景名
+                  path
                 }
               })
 
