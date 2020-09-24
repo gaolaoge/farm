@@ -298,37 +298,37 @@
             {
               userLevel: '普通用户',
               total: '累计充值0元',
-              price: '9',
+              price: '8',
               dir1: '相当于2张M10卡',
-              RAM: '50G'
+              RAM: '10G'
             },
             {
               userLevel: '璀璨白银',
               total: '累计充值2000元',
-              price: '7',
+              price: '6.4',
               dir1: '相当于2张M10卡',
-              RAM: '500G'
+              RAM: '20G'
             },
             {
               userLevel: '荣耀黄金',
               total: '累计充值12000元',
-              price: '6',
+              price: '5',
               dir1: '相当于2张M10卡',
-              RAM: '1T'
+              RAM: '30G'
             },
             {
               userLevel: '尊贵铂金',
               total: '累计充值30000元',
-              price: '5',
+              price: '4',
               dir1: '相当于2张M10卡',
-              RAM: '2T'
+              RAM: '40G'
             },
             {
               userLevel: '永恒钻石',
               total: '累计充值60000元',
-              price: '4',
+              price: '3.2',
               dir1: '相当于2张M10卡',
-              RAM: '5T'
+              RAM: '50G'
             }
           ]
         },

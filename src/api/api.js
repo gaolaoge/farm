@@ -311,9 +311,10 @@ export function getTaskItemList(){
 // 任务 - 分析上传 - 获取列表
 export function getTaskTableList(data){
   return businessServer({
-    url: `/professional/task/getAnalyseTaskList?${data}`,
-    method: 'GET',
-    timeout: 5000
+    url: `/professional/task/getAnalyseTaskList`,
+    method: 'POST',
+    timeout: 5000,
+    data
   })
 }
 
@@ -355,9 +356,9 @@ export function upTopTableSet(data){
 // 任务 - 渲染下载 - 获取列表
 export function getRenderTableList(data){
   return businessServer({
-    url: `/professional/task/getRenderTaskList?${data}`,
-    method: 'GET',
-
+    url: `/professional/task/getRenderTaskList`,
+    method: 'POST',
+    data
   })
 }
 

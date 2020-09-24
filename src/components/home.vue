@@ -72,14 +72,46 @@
                 </div>
               </div>
               <div class="l">
-                <span>分析中：{{ item.analyzing }}</span>
-                <span>分析失败：{{ item.analyseFail }}</span>
-                <span>分析警告：{{ item.analyseWarn }}</span>
-                <span>待设置参数：{{ item.waitSetUpParam }}</span>
-                <span>渲染中：{{ item.rendering }}</span>
-                <span>待全部渲染：{{ item.waitAllRender }}</span>
-                <span>渲染失败：{{ item.renderPause }}</span>
-                <span>渲染完成：{{ item.finishRender }}</span>
+                <!--分析中-->
+                <span :class="[{'worthy': item.analyzing > 0}]"
+                      @click="redirectToTask(item.projectUuid, 'analyzing', item.analyzing)">
+                  分析中：{{ item.analyzing }}
+                </span>
+                <!--分析失败-->
+                <span :class="[{'worthy': item.analyseFail > 0}]"
+                      @click="redirectToTask(item.projectUuid, 'analyseFail', item.analyseFail)">
+                  分析失败：{{ item.analyseFail }}
+                </span>
+                <!--分析警告-->
+                <span :class="[{'worthy': item.analyseWarn > 0}]"
+                      @click="redirectToTask(item.projectUuid, 'analyseWarn', item.analyseWarn)">
+                  分析警告：{{ item.analyseWarn }}
+                </span>
+                <!--待设置参数-->
+                <span :class="[{'worthy': item.waitSetUpParam > 0}]"
+                      @click="redirectToTask(item.projectUuid, 'waitSetUpParam', item.waitSetUpParam)">
+                  待设置参数：{{ item.waitSetUpParam }}
+                </span>
+                <!--渲染中-->
+                <span :class="[{'worthy': item.rendering > 0}]"
+                      @click="redirectToTask(item.projectUuid, 'rendering', item.rendering)">
+                  渲染中：{{ item.rendering }}
+                </span>
+                <!--待全部渲染-->
+                <span :class="[{'worthy': item.waitAllRender > 0}]"
+                      @click="redirectToTask(item.projectUuid, 'waitAllRender', item.waitAllRender)">
+                  待全部渲染：{{ item.waitAllRender }}
+                </span>
+                <!--渲染失败-->
+                <span :class="[{'worthy': item.renderPause > 0}]"
+                      @click="redirectToTask(item.projectUuid, 'renderPause', item.renderPause)">
+                  渲染失败：{{ item.renderPause }}
+                </span>
+                <!--渲染完成-->
+                <span :class="[{'worthy': item.finishRender > 0}]"
+                      @click="redirectToTask(item.projectUuid, 'finishRender', item.finishRender)">
+                  渲染完成：{{ item.finishRender }}
+                </span>
               </div>
             </li>
           </ul>
@@ -216,6 +248,23 @@
       newTask
     },
     methods: {
+      // 任务列表跳转到task
+      redirectToTask(projectUuid, type, val){
+        if(!val) return false
+        let tableIndex
+        if(type == 'analyzing' || type == 'analyzing' || type == 'analyzing' || type == 'analyzing') tableIndex = 0
+        else tableIndex = 1
+        this.$router.push({
+          name: 'task',
+          params: {
+            toHomeTaskList: {
+              projectUuid,
+              type,
+              tableIndex
+            }
+          }
+        })
+      },
       async getTaskList() {
         let data = await getRecentTaskList(`zoneUuid=${this.zoneId}`)
         this.recentList = data.data.data.map(item => {
@@ -714,6 +763,10 @@
                   font-weight: 400;
                   color: rgba(255, 255, 255, 0.8);
                   line-height: 21px;
+
+                  &.worthy {
+                    cursor: pointer;
+                  }
 
                   &::before {
                     position: absolute;

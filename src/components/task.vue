@@ -498,42 +498,70 @@
           }
         },
         immediate: true
+      },
+      '$route.params': {
+        handler: function(val){
+          if(!val) return false
+          this.$nextTick(()=>{   //此处使用这个可以等节点渲染后再获取节点
+            if (val.name) switch (val.name) {
+              case this.$t('task.status.toBeSet'):          // 待设置参数
+                sessionStorage.setItem('taskListActive', '0')
+                this.table.navListActiveIndex = 0
+                this.$refs.uploadMode.getList({
+                  parametersToBeSet: 1
+                })
+                break
+              case this.$t('task.status.render_ing'):       // 渲染中
+                sessionStorage.setItem('taskListActive', '1')
+                this.table.navListActiveIndex = 1
+                this.$refs.renderMode.getList({
+                  renderStatus: 2
+                })
+                break
+              case this.$t('task.status.render_all'):       // 待全部渲染
+                sessionStorage.setItem('taskListActive', '1')
+                this.table.navListActiveIndex = 1
+                this.$refs.renderMode.getList({
+                  renderStatus: 5
+                })
+                break
+              case this.$t('task.status.render_timeOut'):   // 渲染暂停
+                sessionStorage.setItem('taskListActive', '1')
+                this.table.navListActiveIndex = 1
+                this.$refs.renderMode.getList({
+                  renderStatus: 4
+                })
+                break
+              case this.$t('task.status.render_done'):      // 渲染完成
+                sessionStorage.setItem('taskListActive', '1')
+                this.table.navListActiveIndex = 1
+                this.$refs.renderMode.getList({
+                  renderStatus: 3
+                })
+                break
+            }
+            if (val.toHomeTaskList) {
+              console.log(val.toHomeTaskList)
+              this.table.navListActiveIndex = val.toHomeTaskList.tableIndex
+              val.toHomeTaskList.tableIndex == 0 ? this.$refs.uploadMode.getList({
+                uploadStatus: null,
+                type: val.toHomeTaskList.type,
+                projectUuid: val.toHomeTaskList.projectUuid
+              }) : this.$refs.renderMode.getList({
+                renderStatusFormHome: val.toHomeTaskList.type,
+                projectUuid: val.toHomeTaskList.projectUuid
+              })
+            }
+          })
+
+        },
+        immediate: true
       }
     },
     mounted() {
       // 选择上次关闭时选中的Table
       if (sessionStorage.getItem('taskListActive') == '1') this.table.navListActiveIndex = 1
       createTableIconList()  // 图标
-      // Table 筛选条件
-      let name = this.$route.params.name ? this.$route.params.name : null
-      if (!name) return false
-      switch (name) {
-        case this.$t('task.status.toBeSet'):          // 待设置参数
-          sessionStorage.setItem('taskListActive', '0')
-          this.table.navListActiveIndex = 0
-          this.$refs.uploadMode.getList(true)
-          break
-        case this.$t('task.status.render_ing'):       // 渲染中
-          sessionStorage.setItem('taskListActive', '1')
-          this.table.navListActiveIndex = 1
-          this.$refs.renderMode.getList(2)
-          break
-        case this.$t('task.status.render_all'):       // 待全部渲染
-          sessionStorage.setItem('taskListActive', '1')
-          this.table.navListActiveIndex = 1
-          this.$refs.renderMode.getList(5)
-          break
-        case this.$t('task.status.render_timeOut'):   // 渲染暂停
-          sessionStorage.setItem('taskListActive', '1')
-          this.table.navListActiveIndex = 1
-          this.$refs.renderMode.getList(4)
-          break
-        case this.$t('task.status.render_done'):      // 渲染完成
-          sessionStorage.setItem('taskListActive', '1')
-          this.table.navListActiveIndex = 1
-          this.$refs.renderMode.getList(3)
-          break
-      }
     },
     computed: {
       ...mapState(['socket_backS_msg', 'redirectToTask'])

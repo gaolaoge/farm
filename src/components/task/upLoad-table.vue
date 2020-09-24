@@ -171,8 +171,7 @@
           selectionList: [],            // table 选中项
           uploadStatus: [],             // 上传状态数组
           analyseStatus: [],            // 分析状态数组
-          // 所属项目筛选数组
-          projectList: [],
+          projectList: [],              // 筛选 - 所属项目数组
           statusList: [
             {text: '全部', value: '全部'},
             {text: '上传中', value: '上传中...'},
@@ -269,7 +268,7 @@
         let d = this.$refs.uploadTable.getElementsByClassName('farmTableSelected')[0]
         if (d) d.classList.remove('farmTableSelected')
       },
-      // 获取项目列表
+      // 获取项目列表 暂时关闭
       async getTaskItemListFun() {
         let data = await getTaskItemList()
         this.table.projectList = data.data.data.map(curr => {
@@ -281,7 +280,7 @@
         if (!this.$route.params.name) this.getList()
       },
       // 获取 table 列表
-      async getList(uploadStatus = '') {
+      async getList(obj) {
         const loading = this.$loading({
           lock: true,
           text: 'Loading',
@@ -297,8 +296,32 @@
         //   analyseStatus: this.table.analyseStatus,             //分析状态数组
         //   projectUuid: this.projectUuidList                    //项目UUID数组
         // }
-        let t = `zoneUuid=${this.zoneId}&keyword=${this.searchInput}&pageIndex=${this.table.current}&pageSize=${this.table.pageSize}&uploadStatus=&analyseStatus=&projectUuid=${this.projectUuidList.length == 0 ? '' : JSON.stringify(this.projectUuidList)}&setParameters=${uploadStatus ? 1 : ''}`
-        let data = await getTaskTableList(t),
+        let parametersToBeSet = (obj && obj.parametersToBeSet) ? obj.parametersToBeSet : '',
+          projectUuid = (obj && obj.projectUuid) ? [obj.projectUuid] : ''
+        if(obj && obj.type) switch (obj.type) {
+          case 'waitSetUpParam':       // 待设置参数
+            parametersToBeSet = 1
+            break
+          case 'analyzing':       // 分析中
+            this.table.analyseStatus = [2]
+            break
+          case 'analyseFail':       // 分析失败
+            this.table.analyseStatus = [5]
+            break
+          case 'analyseWarn':       // 分析警告
+            this.table.analyseStatus = [4]
+            break
+        }
+        let data = await getTaskTableList({
+            zoneUuid: this.zoneId,
+            keyword: this.searchInput,
+            pageIndex: this.table.current,
+            pageSize: this.table.pageSize,
+            uploadStatus: this.table.uploadStatus,
+            analyseStatus: this.table.analyseStatus,
+            projectUuid,
+            setParameters: parametersToBeSet
+          }),
           usersList = new Set(),
           statusList = new Set()
         this.table.UploadAnalysisData = data.data.data.map(curr => {
@@ -436,10 +459,7 @@
       }
     },
     computed: {
-      ...mapState(['zoneId']),
-      projectUuidList() {
-        return []
-      },
+      ...mapState(['zoneId'])
     },
     components: {
       farmDrawer

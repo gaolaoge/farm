@@ -366,9 +366,11 @@
             {text: '部分下载', value: '部分下载'},
             {text: '已下载', value: '已下载'}
           ],
+          projectUuidList: [],          // 筛选 - 所属项目
+          renderStatus: [],             // 筛选 - 状态
           usersList: [],                // 筛选 - 创建人
           itemList: [],                 // 筛选 - 所属项目
-          statusList: [                 // 筛选 - 状态
+          statusList: [                 // 筛选 - 状态label
             {text: '全部', value: '全部'},
             {text: '待全部渲染', value: '待全部渲染'},
             {text: '渲染中', value: '渲染中'},
@@ -555,7 +557,7 @@
         d.classList.remove('farmTableSelected')
       },
       // 获取列表
-      async getList(condition = 'null') {
+      async getList(obj) {
         // {
         //   zoneUuid: '',            // 分区ID
         //   keyword: '',             // 关键字
@@ -564,9 +566,32 @@
         //   uploadStatus '',         // 渲染状态
         //   renderStatus: ''         // 工程ID
         // }
-        let t = `zoneUuid=${this.zoneId}&keyword=${this.searchInput}&pageIndex=${this.table.current}&pageSize=${this.table.pageSize}&renderStatus=${condition == 'null' ? '' : condition}&projectUuid=`,
-          f = `/${this.zoneId}/${this.table.current}/${this.table.pageSize}`,
-          data = this.zone == 1 ? await getRenderTableList(t) : await uploadTabGetList(f),
+        console.log(obj)
+        if(obj && obj.renderStatus) this.table.renderStatus = [obj.renderStatus]
+        if(obj && obj.projectUuid) this.table.projectUuid = [obj.projectUuid]
+        if(obj && obj.renderStatusFormHome) switch (obj.renderStatusFormHome) {
+          case 'rendering':           // 渲染中
+            this.table.renderStatus = [2]
+            break
+          case 'waitAllRender':       // 待全部渲染
+            this.table.renderStatus = [5]
+            break
+          case 'renderPause':         // 渲染失败
+            this.table.renderStatus = [3]
+            break
+          case 'finishRender':        // 渲染完成
+            this.table.renderStatus = [3]
+            break
+        }
+        let f = `/${this.zoneId}/${this.table.current}/${this.table.pageSize}`,
+          data = this.zone == 1 ? await getRenderTableList({
+            zoneUuid: this.zoneId,
+            keyword: this.searchInput,
+            pageIndex: this.table.current,
+            pageSize: this.table.pageSize,
+            renderStatus: this.table.renderStatus,
+            projectUuid: this.table.projectUuidList
+          }) : await uploadTabGetList(f),
           usersList = new Set()
         this.table.renderTableTotal = data.data.total              // 【渲染下载】翻页长度
         this.$emit('renderTableTotalItem', data.data.total)  // 【渲染下载】标签后显示长度
@@ -600,7 +625,7 @@
               let status = itemDownloadStatus(item.layerTaskStatus)
               if (status == '渲染暂停' && item.result == 5) status = '待全速渲染'
               return {
-                id: '-',                                                // 任务ID
+                id: item.layerNo,                                                // 任务ID
                 sceneName: curr.fileName + '-' + item.layerName,        // 场景名
                 status,                           // 状态
                 renderingProgress: item.frameCount.done + '/' + item.frameCount.total,    //渲染进度
