@@ -1146,6 +1146,13 @@
           this.$refs.passwordRegister.type = 'password'
         }
       },
+      '$route.params': {
+        handler: function(val){
+          if(val.modify) this.login.mode = 'findBack'
+        },
+        immediate: true,
+        deep: true
+      }
     },
     created() {
       sessionStorage.setItem('info', JSON.stringify({

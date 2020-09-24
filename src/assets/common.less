@@ -223,8 +223,20 @@ div {
     &.son-row {
       background-color: rgba(255, 255, 255, 1);
 
-      td:nth-of-type(1) .cell {
-        padding-left: 100px;
+      td:nth-of-type(1) {
+        position: relative;
+        & .cell {
+          position: absolute;
+          left: 90px;
+          top: 13px;
+        }
+
+        //margin-left: 100px;
+
+        &.el-checkbox{
+          //display: inline-block;
+          //padding-left: 100px;
+        }
       }
       td:nth-of-type(2) .cell {
         padding-left: 48px;

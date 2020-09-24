@@ -3,6 +3,7 @@ import vue from '@/main.js'
 import {
   messageFun
 } from "../assets/common"
+import store from '../store'
 
 let lock = true
 
@@ -34,17 +35,19 @@ businessServer.interceptors.response.use(
   },
   error => {
     if (vue.$route.path == '/login') return false
-    if (error.response.status == 401) {
-      createEM()
-      // sessionStorage.setItem('token','')
-      vue.$router.push('/login')
-    }
+    if (error.response.status == 401) error.response.data.msg == '异地登录' ? createEM(error.response.data.data) : createEM()
   })
 
-function createEM() {
-  if(lock) lock = false
-  else return false
-  messageFun('error', '授权失效，需要重新登录')
+function createEM(remoteLogin) {
+  if(!lock) return false
+  else lock = false
+  if(remoteLogin) {
+    // messageFun('error', '异地登录')
+    store.commit('remoteLoginFun', remoteLogin)
+  } else {
+    messageFun('error', '授权失效，需要重新登录')
+    vue.$router.push('/login')
+  }
   setTimeout(() => lock = true, 1000)
 }
 

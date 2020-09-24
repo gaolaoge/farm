@@ -57,6 +57,7 @@ export default new Vuex.Store({
     },
     pluginDialog: false,    // 打开插件窗口
     redirectToTask: null,   // 站内信跳转到task
+    remoteLoginDate: null,  // 异地登录事件触发时间
   },
   getter: {},
   mutations: {
@@ -118,6 +119,10 @@ export default new Vuex.Store({
       if (!state.socket_plugin) return false
       state.socket_plugin.close()
       state.socket_plugin = null
+    },
+    // 触发异地登录弹窗
+    remoteLoginFun(s, date){
+      s.remoteLoginDate = date
     },
     // 总容量
     changeTotalCapacity(s, num){

@@ -23,16 +23,43 @@
                top="34vh"
                width="360px">
       <header class="dl_header">
-        <span>{{ title }}</span>
+        <span>{{ pluginDialog_.title }}</span>
         <img src="@/icons/shutDialogIcon.png" class="closeIcon" @click="$store.commit('openPluginDialog', false)">
       </header>
       <div class="dl_wrapper">
         <span class="main">
-          {{ dialogMainText }} <span class="blue" @click="triggerPlugin">{{ triggerText }}</span> {{ dialogMainText2 }}
+          {{ pluginDialog_.dialogMainText }} <span class="blue"
+                                                   @click="triggerPlugin">{{ pluginDialog_.triggerText }}</span> {{ pluginDialog_.dialogMainText2 }}
         </span>
-        <div class="download_btn" @click="w"><span>{{ downloadText }}</span></div>
+        <div class="download_btn" @click="w"><span>{{ pluginDialog_.downloadText }}</span></div>
         <div class="warnInfo">
-          <span>{{ warnInfo }}</span>
+          <span>{{ pluginDialog_.warnInfo }}</span>
+        </div>
+      </div>
+    </el-dialog>
+    <!--打开异地登录窗口-->
+    <el-dialog :visible.sync="remoteLoginDialog.show"
+               :show-close="false"
+               top="30vh"
+               width="520px">
+      <header class="dl_header">
+        <span>{{ remoteLoginDialog.title }}</span>
+        <img src="@/icons/shutDialogIcon.png" class="closeIcon" @click="shutRemoteLogin(false)">
+      </header>
+      <div class="dl_wrapper">
+        <div class="body">
+          <p class="header">
+            {{ remoteLoginDialog.header1 }}{{ user.account }}{{ remoteLoginDialog.header2 }}
+          </p>
+          <p class="contant">
+            {{ remoteLoginDialog.contant1 }}{{ remoteLoginDialog.date }}{{ remoteLoginDialog.contant2 }}
+          </p>
+          <p class="contant">
+            {{ remoteLoginDialog.contant3 }}
+            <span class="editPS" @click="shutRemoteLogin(true)">{{ remoteLoginDialog.contant4 }}</span>
+            {{ remoteLoginDialog.contant5 }}
+          </p>
+          <div class="download_btn z" @click="shutRemoteLogin(false)"><span>{{ remoteLoginDialog.btn }}</span></div>
         </div>
       </div>
     </el-dialog>
@@ -45,9 +72,11 @@
     Navbar,
     appMain
   } from './components'
+  import {
+    createDateFun
+  } from '@/assets/common'
   import iv from '@/components/home/Info&Vip'
-  import { mapState } from 'vuex'
-  import store from "../store";
+  import {mapState} from 'vuex'
 
   export default {
     name: 'layout-wrapper',
@@ -55,12 +84,27 @@
       return {
         inHome: false,
         showGZ: false,
-        title: '提示信息',
-        dialogMainText: '需要安装传输插件才能进行文件传输若已安装过插件，请点此',
-        triggerText: '启动传输插件',
-        dialogMainText2: '并刷新此页面',
-        downloadText: '下载传输插件',
-        warnInfo: '若已启用，依然无法传输，\n' + '请联系24小时在线客服0531-2635521'
+        pluginDialog_: {
+          title: '提示信息',
+          dialogMainText: '需要安装传输插件才能进行文件传输若已安装过插件，请点此',
+          triggerText: '启动传输插件',
+          dialogMainText2: '并刷新此页面',
+          downloadText: '下载传输插件',
+          warnInfo: '若已启用，依然无法传输，\n' + '请联系24小时在线客服0531-2635521',
+        },
+        remoteLoginDialog: {
+          show: false,
+          title: '下线通知',
+          header1: '亲爱的',
+          header2: '，您好！',
+          contant1: '您的账号于',
+          date: null,
+          contant2: '在另一地点登录了CloudRender，为了您得账号安全，您当前登录已被迫下线。',
+          contant3: '如果这不是您本人得操作，那么您的密码很可能已经泄露，建议您点击',
+          contant4: '修改密码',
+          contant5: '。',
+          btn: '重新登录'
+        }
       }
     },
     components: {
@@ -70,20 +114,29 @@
       iv
     },
     computed: {
-      ...mapState(['login', 'thumb', 'socket_plugin', 'pluginDialog'])
+      ...mapState(['login', 'user', 'thumb', 'socket_plugin', 'pluginDialog', 'remoteLoginDate'])
     },
     watch: {
       '$route': {
         handler: function (val) {
           if (val.name == 'home') this.inHome = true
           else this.inHome = false
-          if(val.name == 'assets' || val.name == 'task') this.showGZ = true
+          if (val.name == 'assets' || val.name == 'task') this.showGZ = true
           else this.showGZ = false
         },
         immediate: true
+      },
+      'remoteLoginDate': function (date) {
+        if(!date) return false
+        this.remoteLoginDialog.date = createDateFun(new Date(date), null, true)
+        this.remoteLoginDialog.show = true
       }
     },
     methods: {
+      shutRemoteLogin(editPS){
+        this.remoteLoginDialog.show = false
+        editPS ? this.$router.push({name: 'login', params: {modify: true}}) : this.$router.push({name: 'login', params: {modify: false}})
+      },
       // 跳转到下载
       w() {
         window.open('http://223.80.107.190:8084/Setup.exe', '_blank')
@@ -96,8 +149,8 @@
         son.contentDocument.open()
       },
       // 打开【传输列表】
-      openPlugin(){
-        if(this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_SEND', 'open')
+      openPlugin() {
+        if (this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_SEND', 'open')
         else this.$store.commit('openPluginDialog', true)
       }
     }
@@ -185,6 +238,7 @@
     justify-content: center;
     align-items: center;
     cursor: pointer;
+
     img {
       max-width: 80vw;
       max-height: 80vh;
@@ -212,10 +266,12 @@
       cursor: pointer;
     }
   }
+
   .dl_wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
+
     .main {
       margin: 30px 0px;
       flex-grow: 0;
@@ -223,12 +279,14 @@
       font-size: 14px;
       color: rgba(22, 29, 37, 1);
       line-height: 26px;
+
       .blue {
         color: #1b53f4;
         text-decoration: underline;
         cursor: pointer;
       }
     }
+
     .download_btn {
       width: 144px;
       height: 36px;
@@ -239,26 +297,62 @@
       align-items: center;
       cursor: pointer;
       margin-bottom: 10px;
+
       span {
         font-size: 14px;
-        color: rgba(255,255,255,1);
+        color: rgba(255, 255, 255, 1);
+      }
+
+      &.z {
+        float: right;
+        margin-top: 20px;
+        width: 90px;
       }
     }
+
     .warnInfo {
       width: 188px;
+
       span {
         font-size: 11px;
         color: rgba(22, 29, 37, 0.6);
         line-height: 16px;
       }
     }
+
+    .body {
+      padding: 0px 30px;
+    }
+
+    .header {
+      margin: 44px 0px 30px;
+      width: 100%;
+      font-size: 14px;
+      font-weight: 500;
+      text-align: left;
+      color: #000;
+    }
+
+    .contant {
+      width: 100%;
+      font-size: 14px;
+      line-height: 2.0em;
+      margin-bottom: 10px;
+
+      .editPS {
+        color: #0061ff;
+        cursor: pointer;
+        text-decoration: underline;
+      }
+    }
   }
 
-  /deep/.el-dialog__body {
+  /deep/ .el-dialog__body {
     padding: 0px 0px 20px 0px;
-    background-color: rgba(255,255,255,1);
+    background-color: rgba(255, 255, 255, 1);
   }
-  /deep/.el-dialog {
+
+  /deep/ .el-dialog {
     border-radius: 8px;
     overflow: hidden;
   }
