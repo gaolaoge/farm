@@ -5,7 +5,7 @@
         <span>{{ title }}</span>
         <img src="@/icons/shutDialogIcon.png" alt="" class="shutImg" @click="cancelFun">
       </p>
-      <!--编辑-->
+      <!--编辑demo2-->
       <div class="content" v-show="editing">
         <!--手机号demo-->
         <div class="farm-item">
