@@ -354,7 +354,7 @@
         //   messageFun('info', `当前账户余额为${r.data.data}，请先进行充值！`);
         //   return false
         // }
-        this.$confirm('将下载选中选, 是否继续?', '提示', {
+        this.$confirm('将下载选中选, 是否继续?', '提示信息', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -391,7 +391,7 @@
       // 删除item
       deleteFun() {
         if (!this.table.selectionList.length) return false
-        this.$confirm('将删除选中选, 是否继续?', '提示', {
+        this.$confirm('将删除选中选, 是否继续?', '提示信息', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'

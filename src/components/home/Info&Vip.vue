@@ -112,7 +112,7 @@
       },
       // 退出
       quitFun() {
-        this.$confirm('确认退出登录?', '提示', {
+        this.$confirm('确认退出登录?', '提示信息', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'

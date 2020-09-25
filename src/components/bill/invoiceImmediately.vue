@@ -496,7 +496,7 @@
       },
       // 发票抬头 - 删除
       deleteItem(index) {
-        this.$confirm('删除后将无法找回，确认删除?', '提示', {
+        this.$confirm('删除后将无法找回，确认删除?', '提示信息', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'

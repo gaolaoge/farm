@@ -35,8 +35,8 @@
       <div class="form-item">
         <span class="label">{{ info.sexLabel }}：</span>
         <el-radio-group v-model="info.sexVal" @change="changeSex">
-          <el-radio :label=1>{{ info.sexRadio[0] }}</el-radio>
-          <el-radio :label=0>{{ info.sexRadio[1] }}</el-radio>
+          <el-radio :label='1'>{{ info.sexRadio[0] }}</el-radio>
+          <el-radio :label='0'>{{ info.sexRadio[1] }}</el-radio>
         </el-radio-group>
         <span class="remarks" v-show="info.sexVal == null">{{ info.sexRemarks }}</span>
         <img src="@/icons/star.png" v-show="info.sexVal == null">
@@ -197,10 +197,15 @@
     computed: {
       ...mapState(['user']),
     },
-    mounted() {
-      this.info.sexVal = this.user.sex
-      this.info.birthdayVal = this.user.birthday ? new Date(this.user.birthday) : null
-    }
+    watch: {
+      'user': {
+        handler: function(user){
+          this.info.sexVal = user.sex
+          this.info.birthdayVal = user.birthday ? new Date(user.birthday) : null
+        },
+        deep: true
+      }
+    },
   }
 </script>
 

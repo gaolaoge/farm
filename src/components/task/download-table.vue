@@ -808,7 +808,7 @@
       // 操作 - 开始
       startFun() {
         if (!this.table.renderSelectionList.length) return false
-        this.$confirm('选中项将开始渲染, 是否继续?', '提示', {
+        this.$confirm('选中项将开始渲染, 是否继续?', '提示信息', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -845,7 +845,7 @@
       // 操作 - 归档
       archiveFun() {
         if (!this.table.renderSelectionList.length) return false
-        this.$confirm('确认归档选中项目?', '提示', {
+        this.$confirm('确认归档选中项目?', '提示信息', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -875,7 +875,7 @@
       // 操作 - 全部渲染
       renderAllFun() {
         if (!this.table.renderSelectionList.length) return false
-        this.$confirm('选中项将开始全部渲染, 是否继续?', '提示', {
+        this.$confirm('选中项将开始全部渲染, 是否继续?', '提示信息', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -908,7 +908,7 @@
       // 操作 - 删除
       deleteFun() {
         if (!this.table.renderSelectionList.length) return false
-        this.$confirm('将删除选中选, 是否继续?', '提示', {
+        this.$confirm('将删除选中选, 是否继续?', '提示信息', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -949,7 +949,7 @@
       // 操作 - 暂停
       pauseFun() {
         if (!this.table.renderSelectionList.length) return false
-        this.$confirm('将暂停选中选, 是否继续?', '提示', {
+        this.$confirm('将暂停选中选, 是否继续?', '提示信息', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'

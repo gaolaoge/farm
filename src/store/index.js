@@ -43,7 +43,7 @@ export default new Vuex.Store({
     login: false,
     zoneId: null,           // 所在区ID
     zone: null,             // 分区 1影视区 2效果图区
-    taskType: null,         // 渲染模式 「profession」专业版 「easy」一键版
+    taskType: 'profession', // 渲染模式 「profession」专业版 「easy」一键版
     isGup: null,
     socket_plugin: null,    // 与插件关联的websocket
     socket_plugin_msg: null,// 与插件关联的websocket接收的参数

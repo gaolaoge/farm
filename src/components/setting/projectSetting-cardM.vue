@@ -116,7 +116,7 @@
             <div class="farm-btn cancel" @click="createCancelBtnFun">
               <span>{{ btnCancel }}</span>
             </div>
-            <div class="farm-btn save" @click="createSaveBtnFun">
+            <div class="farm-btn save" :class="[{'cannotBeGo': verif}]" @click="createSaveBtnFun">
               <span>{{ btnSave }}</span>
             </div>
           </div>
@@ -219,7 +219,7 @@
         placeholder: '输入项目名称',
         createProject: {
           tit: '新建项目',
-          name: null,
+          name: '',
           checked: 0,
           placeholder: '请输入项目名称',
         },
@@ -285,7 +285,6 @@
         this.editProject.thumbnail = src
         this.showCutter = false
       },
-
       // 关键字搜索
       getData() {
         this.getList(this.searchInputVal, 1, this.page.size)
@@ -332,12 +331,9 @@
       },
       // 新建项目 - 保存
       async createSaveBtnFun() {
+        if(this.verif) return false
         let c = this.createProject,
-          data
-        if (!c.name.trim()) {
-          messageFun('info', '项目名不能为空')
-          return false
-        } else data = await createTask({
+          data = await createTask({
           'projectName': c.name,
           'isDefault': c.checked
         })
@@ -373,7 +369,7 @@
           messageFun('success', '编辑成功')
           this.editBaseShow = false
           this.getList('', 1, this.page.size)
-        }
+        } else if (data.data.code == 101) messageFun('info', '项目名已存在')
       },
       // 操作按钮
       uploadOperating(name) {
@@ -412,16 +408,20 @@
         }
       },
       // 删除
-      async deleteFun() {
-        let data = await deleteTask({'projectList': this.selectionList.map(curr => curr.taskProjectUuid)})
-        if (data.data.code == 201) {
-          messageFun('success', '操作成功')
-          this.getList(this.searchInputVal, this.page.index, this.page.size)
-        } else if (data.data.code == 1000) {
-          messageFun('error', '操作失败')
-        } else if (data.data.code == 10001) {
-          messageFun('error', '参数无效')
-        }
+      deleteFun() {
+        this.$confirm('项目删除后将无法找回，确认删除选中项目吗?', '提示信息', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+          .then(async () => {
+            let data = await deleteTask({'projectList': this.selectionList.map(curr => curr.taskProjectUuid)})
+            if (data.data.code == 201) {
+              messageFun('success', '操作成功')
+              this.getList(this.searchInputVal, this.page.index, this.page.size)
+            } else if (data.data.code == 1000) messageFun('error', '操作失败')
+            else if (data.data.code == 10001) messageFun('error', '参数无效')
+          })
       },
       // 跳页
       jump(val) {
@@ -434,6 +434,11 @@
     components: {
       AvatarCutter,
     },
+    computed: {
+      verif(){
+        return (Boolean(this.newNameErr) || !Boolean(this.createProject.name.trim()))
+      }
+    }
   }
 </script>
 
@@ -632,6 +637,7 @@
   .page {
     margin: 10px;
     display: inline-flex;
+
     .btn {
       margin-left: 20px;
     }

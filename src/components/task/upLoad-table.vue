@@ -400,7 +400,7 @@
       // 操作 - 删除
       deleteItem() {
         if (!this.table.selectionList.length) return false
-        this.$confirm('此操作将永久删除该文件, 是否继续?', '提示', {
+        this.$confirm('此操作将永久删除该文件, 是否继续?', '提示信息', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -433,7 +433,7 @@
       // 操作 - 重新分析
       analyseAgainFun() {
         if (!this.table.selectionList.length) return false
-        this.$confirm('确认重新分析?', '提示', {
+        this.$confirm('确认重新分析?', '提示信息', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'

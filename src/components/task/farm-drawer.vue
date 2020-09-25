@@ -1914,7 +1914,7 @@
       // 渲染结果 - 主 - 操作 - 重新渲染
       operateRenderAgain() {
         if (this.result.operateBtnList[3]['classState']) return false
-        this.$confirm('此操作将重新渲染选中项, 是否继续?', '提示', {
+        this.$confirm('此操作将重新渲染选中项, 是否继续?', '提示信息', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
         })

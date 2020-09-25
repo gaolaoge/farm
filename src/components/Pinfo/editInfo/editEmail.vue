@@ -15,7 +15,15 @@
         </div>
         <!--验证码-->
         <div class="farm-item">
-          <input type="text" class="farm-input code" v-model="codeVal" :placeholder="codePlaceholder">
+          <input type="text"
+                 class="farm-input code"
+                 :class="[{'error': verif.phoneCode === false}]"
+                 v-model="codeVal"
+                 @blur="verifCode('codeVal', 'phoneCode')"
+                 @focus="verif.phoneCode = null"
+                 @input="verifCode('codeVal', 'phoneCode', true)"
+                 :placeholder="codePlaceholder">
+          <span class="errorInfo" v-show="verif.phoneCode === false">{{ errorInfo.code }}</span>
           <div class="getCode" :class="[{'cannotBe': getPhoneCodeD.showCountdown}]">
             <span class="getSpan" v-show="!getPhoneCodeD.showCountdown" @click="getPhoneCode">{{ codeLabel }}</span>
             <span class="countdown" v-show="getPhoneCodeD.showCountdown">{{ getPhoneCodeD.time }}{{ unit }}</span>
@@ -98,10 +106,25 @@
           showCountdown: false,
           setF: null,
           time: 60,
+        },
+        verif: {
+          phoneCode: null,
+          emailCode: null,
+        },
+        errorInfo: {
+          code: '验证码格式错误'
         }
       }
     },
     methods: {
+      // 验证验证码
+      verifCode(node, code, ing){
+        if(/^\d{6}$/.test(this[node])) this.verif[code] = true
+        else {
+          if(ing) this.verif[code] = null
+          else this.verif[code] = false
+        }
+      },
       cancelFun() {
         this.editing = true
         this.$emit('cancel')
@@ -290,6 +313,7 @@
     }
 
     .farm-item {
+      position: relative;
       padding: 0px 30px;
       width: 100%;
       height: 36px;
@@ -348,6 +372,10 @@
 
         &.code {
           width: 240px;
+
+          &.error {
+            border: 1px solid rgba(255, 62, 77, 1);
+          }
         }
 
         &::-webkit-input-placeholder { /* WebKit browsers */
@@ -361,6 +389,15 @@
         &:-ms-input-placeholder { /* Internet Explorer 10+ */
           color: rgba(22, 29, 37, 0.4);
         }
+      }
+
+      .errorInfo {
+        position: absolute;
+        top: 38px;
+        left: 50px;
+        font-size: 12px;
+        color: rgba(255, 62, 77, 0.88);
+        line-height: 17px;
       }
     }
   }

@@ -254,7 +254,7 @@
       },
       // 操作 - 删除
       deleteFun() {
-        this.$confirm('将删除选中选, 是否继续?', '提示', {
+        this.$confirm('将删除选中选, 是否继续?', '提示信息', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -347,7 +347,7 @@
       },
       // 操作 - 还原到渲染下载
       reductionFUn() {
-        this.$confirm('将选中项还原到渲染下载列表, 是否继续?', '提示', {
+        this.$confirm('将选中项还原到渲染下载列表, 是否继续?', '提示信息', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'

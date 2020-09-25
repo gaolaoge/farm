@@ -1243,7 +1243,7 @@
       },
       // 2.设置渲染模板 - 删除模板
       deleteTemplate(index) {
-        this.$confirm('删除后将无法找回，确认删除当前模板吗？', '提示', {
+        this.$confirm('删除后将无法找回，确认删除当前模板吗？', '提示信息', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           showClose: false
@@ -1401,7 +1401,7 @@
       operateBtnDelete() {
         let r = this.stepOneBase.local.selectionR
         if (!r.length) messageFun('error', '没有选中项')
-        else this.$confirm('此操作将永久删除该记录, 是否继续?', '提示', {
+        else this.$confirm('此操作将永久删除该记录, 是否继续?', '提示信息', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
