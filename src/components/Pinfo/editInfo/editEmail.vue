@@ -7,7 +7,7 @@
       </p>
       <!--编辑-->
       <div class="content" v-show="editing">
-        <!--手机号-->
+        <!--手机号demo-->
         <div class="farm-item">
           <div class="phone">
             <span>{{ String(user.phone).substr(0, 3) + '****' + String(user.phone).substr(7,4) }}</span>
