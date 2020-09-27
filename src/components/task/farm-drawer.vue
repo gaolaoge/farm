@@ -389,7 +389,7 @@
               <el-radio :label="item.val"
                         v-for="(item,index) in setting.mode.modeList"
                         :key="index">
-                {{ item.label }}{{ item.label }}
+                {{ item.label }}
               </el-radio>
             </el-radio-group>
           </div>
@@ -1739,11 +1739,11 @@
           // }else if (this.zone == 1 && tt.num.randerError) {
           //   messageFun('error', '帧范围设定存在错误')
           //   return false
-        } else if (this.zone == 1 && tt.num.numError) {
+        }
+        if (this.zone == 1 && tt.num.numError) {
           messageFun('error', '帧间隔设定存在错误')
           return false
         }
-
         if (!tt.num.selected.length) {
           messageFun('info', '未选中层')
           return false
