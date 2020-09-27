@@ -964,7 +964,7 @@
               id: item.patternUuid
             }
           })
-          this.setting.mode.mode = this.setting.mode.modeList[0]['val']
+          this.stepThreeBase.mode.mode = this.stepThreeBase.mode.modeList[0]['val']
         },
         immediate: true
       }

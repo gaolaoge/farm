@@ -986,6 +986,7 @@
       // 操作 - 下载完成帧
       async downloadFils() {
         if (!this.table.renderSelectionList.length) return false
+        if(!this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_INIT', true)
         // let r = await seeBalance()
         // if (r.data.code == 1001) {
         //   messageFun('info', `当前账户余额为${r.data.data}，请先进行充值！`);
@@ -1146,7 +1147,7 @@
       if (!this.$route.params.name) setTimeout(() => this.getList(), 100)
     },
     computed: {
-      ...mapState(['zoneId', 'zone', 'user']),
+      ...mapState(['zoneId', 'zone', 'user', 'socket_plugin']),
     },
     watch: {
       'table.renderSelectionList': {

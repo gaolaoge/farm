@@ -389,7 +389,7 @@
               <el-radio :label="item.val"
                         v-for="(item,index) in setting.mode.modeList"
                         :key="index">
-                {{ item.label }}
+                {{ item.label }}{{ item.label }}
               </el-radio>
             </el-radio-group>
           </div>
@@ -1895,6 +1895,7 @@
       async operateDownloadFrame() {
         if (this.result.operateBtnList[2]['classState']) return false
         if (!this.result.selectionResult.length) return false
+        if(!this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_INIT', true)
         // let data = await seeBalance()
         // if (data.data.code == 1001) {
         //   messageFun('error', `当前账户余额为${data.data.data}，请先进行充值！`);
@@ -2112,7 +2113,7 @@
       }
     },
     computed: {
-      ...mapState(['zone', 'isGup', 'user', 'socket_plugin_msg', 'socket_backS_msg', 'zoneId'])
+      ...mapState(['zone', 'isGup', 'user', 'socket_plugin_msg', 'socket_backS_msg', 'zoneId', 'socket_plugin'])
     }
   }
 </script>
