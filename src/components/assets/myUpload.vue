@@ -32,11 +32,15 @@
           width="58"/>
         <!--文件名-->
         <el-table-column
-          prop="fileName"
           label="文件名"
           sortable
           show-overflow-tooltip
-          min-width="180"/>
+          min-width="180">
+          <template slot-scope="scope">
+            <span>{{ scope.row.fileName }}</span>
+            <span v-show="scope.row.ing">.cloudtransfer.uploading</span>
+          </template>
+        </el-table-column>
         <!--文件大小-->
         <el-table-column
           prop="size"
@@ -196,7 +200,7 @@
                 'updateTime': createDateFun(new Date(item.updateTime)),
                 'completedTime': item.completedTime,
                 'validPeriod': consum(item.validPeriod),
-                'fileName': item.fileType == '文件夹' ? item.fileName.slice(0, item.fileName.length - 1) : (item.completedTime != 0 ? item.fileName : item.fileName + '.cloudtransfer.uploading'),
+                'fileName': item.fileType == '文件夹' ? item.fileName.slice(0, item.fileName.length - 1) : item.fileName,
                 'position': this.path + item.fileName,
                 'ing': item.completedTime != 0 ? false : true,
                 'size': item.fileType == '文件夹' ? '-' : getFileSize(item.size)
