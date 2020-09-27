@@ -1293,6 +1293,13 @@
           if (this.taskData.FatherTaskUuId == taskUuid && this.taskData.taskUuid == layerUuid) this.getRenderItemMoreTableF()
         }
       },
+      'socket_backS_msg': {
+        handler: function (e) {
+          let data = JSON.parse(e.data)
+          if (data.code == 853) this.getRenderItemMoreTableF()           // 渲染列表
+          else return false
+        },
+      },
       'zoneId': {
         handler: function (id) {
           this.getRenderModeF(id)
@@ -1886,7 +1893,6 @@
       },
       // 渲染结果 - 主 - 操作 - 下载完成帧
       async operateDownloadFrame() {
-        console.log('fileList')
         if (this.result.operateBtnList[2]['classState']) return false
         if (!this.result.selectionResult.length) return false
         // let data = await seeBalance()
@@ -1895,18 +1901,18 @@
         //   return false
         // }
         let fileList = this.result.selectionResult.map(item => {
-          console.log(item)
           let index = item['outFilePath'].indexOf(item.taskTaskUuid)
           return {
             path: '\\' + item['outFilePath'].slice(index) + item['fileName'],
-            taskID: item['taskID'],          // 任务ID
-            fileName: item['sceneName']     // 场景名
+            taskID: this.taskData['id'],             // 任务ID
+            fileName: this.taskData['sceneName']     // 场景名
           }
         })
         this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
           'transferType': 2,
           'userID': this.user.id,
           isRender: 1,
+          parent: '',
           fileList
         })
 
@@ -2111,7 +2117,7 @@
       }
     },
     computed: {
-      ...mapState(['zone', 'isGup', 'user', 'socket_plugin_msg', 'zoneId'])
+      ...mapState(['zone', 'isGup', 'user', 'socket_plugin_msg', 'socket_backS_msg', 'zoneId'])
     }
   }
 </script>

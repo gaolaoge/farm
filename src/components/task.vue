@@ -361,26 +361,22 @@
         if (val.includes(this.$t('task.status.render_ing'))) {                    // 渲染中
           t.downloadTableBtnDelete = false
           t.downloadTableBtnStart = false
-          t.downloadTableBtnDownload = false
           t.downloadTableBtnArchive = false
         } else if (val.includes(this.$t('task.status.render_timeOut'))) {        // 渲染暂停
           t.downloadTableBtnStart = true
           t.downloadTableBtnPause = false
           t.downloadTableBtnRenderAll = false
           t.downloadTableBtnArchive = false
-          t.downloadTableBtnDownload = false
         } else if (val.includes(this.$t('task.status.render_all'))) {            // 待全部渲染
           t.downloadTableBtnStart = false
           t.downloadTableBtnPause = false
           t.downloadTableBtnArchive = false
-          t.downloadTableBtnDownload = false
         } else if (val.includes(this.$t('task.status.render_done'))) {           // 渲染完成
           t.downloadTableBtnStart = false
           t.downloadTableBtnPause = false
           t.downloadTableBtnRenderAll = false
           t.downloadTableBtnDownload = false
         } else if (val.includes(this.$t('task.status.wait'))) {                  // 等待
-          t.downloadTableBtnDownload = false
         }
         if (val.length == 1) t.downloadTableBtnCopy = true     // 渲染下载 - 拷贝
         else t.downloadTableBtnCopy = false
@@ -469,10 +465,7 @@
         handler: function (e) {
           let data = JSON.parse(e.data)
           if (data.code == 852) this.$refs.renderMode.getList()           // 渲染列表
-          else if (data.code == 854) {
-            console.log('-----------this.$refs.uploadMode.getList()------------')
-            this.$refs.uploadMode.getList()
-          }       // 分析列表
+          else if (data.code == 854) this.$refs.uploadMode.getList()      // 分析列表
           else return false
         },
       },
@@ -755,10 +748,10 @@
     }
   }
 
-  @media screen and (orientation: portrait) {
-    .task-wrapper .tableGroup .tableList {
-      min-height: 0px;
-      height: calc(100vw - 80px - 73px - 42px - 40px);
-    }
-  }
+  /*@media screen and (orientation: portrait) {*/
+  /*  .task-wrapper .tableGroup .tableList {*/
+  /*    min-height: 0px;*/
+  /*    height: calc(100vw - 80px - 73px - 42px - 40px);*/
+  /*  }*/
+  /*}*/
 </style>

@@ -51,10 +51,10 @@
       height: calc(100vh - 80px);
     }
   }
-  @media screen and (orientation: portrait) {
-    .appMain-wrapper {
-      width: calc(100vh - 175px);
-      height: calc(100vw - 80px);
-    }
-  }
+  /*@media screen and (orientation: portrait) {*/
+  /*  .appMain-wrapper {*/
+  /*    width: calc(100vh - 175px);*/
+  /*    height: calc(100vw - 80px);*/
+  /*  }*/
+  /*}*/
 </style>

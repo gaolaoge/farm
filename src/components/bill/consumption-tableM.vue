@@ -419,14 +419,14 @@
     margin-top: 5vh !important;
   }
 
-  @media screen and (orientation: portrait) {
-    /deep/ .el-dialog__wrapper {
-      width: 100vh;
-    }
+  /*@media screen and (orientation: portrait) {*/
+  /*  /deep/ .el-dialog__wrapper {*/
+  /*    width: 100vh;*/
+  /*  }*/
 
-    /deep/ .el-dialog {
-      width: 80vh;
-      margin-top: 5vw !important;
-    }
-  }
+  /*  /deep/ .el-dialog {*/
+  /*    width: 80vh;*/
+  /*    margin-top: 5vw !important;*/
+  /*  }*/
+  /*}*/
 </style>

@@ -281,7 +281,8 @@
     itemArchive,
     itemDelete,
     compressionFiles,
-    seeBalance
+    seeBalance,
+    getRenderTSeeMore
   } from '@/api/api'
   import {
     uploadTabGetList,
@@ -392,7 +393,7 @@
     },
     methods: {
       // 清除筛选条件
-      clearFilterF(type){
+      clearFilterF(type) {
         this.$refs.renderTableImportant.clearFilter(type)
       },
       // farm-drawer 翻页
@@ -496,22 +497,22 @@
       },
       // 筛选条件修改
       filterChangeF(val) {
-        if(Object.keys(val)[0] == 'status') this.$emit('changeFilter', {
+        if (Object.keys(val)[0] == 'status') this.$emit('changeFilter', {
           'tab': 'downloadT',
           'type': 'status',
           'val': val['status']
         })
-        else if(Object.keys(val)[0] == 'task') this.$emit('changeFilter', {
+        else if (Object.keys(val)[0] == 'task') this.$emit('changeFilter', {
           'tab': 'downloadT',
           'type': 'task',
           'val': val['task']
         })
-        else if(Object.keys(val)[0] == 'download') this.$emit('changeFilter', {
+        else if (Object.keys(val)[0] == 'download') this.$emit('changeFilter', {
           'tab': 'downloadT',
           'type': 'download',
           'val': val['download']
         })
-        else if(Object.keys(val)[0] == 'founder') this.$emit('changeFilter', {
+        else if (Object.keys(val)[0] == 'founder') this.$emit('changeFilter', {
           'tab': 'downloadT',
           'type': 'founder',
           'val': val['founder']
@@ -567,9 +568,9 @@
         //   renderStatus: ''         // 工程ID
         // }
         console.log(obj)
-        if(obj && obj.renderStatus) this.table.renderStatus = [obj.renderStatus]
-        if(obj && obj.projectUuid) this.table.projectUuid = [obj.projectUuid]
-        if(obj && obj.renderStatusFormHome) switch (obj.renderStatusFormHome) {
+        if (obj && obj.renderStatus) this.table.renderStatus = [obj.renderStatus]
+        if (obj && obj.projectUuid) this.table.projectUuid = [obj.projectUuid]
+        if (obj && obj.renderStatusFormHome) switch (obj.renderStatusFormHome) {
           case 'rendering':           // 渲染中
             this.table.renderStatus = [2]
             break
@@ -602,65 +603,65 @@
             downloadStatus = '部分下载'
           // 兼容数据结构错误 生产时删除判断
           curr.renderLayerTaskDTOList[0] && (children = curr.renderLayerTaskDTOList.map((item, sonIndex) => {
-              // let status
-              // switch(item.layerTaskStatus){
-              //   case 1:
-              //     status = '等待'
-              //     break
-              //   case 2:
-              //     status = '渲染中'
-              //     break
-              //   case 3:
-              //     status = '渲染结束'
-              //     break
-              //   case 4:
-              //     status = '渲染暂停'
-              //     break
-              //   case 6:
-              //     status = '渲染放弃'
-              //     break
-              // }
-              let downloadStatus = !Boolean(item.downloadFrameCount) ? '待下载' : (item.downloadFrameCount == item.allFrameCount ? '已下载' : '部分下载')
-              downloadStatusS.push(downloadStatus)
-              let status = itemDownloadStatus(item.layerTaskStatus)
-              if (status == '渲染暂停' && item.result == 5) status = '待全速渲染'
-              return {
-                id: item.layerNo,                                                // 任务ID
-                sceneName: curr.fileName + '-' + item.layerName,        // 场景名
-                status,                           // 状态
-                renderingProgress: item.frameCount.done + '/' + item.frameCount.total,    //渲染进度
-                percent: curr.frameCount.total == null ? 0 : Math.floor(item.frameCount.done / item.frameCount.total * 100),
-                viewProject: curr.projectName,                         // 所属项目
-                rendering: item.frameCount.running,                    // 渲染中
-                wait: item.frameCount.wait,                            // 等待
-                timeOut: item.frameCount.pause,                        // 暂停
-                carryOut: item.frameCount.done,                        // 完成
-                failure: item.frameCount.fail,                         // 失败
-                renderingTime: consum(item.useTime),                   // 渲染时长
-                renderingCost: item.cost,                              // 渲染费用（金币）
-                frameRange: item.frameRange,                           // 帧范围
-                intervalFrame: item.frameInterval,                     // 间隔帧
-                camera: item.camera,                                   // 相机
-                layerName: item.layerName,                             // 层名
-                downloadStatus,                                        // 下载情况
-                renderingStartTime: createDateFun(new Date(item.startTime)),                    // 渲染开始时间
-                renderingEndTime: createDateFun(new Date(item.endTime)),                        // 渲染结束时间
-                founder: curr.account,                                 // 创建人
-                creationTime: createDateFun(new Date(curr.createTime)),                         // 创建时间
-                rowId: curr.taskNo + '-' + sonIndex,                   // 唯一值
-                resolutionVal: item.width + '*' + item.height,         // 分辨率
-                formatName: item.formatName,                           // 输出格式
-                modeVal: curr.core + '核' + '-' + curr.memory + 'G' + '（' + curr.patternName + '）',   // 渲染模式
-                softwareVal: curr.softName + ' ' + curr.softVer,                                // 软件+版本
-                pluginVal: curr.pluginName + ' ' + curr.pluginVersion,                          // 插件+版本
-                taskUuid: item.layerTaskUuid,                          // 子项目ID 查看详情用
-                layerTaskUuid: item.layerTaskUuid,
-                FatherId: curr.taskNo,
-                FatherTaskUuId: curr.taskUuid,
-                FatherIndex: fatherIndex,
-                inFilePath: curr.inFilePath
-              }
-            }))
+            // let status
+            // switch(item.layerTaskStatus){
+            //   case 1:
+            //     status = '等待'
+            //     break
+            //   case 2:
+            //     status = '渲染中'
+            //     break
+            //   case 3:
+            //     status = '渲染结束'
+            //     break
+            //   case 4:
+            //     status = '渲染暂停'
+            //     break
+            //   case 6:
+            //     status = '渲染放弃'
+            //     break
+            // }
+            let downloadStatus = !Boolean(item.downloadFrameCount) ? '待下载' : (item.downloadFrameCount == item.allFrameCount ? '已下载' : '部分下载')
+            downloadStatusS.push(downloadStatus)
+            let status = itemDownloadStatus(item.layerTaskStatus)
+            if (status == '渲染暂停' && item.result == 5) status = '待全速渲染'
+            return {
+              id: item.layerNo,                                                // 任务ID
+              sceneName: curr.fileName + '-' + item.layerName,        // 场景名
+              status,                           // 状态
+              renderingProgress: item.frameCount.done + '/' + item.frameCount.total,    //渲染进度
+              percent: curr.frameCount.total == null ? 0 : Math.floor(item.frameCount.done / item.frameCount.total * 100),
+              viewProject: curr.projectName,                         // 所属项目
+              rendering: item.frameCount.running,                    // 渲染中
+              wait: item.frameCount.wait,                            // 等待
+              timeOut: item.frameCount.pause,                        // 暂停
+              carryOut: item.frameCount.done,                        // 完成
+              failure: item.frameCount.fail,                         // 失败
+              renderingTime: consum(item.useTime),                   // 渲染时长
+              renderingCost: item.cost,                              // 渲染费用（金币）
+              frameRange: item.frameRange,                           // 帧范围
+              intervalFrame: item.frameInterval,                     // 间隔帧
+              camera: item.camera,                                   // 相机
+              layerName: item.layerName,                             // 层名
+              downloadStatus,                                        // 下载情况
+              renderingStartTime: createDateFun(new Date(item.startTime)),                    // 渲染开始时间
+              renderingEndTime: createDateFun(new Date(item.endTime)),                        // 渲染结束时间
+              founder: curr.account,                                 // 创建人
+              creationTime: createDateFun(new Date(curr.createTime)),                         // 创建时间
+              rowId: curr.taskNo + '-' + sonIndex,                   // 唯一值
+              resolutionVal: item.width + '*' + item.height,         // 分辨率
+              formatName: item.formatName,                           // 输出格式
+              modeVal: curr.core + '核' + '-' + curr.memory + 'G' + '（' + curr.patternName + '）',   // 渲染模式
+              softwareVal: curr.softName + ' ' + curr.softVer,                                // 软件+版本
+              pluginVal: curr.pluginName + ' ' + curr.pluginVersion,                          // 插件+版本
+              taskUuid: item.layerTaskUuid,                          // 子项目ID 查看详情用
+              layerTaskUuid: item.layerTaskUuid,
+              FatherId: curr.taskNo,
+              FatherTaskUuId: curr.taskUuid,
+              FatherIndex: fatherIndex,
+              inFilePath: curr.inFilePath
+            }
+          }))
           if (downloadStatusS.every(item => item == '待下载')) downloadStatus = '待下载'
           if (downloadStatusS.every(item => item == '已下载')) downloadStatus = '已下载'
           usersList.add(curr['account'])
@@ -991,19 +992,76 @@
         //   return false
         // }
         let list = this.computedResult()
-        let fileList = list.map(item => {
-          return {
-            path: item['selfIndex'] ? item['taskUuid'] + '/' : item['taskUuid'] + '/' + item['layerName'] + '/',
-            taskID: item['rowId'],          // 任务ID
-            fileName: item['sceneName']     // 场景名
+        for (const taskItem of list) {
+          let fileList = []
+          if (taskItem.FatherId) {
+            // 层任务
+            let parameter = `taskUuid=${taskItem.FatherTaskUuId}&layerTaskUuid=${taskItem.taskUuid}&keyword=&pageIndex=1&pageSize=999`,
+              data = await getRenderTSeeMore(parameter),
+              list_ = data.data.data.frameList.filter(item => item['outFilePath'])
+            fileList = list_.map(item => {
+              let index_ = item['outFilePath'].indexOf(item['taskUuid'])
+              return {
+                path: '\\' + item['outFilePath'].slice(index_) + item['fileName'],
+                taskID: taskItem['id'],             // 任务ID
+                fileName: taskItem['sceneName']     // 场景名
+              }
+            })
+            this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
+              'transferType': 2,
+              'userID': this.user.id,
+              parent: '',
+              isRender: 1,
+              fileList
+            })
+          } else if (taskItem.secretChild) {
+            let sonItem = taskItem.secretChild
+            // 主任务且没有层任务
+            let parameter = `taskUuid=${sonItem.FatherTaskUuId}&layerTaskUuid=${sonItem.taskUuid}&keyword=&pageIndex=1&pageSize=999`,
+              data = await getRenderTSeeMore(parameter),
+              list_ = data.data.data.frameList.filter(item => item['outFilePath'])
+            fileList = list_.map(item => {
+              let index_ = item['outFilePath'].indexOf(item['taskUuid'])
+              return {
+                path: '\\' + item['outFilePath'].slice(index_) + item['fileName'],
+                taskID: sonItem['id'],             // 任务ID
+                fileName: sonItem['sceneName']     // 场景名
+              }
+            })
+            this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
+              'transferType': 2,
+              'userID': this.user.id,
+              parent: taskItem['id'] + '-' + taskItem['sceneName'],
+              isRender: 1,
+              fileList
+            })
+          } else if (taskItem.children) {
+            // 主任务且有数个层任务
+            let sonList = []
+            for (const sonItem of taskItem.children) {
+              let parameter = `taskUuid=${sonItem.FatherTaskUuId}&layerTaskUuid=${sonItem.taskUuid}&keyword=&pageIndex=1&pageSize=999`,
+                data = await getRenderTSeeMore(parameter),
+                list_ = data.data.data.frameList.filter(item => item['outFilePath'])
+              fileList = list_.map(item => {
+                let index_ = item['outFilePath'].indexOf(item['taskUuid'])
+                return {
+                  path: '\\' + item['outFilePath'].slice(index_) + item['fileName'],
+                  taskID: sonItem['id'],             // 任务ID
+                  fileName: sonItem['sceneName']     // 场景名
+                }
+              })
+              sonList.push(fileList)
+            }
+            console.log(sonList)
+            this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
+              'transferType': 2,
+              'userID': this.user.id,
+              parent: taskItem['id'] + '-' + taskItem['sceneName'],
+              isRender: 1,
+              fileList: sonList
+            })
           }
-        })
-        this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
-          'transferType': 2,
-          'userID': this.user.id,
-          isRender: 1,
-          fileList
-        })
+        }
       },
       // 操作 - 拷贝
       async copyFun() {

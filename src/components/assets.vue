@@ -155,6 +155,12 @@
               action: true
             },
             {
+              initialIcon: require('@/icons/deleteIcon-black.png'),
+              selectedIcon: require('@/icons/deleteIcon-white.png'),
+              text: this.$t('assets.outPutBtnGroup')[1], // 删除
+              action: false
+            },
+            {
               initialIcon: require('@/icons/u-black.png'),
               selectedIcon: require('@/icons/u-white.png'),
               text: this.$t('assets.myUploadBtnGroup')[2], // 下载
@@ -179,7 +185,7 @@
           ],
           moreBtnText: this.$t('assets.moreBtnText'),
           moreBtnIcon: require('@/icons/more-btn.png'),
-          moreBtnList: this.$t('assets.moreBtnList'),    // ['移动到', '复制到', '重命名', '解压', '删除']
+          moreBtnList: this.$t('assets.moreBtnList'),    // ['移动到', '复制到', '重命名', '解压']
           showMoreBtnList: false,
           howToCreateBtn: this.$t('assets.howToCreateBtn'),  // ['手动创建资产目录', '自动创建资产目录']
           howToCreateIindex: '0'
@@ -245,22 +251,28 @@
       createTableIconList()
     },
     methods: {
+      // 根据【我的上传】多选改变修改操作按钮状态
       uploadSelectionF(list) {
-        if (!list.length) {
-          this.btnGroup.myUploadBtnGroup[1]['action'] = false
-          return false
+        let group = this.btnGroup.myUploadBtnGroup
+        if (!list.length || list.some(item => item['ing'])) {
+          group[1]['action'] = false     // 删除
+          group[2]['action'] = false     // 下载
+        } else {
+          group[1]['action'] = true
+          group[2]['action'] = true
         }
-        if (list.some(item => item['ing'])) this.btnGroup.myUploadBtnGroup[1]['action'] = false
-        else this.btnGroup.myUploadBtnGroup[1]['action'] = true
       },
+      // 根据【渲染输出】多选改变修改操作按钮状态
       renderSelectionF(list) {
         if (!list.length) this.btnGroup.outPutBtnGroup.forEach(item => item.action = false)
         else this.btnGroup.outPutBtnGroup.forEach(item => item.action = true)
       },
+      // 根据关键字进行筛选
       searchFun(type) {
         if (type == 'render') this.$refs.outPutTable.getList()
         else this.$refs.myUploadTable.getList()
       },
+      // 清空关键字筛选输入框
       clearInput() {
         this.searchInputVal = ''
       },
@@ -450,8 +462,8 @@
     }
 
     .moreBtnList {
-      left: 290px;
-      height: 145px;
+      left: 378px;
+      height: 116px;
     }
 
     .uploadBtnList {
@@ -595,10 +607,10 @@
       }
     }
 
-    @media screen and (orientation: portrait) {
-      /deep/ .el-table__body-wrapper {
-        height: calc(100vw - 375px);
-      }
-    }
+    /*@media screen and (orientation: portrait) {*/
+    /*  /deep/ .el-table__body-wrapper {*/
+    /*    height: calc(100vw - 375px);*/
+    /*  }*/
+    /*}*/
   }
 </style>

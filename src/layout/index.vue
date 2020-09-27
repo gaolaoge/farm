@@ -357,10 +357,10 @@
     overflow: hidden;
   }
 
-  @media screen and (orientation: portrait) {
-    .layout-wrapper {
-      height: 100vw;
-      width: 100vh;
-    }
-  }
+  /*@media screen and (orientation: portrait) {*/
+  /*  .layout-wrapper {*/
+  /*    height: 100vw;*/
+  /*    width: 100vh;*/
+  /*  }*/
+  /*}*/
 </style>

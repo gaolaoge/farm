@@ -856,9 +856,9 @@
     }
   }
 
-  @media screen and (orientation: portrait) {
-    .home-wrapper .thiRow {
-      height: calc(100vw - 80px - 20px - 248px - 30px - 30px - 229px - 20px);
-    }
-  }
+  /*@media screen and (orientation: portrait) {*/
+  /*  .home-wrapper .thiRow {*/
+  /*    height: calc(100vw - 80px - 20px - 248px - 30px - 30px - 229px - 20px);*/
+  /*  }*/
+  /*}*/
 </style>

@@ -329,11 +329,11 @@
     }
   }
 
-  @media screen and (orientation: portrait) {
-    .bill-wrapper {
+  /*@media screen and (orientation: portrait) {*/
+  /*  .bill-wrapper {*/
 
-    }
-  }
+  /*  }*/
+  /*}*/
 </style>
 
 <style lang="less">
@@ -413,10 +413,10 @@
       }
     }
 
-    @media screen and (orientation: portrait) {
-      /deep/ .el-table__body-wrapper {
-        height: calc(100vw - 557px);
-      }
-    }
+    /*@media screen and (orientation: portrait) {*/
+    /*  /deep/ .el-table__body-wrapper {*/
+    /*    height: calc(100vw - 557px);*/
+    /*  }*/
+    /*}*/
   }
 </style>

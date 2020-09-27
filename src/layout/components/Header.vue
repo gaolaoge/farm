@@ -1064,9 +1064,9 @@
     }
   }
 
-  @media screen and (orientation: portrait) {
-    .header-wrapper {
-      width: calc(100vh - 175px);
-    }
-  }
+  /*@media screen and (orientation: portrait) {*/
+  /*  .header-wrapper {*/
+  /*    width: calc(100vh - 175px);*/
+  /*  }*/
+  /*}*/
 </style>
