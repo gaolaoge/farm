@@ -1,0 +1,62 @@
+@font-face {
+  font-family: "PingFangSCRegular";
+  src: url('PingFangSCRegular.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Arial Bold";
+  src: url('ArialBold.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "MicrosoftYaHei";
+  src: url('MicrosoftYaHei.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/*@font-face {*/
+/*  font-family: "SourceHanSansCN";*/
+/*  src: url('SourceHanSansCN-Normal.otf');*/
+/*  font-weight: normal;*/
+/*  font-style: normal;*/
+/*}*/
+
+@font-face {
+  font-family: "ArialBold";
+  src: url('ArialBold.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Helvetica";
+  src: url('Helvetica.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Cabin-Bold";
+  src: url('Cabin-Bold.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "nexa-bold";
+  src: url('nexa-bold.ttf');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "MontserratAlternates-BlackItalic";
+  src: url('MontserratAlternates-BlackItalic.ttf');
+  font-weight: normal;
+  font-style: normal;
+}

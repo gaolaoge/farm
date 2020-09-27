@@ -1,0 +1,30 @@
+{
+  "id": "1717174",
+  "name": "farm",
+  "font_family": "farmIconFont",
+  "css_prefix_text": "icon",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "781638",
+      "name": "右箭头",
+      "font_class": "sanjiaoright",
+      "unicode": "e6b7",
+      "unicode_decimal": 59063
+    },
+    {
+      "icon_id": "9287597",
+      "name": "筛选",
+      "font_class": "shaixuan2",
+      "unicode": "e624",
+      "unicode_decimal": 58916
+    },
+    {
+      "icon_id": "12103028",
+      "name": "筛选",
+      "font_class": "shaixuan1",
+      "unicode": "e61d",
+      "unicode_decimal": 58909
+    }
+  ]
+}
