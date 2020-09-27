@@ -1927,15 +1927,7 @@
           .then(
             async () => {
               let dataList = []
-              this.result.selectionResult.forEach(curr => {
-                if ('selfIndex' in curr) return false
-                let dataListIndex = dataList.findIndex(item => item.taskUuid == curr.FatherTaskUuId)
-                if (dataListIndex == -1) {
-                  dataList.push(curr.frameTaskUuid)
-                } else {
-                  dataList[dataListIndex]['layerUuidList'].push(curr.taskUuid)
-                }
-              })
+              this.result.selectionResult.forEach(curr => dataList.push(curr.frameTaskUuid))
               let data = await itemStart({
                 "instructType": 33,
                 "instructTaskList": [{
@@ -1947,7 +1939,10 @@
             },
             () => messageFun('info', '已取消操作')
           )
-          .catch(() => messageFun('error', '报错，操作失败'))
+          .catch(error => {
+            messageFun('error', '报错，操作失败')
+            console.log(error)
+          })
       },
       // 渲染结果 - 详情 - 操作 - 返回
       moreOperateBack() {
