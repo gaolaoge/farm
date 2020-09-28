@@ -111,7 +111,7 @@
                           <!--文件-->
                           <el-checkbox v-model="stepOneBase.netdisc.sceneFileSelection" :label="data.id"
                                        v-show="data.type == 'file'">
-                            <img src="@/icons/maya-icon.png" v-if="node.format == 'ma' || data.format == 'mb'">
+                            <img src="@/icons/maya-icon.png" v-if="data.format == 'ma' || data.format == 'mb'">
                             <span>{{ node.label }}</span>
                           </el-checkbox>
                           <!--文件夹-->
@@ -478,7 +478,7 @@
         </div>
         <!--确定-->
         <div class="btnGroup-btn confirm" @click="confirmFun">
-          <span>{{ btn.confirm }}</span>
+          <span>{{ stepThreeBase.btn.startBtn }}</span>
         </div>
       </div>
 
@@ -819,9 +819,9 @@
           btn: {
             returnBtn: '返回',
             startBtn: '开始渲染'
-          }
+          },
         },
-        innerVisible: false,        //添加模板
+        innerVisible: false,        // 添加模板
         // 添加模板窗口
         dialogAdd: {
           title: '添加模板',
@@ -884,7 +884,7 @@
         },
         infoMessageShow: false,     // 选择渲染文件 - 我的电脑 - 工程路径 - 问号
         renderFileTypeList: [],     // 可用的场景文件格式
-        confirmLock: true,          // 提交锁 关闭5秒后开启
+        confirmLock: true,          // 开始渲染事件锁
         initialAcquV: true,         // 首次获取场景文件tree
       }
     },
@@ -1419,7 +1419,6 @@
       async confirmFun() {
         if (!this.confirmLock) return
         this.confirmLock = false
-        setTimeout(() => this.confirmLock = true, 5000)
         let fir = this.stepOneBase,
           sec = this.stepTwoBase,
           thi = this.stepThreeBase
@@ -1483,11 +1482,13 @@
             })})
           }
         }
+        this.confirmLock = true
       },
       // 4.创建成功
       createSuc() {
         messageFun('success', '创建成功')
         this.closeDialogFun()
+        sessionStorage.setItem('taskListActive', '0')
         this.$router.push('/task')
 
       },

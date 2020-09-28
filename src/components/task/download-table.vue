@@ -47,7 +47,7 @@
             <span v-if="scope.row.status == '渲染完成'" style="color: rgba(0, 227, 255, 1)">
               {{ scope.row.status }}
             </span>
-            <span v-if="scope.row.status == '渲染暂停' || scope.row.status == '待全速渲染'"
+            <span v-if="scope.row.status == '渲染暂停' || scope.row.status == '待全部渲染'"
                   style="color: rgba(229, 199, 138, 1)">
               {{ scope.row.status }}
             </span>
@@ -243,7 +243,7 @@
                width="400px">
       <div class="header">
         <span>提示</span>
-        <img src="@/icons/shutDialogIcon.png" alt="">
+        <img src="@/icons/shutDialogIcon.png" @click="cancelBtn">
       </div>
       <div class="b">
         <span class="renderAgainBoxTit">{{ renderAgainBoxTit }}</span>
@@ -385,7 +385,7 @@
         searchInput: '',
         dialogTableVisible: false,
         renderAgainBoxcheckbox: ['失败帧', '完成帧'],
-        renderAgainBoxSupplement: '（完成帧重现渲染会重复扣除费用）',
+        renderAgainBoxSupplement: '（完成帧重新渲染会重复扣除费用）',
         renderAgainBoxTit: '确认重新渲染以下帧么？',
         renderAgainBoxBtnList: ['取消', '确定'],
         refresh: '刷新'
@@ -624,7 +624,7 @@
             let downloadStatus = !Boolean(item.downloadFrameCount) ? '待下载' : (item.downloadFrameCount == item.allFrameCount ? '已下载' : '部分下载')
             downloadStatusS.push(downloadStatus)
             let status = itemDownloadStatus(item.layerTaskStatus)
-            if (status == '渲染暂停' && item.result == 5) status = '待全速渲染'
+            if (status == '渲染暂停' && item.result == 5) status = '待全部渲染'
             return {
               id: item.layerNo,                                                // 任务ID
               sceneName: curr.fileName + '-' + item.layerName,        // 场景名
@@ -715,7 +715,7 @@
           // pageIndex: null
           // pageSize: null
           // projectName: ""              // 项目名称
-          // renderStatus: 3              // 渲染各个阶段的状态。1，等待；2，渲染中，3，渲染结束；4，渲染暂停；5，待全速渲染； 6，渲染放弃
+          // renderStatus: 3              // 渲染各个阶段的状态。1，等待；2，渲染中，3，渲染结束；4，渲染暂停；5，待全部渲染； 6，渲染放弃
           // rendering: 0                 // 渲染中任务数
           // startTime: null              // 开始时间。可能为null
           // stopped: 0                   // 停止中任务数
@@ -733,7 +733,7 @@
           curr.designTaskDTOList.length && (children = curr.designTaskDTOList.map((item, sonIndex) => {
             let itemTotal = item.win + item.lose + item.rendering + item.await + item.stopped,
               status = itemDownloadStatus(item.layerTaskStatus)
-            // if(status == '渲染暂停' && item.result == 5) status = '待全速渲染'
+            // if(status == '渲染暂停' && item.result == 5) status = '待全部渲染'
             return {
               id: '-',                                               // 任务ID
               sceneName: curr.fileName + '-' + item.fileName,        // 场景名
@@ -818,16 +818,19 @@
             async () => {
               let dataList = []
               this.table.renderSelectionList.forEach(curr => {
-                if ('selfIndex' in curr) return false
+                if (('selfIndex' in curr) && !('secretChild' in curr)) return false
                 let dataListIndex = dataList.findIndex(item => item.taskUuid == curr.FatherTaskUuId)
                 if (dataListIndex == -1) {
-                  dataList.push({
+                  if ('secretChild' in curr) {
+                    dataList.push({
+                      taskUuid: curr.secretChild[0]['FatherTaskUuId'],
+                      layerUuidList: [curr.secretChild[0]['taskUuid']]
+                    })
+                  } else dataList.push({
                     taskUuid: curr.FatherTaskUuId,
                     layerUuidList: [curr.taskUuid]
                   })
-                } else {
-                  dataList[dataListIndex]['layerUuidList'].push(curr.taskUuid)
-                }
+                } else dataList[dataListIndex]['layerUuidList'].push(curr.taskUuid)
               })
               let data = await itemStart({
                 "instructType": 1,
@@ -885,16 +888,19 @@
             async () => {
               let dataList = []
               this.table.renderSelectionList.forEach(curr => {
-                if ('selfIndex' in curr) return false
+                if (('selfIndex' in curr) && !('secretChild' in curr)) return false
                 let dataListIndex = dataList.findIndex(item => item.taskUuid == curr.FatherTaskUuId)
                 if (dataListIndex == -1) {
-                  dataList.push({
+                  if ('secretChild' in curr) {
+                    dataList.push({
+                      taskUuid: curr.secretChild[0]['FatherTaskUuId'],
+                      layerUuidList: [curr.secretChild[0]['taskUuid']]
+                    })
+                  } else dataList.push({
                     taskUuid: curr.FatherTaskUuId,
                     layerUuidList: [curr.taskUuid]
                   })
-                } else {
-                  dataList[dataListIndex]['layerUuidList'].push(curr.taskUuid)
-                }
+                } else dataList[dataListIndex]['layerUuidList'].push(curr.taskUuid)
               })
               let data = await itemStart({
                 "instructType": 111,
@@ -919,17 +925,22 @@
               let dataList = [],
                 fat = []
               this.table.renderSelectionList.forEach(curr => {
-                if ('selfIndex' in curr) {
-                  fat.push(curr['taskUuid']);
-                  return false
-                }
-                let dataListIndex = dataList.findIndex(item => item.taskUuid == curr.FatherTaskUuId)
-                if (dataListIndex == -1) {
+                if (('selfIndex' in curr) && !('secretChild' in curr)) fat.push(curr['taskUuid'])
+                else if ('secretChild' in curr) {
+                  fat.push(curr.secretChild[0]['FatherTaskUuId'])
                   dataList.push({
-                    taskUuid: curr.FatherTaskUuId,
-                    layerUuidList: [curr.taskUuid]
+                    taskUuid: curr.secretChild[0]['FatherTaskUuId'],
+                    layerUuidList: [curr.secretChild[0]['taskUuid']]
                   })
-                } else dataList[dataListIndex]['layerUuidList'].push(curr.taskUuid)
+                } else {
+                  let dataListIndex = dataList.findIndex(item => item.taskUuid == curr.FatherTaskUuId)
+                  if (dataListIndex == -1) {
+                    dataList.push({
+                      taskUuid: curr.FatherTaskUuId,
+                      layerUuidList: [curr.taskUuid]
+                    })
+                  } else dataList[dataListIndex]['layerUuidList'].push(curr.taskUuid)
+                }
               })
               dataList.forEach(curr => {
                 if (!fat.some(item => item == curr.taskUuid)) curr.taskUuid = ''
@@ -945,7 +956,7 @@
             },
             () => messageFun('info', '已取消删除')
           )
-          .catch(() => messageFun('error', '报错，操作失败'))
+        // .catch(() => messageFun('error', '报错，操作失败'))
       },
       // 操作 - 暂停
       pauseFun() {
@@ -959,10 +970,15 @@
             async () => {
               let dataList = []
               this.table.renderSelectionList.forEach(curr => {
-                if ('selfIndex' in curr) return false
+                if (('selfIndex' in curr) && !('secretChild' in curr)) return false
                 let dataListIndex = dataList.findIndex(item => item.taskUuid == curr.FatherTaskUuId)
                 if (dataListIndex == -1) {
-                  dataList.push({
+                  if (curr.secretChild) {
+                    dataList.push({
+                      taskUuid: curr.secretChild[0]['FatherTaskUuId'],
+                      layerUuidList: [curr.secretChild[0]['taskUuid']]
+                    })
+                  } else dataList.push({
                     taskUuid: curr.FatherTaskUuId,
                     layerUuidList: [curr.taskUuid]
                   })
@@ -986,7 +1002,7 @@
       // 操作 - 下载完成帧
       async downloadFils() {
         if (!this.table.renderSelectionList.length) return false
-        if(!this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_INIT', true)
+        if (!this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_INIT', true)
         // let r = await seeBalance()
         // if (r.data.code == 1001) {
         //   messageFun('info', `当前账户余额为${r.data.data}，请先进行充值！`);
@@ -1053,7 +1069,6 @@
               })
               sonList.push(fileList)
             }
-            console.log(sonList)
             this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
               'transferType': 2,
               'userID': this.user.id,
@@ -1066,7 +1081,7 @@
       },
       // 操作 - 拷贝
       async copyFun() {
-        let item = this.table.renderSelectionList.find((item, index) => item.children)
+        let item = this.table.renderSelectionList.find((item, index) => item.children || item.secretChild)
         let data = await getCopySetData(item.taskUuid)
         this.drawerTaskData = item
         this.$refs.drawer.getItemList()
@@ -1102,16 +1117,19 @@
         if (!this.s.length) return false
         let dataList = []
         this.table.renderSelectionList.forEach(curr => {
-          if ('selfIndex' in curr) return false
+          if (('selfIndex' in curr) && !('secretChild' in curr)) return false
           let dataListIndex = dataList.findIndex(item => item.taskUuid == curr.FatherTaskUuId)
           if (dataListIndex == -1) {
-            dataList.push({
+            if (curr.secretChild) {
+              dataList.push({
+                taskUuid: curr.secretChild[0]['FatherTaskUuId'],
+                layerUuidList: [curr.secretChild[0]['taskUuid']]
+              })
+            } else dataList.push({
               taskUuid: curr.FatherTaskUuId,
               layerUuidList: [curr.taskUuid]
             })
-          } else {
-            dataList[dataListIndex]['layerUuidList'].push(curr.taskUuid)
-          }
+          } else dataList[dataListIndex]['layerUuidList'].push(curr.taskUuid)
         })
         let data = await itemStart({
           "instructType": 3,
@@ -1207,6 +1225,10 @@
 
   /deep/ .el-dialog__body {
     padding: 0px;
+  }
+
+  /deep/ .el-checkbox__input.is-checked + .el-checkbox__label {
+    color: rgba(22, 29, 37, 0.8);
   }
 
   .kk {

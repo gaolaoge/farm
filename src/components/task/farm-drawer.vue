@@ -1250,6 +1250,7 @@
           showDetails: false,
           searchInpVal: '',            // 渲染结果 - 主table 操作 关键帧查询
           miniImgHref: null,           // 渲染结果 - 缩略图
+          lock: true,                  // 渲染提交事件锁
         },
         demo: ``,
         loading: null
@@ -1732,14 +1733,16 @@
       },
       // 设置参数 - 开始渲染
       async startRenderFun() {
+        if(!this.result.lock) return false
         let tt = this.setting
         if (this.zone == 1 && tt.priority.customizeInputError) {
           messageFun('error', '自定义帧错误')
           return false
-          // }else if (this.zone == 1 && tt.num.randerError) {
-          //   messageFun('error', '帧范围设定存在错误')
-          //   return false
         }
+        // if (this.zone == 1 && tt.num.randerError) {
+        //   messageFun('error', '帧范围设定存在错误')
+        //   return false
+        // }
         if (this.zone == 1 && tt.num.numError) {
           messageFun('error', '帧间隔设定存在错误')
           return false
@@ -1748,6 +1751,8 @@
           messageFun('info', '未选中层')
           return false
         }
+
+        this.result.lock = false
 
         let layerSettingsList = tt.num.selected.map(curr => {
           // id: '1',
@@ -1834,7 +1839,8 @@
           this.$emit('toRenderTable')
           this.$emit('getListAgain')
           this.isCopy = false
-        }
+        } else messageFun('error', '提交失败，错误行【1842】')
+        this.result.lock = true
       },
       // 渲染结果 - 主 - 操作
       operateFun(action) {

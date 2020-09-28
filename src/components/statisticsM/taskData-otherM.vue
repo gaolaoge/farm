@@ -95,6 +95,7 @@
     name: '',
     data() {
       return {
+        manualTrigger: false,     // 手动触发修改选中项目
         navIndex: 0,
         ec: null,
         dateInterval: 'nearlySevenDays',
@@ -200,8 +201,10 @@
       ...mapState(['zoneId'])
     },
     methods: {
+      // 修改选中项目
       changeTaskV() {
         this.navIndex == 0 ? this.cProjectUuid = this.taskV : this.nProjectUuid = this.taskV
+        this.manualTrigger = true
       },
       // 日期区间下拉框修改
       changeDateInterval(val) {
@@ -292,10 +295,13 @@
       },
       // 获取charts数据通道
       aisle() {
-        if (!this.taskV.length || this.lock) return false
+        if (!this.manualTrigger && !this.taskV.length || this.lock) return false
         this.lock = true
         this.getChartsData()
-        setTimeout(() => this.lock = false, 200)
+        setTimeout(() => {
+          this.lock = false
+          this.manualTrigger = false
+        }, 200)
       },
       // 获取charts数据
       async getChartsData() {

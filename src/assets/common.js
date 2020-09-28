@@ -197,7 +197,7 @@ const itemDownloadStatus = function (num) {
       return '渲染暂停'
       break
     case 5:
-      return '待全速渲染'
+      return '待全部渲染'
       break
     case 6:
       return '渲染放弃'

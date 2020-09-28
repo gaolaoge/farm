@@ -302,17 +302,17 @@
         this.taskStatus['list'][2]['num'] = d.wait                // 任务状态-待全部渲染
         this.taskStatus['list'][0]['num'] = d.finishAnalyse       // 任务状态-待设置参数
         if (d.useTime == null) {
-          m = 0;
+          m = 0
           this.statistics.list[1]['unit'] = '秒钟'
         }
         if (d.useTime / 3600000 >= 1) {
-          m = d.useTime / 3600000;
+          m = d.useTime / 3600000
           this.statistics.list[1]['unit'] = '小时'
         } else if (d.useTime / 3600000 / 60 >= 1) {
-          m = d.useTime / 3600000 / 60;
+          m = d.useTime / 3600000 / 60
           this.statistics.list[1]['unit'] = '分钟'
         } else {
-          m = d.useTime / 3600000 / 60 / 60;
+          m = d.useTime / 3600000 / 60 / 60
           this.statistics.list[1]['unit'] = '秒钟'
         }
         this.statistics['list'][1]['num'] = m.toFixed(2)          // 数据统计-累计渲染用时

@@ -165,7 +165,7 @@ export default {
       render_timeOut: '渲染暂停',
       render_timeOut_t: '渲染暂停（超时）',
       render_timeOut_a: '渲染暂停（欠费）',
-      render_all: '待全速渲染',
+      render_all: '待全部渲染',
       render_done: '渲染完成',
       toBeSet: '待设置参数'
     }

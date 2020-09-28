@@ -134,8 +134,19 @@
         <div class="con">
           <!--缩略图-->
           <div class="imgB">
-            <div class="avatarEdit" @click="avatarEditFun"><span>{{ editAvatar }}</span></div>
-            <img class="img" :src="editProject.thumbnail" alt="">
+            <!--            <div class="avatarEdit" @click="avatarEditFun"><span>{{ editAvatar }}</span></div>-->
+            <!--            <img class="img" :src="editProject.thumbnail" alt="">-->
+            <div class="avatarEdit"><span>{{ editAvatar }}</span></div>
+            <img :src="editProject.thumbnail" class="avatar img">
+            <el-upload
+              action=""
+              class="avatar-uploader avatarEdit"
+              :show-file-list="false"
+              :on-change="handleAvatarChange"
+              :auto-upload="false">
+              <img v-if="editProject.thumbnail" :src="editProject.thumbnail" class="avatar">
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
           </div>
           <!--项目名称-->
           <div class="item">
@@ -170,12 +181,6 @@
       </div>
     </div>
 
-    <!--修改头像-->
-    <avatar-cutter v-show="showCutter"
-                   @cancel="showCutter = false"
-                   return-type="url"
-                   @enter="saveAvatar"
-                   ref="avatarEdit"/>
   </div>
 </template>
 
@@ -253,7 +258,6 @@
         btnCancel: '取消',
         btnSave: '确定',
         editAvatar: '修改图片',
-        showCutter: false,
         refresh: '刷新'
       }
     },
@@ -267,24 +271,30 @@
     },
     methods: {
       // 编辑头像
-      avatarEditFun() {
-        let input = document.createElement('INPUT')
-        input.type = 'file'
-        input.accept = '.jpg,.jpeg,.png'
-        input.addEventListener('change', event => {
-          this.showCutter = true
-          this.$refs.avatarEdit.fileChange(event)
-        })
-        input.click()
+      // avatarEditFun() {
+      //   let input = document.createElement('INPUT')
+      //   input.type = 'file'
+      //   input.accept = '.jpg,.jpeg,.png'
+      //   input.addEventListener('change', event => {
+      //     this.$refs.avatarEdit.fileChange(event)
+      //   })
+      //   input.click()
+      // },
+      handleAvatarChange(res, file) {
+        const type = ['image/jpeg', 'image/jpg', 'image/png'],
+          isType = type.some(t => t == res.raw.type),
+          isLt2M = res.raw.size / 1024 / 1024 < 2
+        if (!isType) this.$message.error('上传头像图片只能是 JPG JPEG PNG 格式!')
+        else if (!isLt2M) this.$message.error('上传头像图片大小不能超过 2MB!')
+        else this.editProject.thumbnail = window.URL.createObjectURL(res.raw)
       },
       handleSelectionChange(val) {
         this.selectionList = val
       },
       // 保存裁剪好的头像
-      saveAvatar(src) {
-        this.editProject.thumbnail = src
-        this.showCutter = false
-      },
+      // saveAvatar(src) {
+      //   this.editProject.thumbnail = src
+      // },
       // 关键字搜索
       getData() {
         this.getList(this.searchInputVal, 1, this.page.size)
@@ -331,12 +341,12 @@
       },
       // 新建项目 - 保存
       async createSaveBtnFun() {
-        if(this.verif) return false
+        if (this.verif) return false
         let c = this.createProject,
           data = await createTask({
-          'projectName': c.name,
-          'isDefault': c.checked
-        })
+            'projectName': c.name,
+            'isDefault': c.checked
+          })
 
         if (data.data.code == 201) {
           messageFun('success', '创建成功')
@@ -427,15 +437,18 @@
       jump(val) {
         this.getList(this.searchInputVal, val, this.page.size)
       },
-    },
+    }
+    ,
     mounted() {
       this.getList('', 1, this.page.size)
-    },
+    }
+    ,
     components: {
       AvatarCutter,
-    },
+    }
+    ,
     computed: {
-      verif(){
+      verif() {
         return (Boolean(this.newNameErr) || !Boolean(this.createProject.name.trim()))
       }
     }
@@ -645,5 +658,11 @@
 
   /deep/ .el-table .el-table__row:hover::after {
     display: none;
+  }
+
+  .avatar-uploader {
+    opacity: 0;
+    top: 0px;
+    z-index: 9;
   }
 </style>

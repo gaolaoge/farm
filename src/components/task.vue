@@ -362,21 +362,26 @@
           t.downloadTableBtnDelete = false
           t.downloadTableBtnStart = false
           t.downloadTableBtnArchive = false
-        } else if (val.includes(this.$t('task.status.render_timeOut'))) {        // 渲染暂停
+        }
+        if (val.includes(this.$t('task.status.render_timeOut'))) {        // 渲染暂停
           t.downloadTableBtnStart = true
           t.downloadTableBtnPause = false
           t.downloadTableBtnRenderAll = false
           t.downloadTableBtnArchive = false
-        } else if (val.includes(this.$t('task.status.render_all'))) {            // 待全部渲染
+        }
+        if (val.includes(this.$t('task.status.render_all'))) {            // 待全部渲染
           t.downloadTableBtnStart = false
           t.downloadTableBtnPause = false
           t.downloadTableBtnArchive = false
-        } else if (val.includes(this.$t('task.status.render_done'))) {           // 渲染完成
+        }
+        if (val.includes(this.$t('task.status.render_done'))) {           // 渲染完成
           t.downloadTableBtnStart = false
           t.downloadTableBtnPause = false
           t.downloadTableBtnRenderAll = false
           t.downloadTableBtnDownload = false
-        } else if (val.includes(this.$t('task.status.wait'))) {                  // 等待
+        }
+        if (val.includes(this.$t('task.status.wait'))) {                  // 等待
+          t.downloadTableBtnPause = false
         }
         if (val.length == 1) t.downloadTableBtnCopy = true     // 渲染下载 - 拷贝
         else t.downloadTableBtnCopy = false
