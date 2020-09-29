@@ -459,7 +459,6 @@
                 zone: curr.zone
               }
             })
-
           })
           .catch(error => console.log(`工作台下拉框获取报错，${error}`))
       },

@@ -64,7 +64,13 @@
             <el-table-column
               prop="status"
               label="状态"
-              width="110"/>
+              width="110">
+              <template slot-scope="scope">
+                <span v-if="scope.row.status == '渲染完成'" style="color: rgba(0, 227, 255, 1)">
+              {{ scope.row.status }}
+            </span>
+              </template>
+            </el-table-column>
             <!--所属项目-->
             <el-table-column
               prop="viewProject"
@@ -135,6 +141,9 @@
     seeBalance
   } from '@/api/api'
   import {
+    downloadCompleteFrame
+  } from '@/api/task-api'
+  import {
     mapState
   } from 'vuex'
 
@@ -166,7 +175,7 @@
       }
     },
     computed: {
-      ...mapState(['zoneId'])
+      ...mapState(['zoneId', 'socket_plugin', 'user'])
     },
     methods: {
       // 获取选中的主任务和单独层任务
@@ -192,7 +201,7 @@
             break
           case '还原到渲染下载':
             this.reductionFUn()
-                break
+            break
           case '删除':
             this.deleteFun()
         }
@@ -249,27 +258,27 @@
       },
       // 操作 - 下载完成帧
       async downloadLayerFun() {
-        let r = await seeBalance()
-        // if (r.data.code == 1001) {
-        //   messageFun('info', `当前账户余额为${r.data.data}，请先进行充值！`);
-        //   return false
+        if (!this.dialogTable.dialogTableSelection.length) return false
+        else if (!this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_INIT', true)
+          // let r = await seeBalance()
+          // if (r.data.code == 1001) {
+          //   messageFun('info', `当前账户余额为${r.data.data}，请先进行充值！`);
+          //   return false
         // }
-        let taskList = []
-        this.dialogTable.dialogTableSelection.forEach(curr => {
-          if ('selfIndex' in curr) {
-            let i = taskList.findIndex(item => item['taskUuid'] == curr['taskUuid'])
-            if (i == -1) taskList.push({taskUuid: curr.taskUuid, layerUuidList: [], hasFather: true})
-            if (i != -1) taskList[i]['hasFather'] = true
-          } else {
-            let i = taskList.findIndex(item => {
-              return item['taskUuid'] == curr['FatherTaskUuId']
-            })
-            if (i != -1) taskList[i]['layerUuidList'].push(curr['layerTaskUuid'])
-            if (i == -1) taskList.push({taskUuid: curr.FatherTaskUuId, layerUuidList: [curr.layerTaskUuid]})
+        else {
+          let list = this.computedResult()
+          for (const taskItem of list) {
+            if (taskItem.FatherTaskUuId) {
+              let val = `transferType=2&userID=${this.user.id}&isRender=1&parent=&taskUuid=${taskItem['FatherTaskUuId']}&layerTaskUuid=${taskItem['layerTaskUuid']}&fileName=${taskItem['FatherSceneName']}`,
+                data = await downloadCompleteFrame(val)
+              this.$store.commit('WEBSOCKET_PLUGIN_SEND', data.data.data)
+            } else {
+              let val = `transferType=2&userID=${this.user.id}&isRender=1&parent=${taskItem['id'] + '-' + taskItem['sceneName']}&taskUuid=${taskItem['taskUuid']}&layerTaskUuid=&fileName=${taskItem['sceneName']}`,
+                data = await downloadCompleteFrame(val)
+              this.$store.commit('WEBSOCKET_PLUGIN_SEND', data.data.data)
+            }
           }
-        })
-
-
+        }
       },
       // 操作 - 还原到渲染下载
       reductionFUn() {
@@ -366,18 +375,18 @@
       selectAll(selection) {
         if (!('children' in selection[0])) {
           this.dialogTable.dialogTableSelection = []
-          this.dialogTable.tableData.forEach(curr => curr.children.forEach(item => this.$refs.archiveTable.toggleRowSelection(item, false)))
-          return false
-        }
-        let data = []
-        this.dialogTable.tableData.forEach(curr => {
-          data.push(curr)
-          curr.children.forEach(item => {
-            data.push(item)
-            this.$refs.archiveTable.toggleRowSelection(item, true)
+          this.dialogTable.tableData.forEach(curr => curr.children && curr.children.forEach(item => this.$refs.archiveTable.toggleRowSelection(item, false)))
+        } else {
+          let data = []
+          this.dialogTable.tableData.forEach(curr => {
+            data.push(curr)
+            curr.children && curr.children.forEach(item => {
+              data.push(item)
+              this.$refs.archiveTable.toggleRowSelection(item, true)
+            })
           })
-        })
-        this.dialogTable.dialogTableSelection = data
+          this.dialogTable.dialogTableSelection = data
+        }
       },
       // 获取列表
       async getList() {
@@ -406,9 +415,9 @@
                 break
             }
             return {
-              id: '-',
-              sceneName: '-',
-              status: itemDownloadStatus(item.downloadStatus),
+              id: item.layerNo,
+              sceneName: curr.fileName + '-' + item.layerName,
+              status: itemDownloadStatus(item.layerTaskStatus),
               viewProject: item.projectName,
               renderingTime: consum(item.useTime),
               renderingCost: item.cost,
@@ -423,12 +432,13 @@
               createDate: createDateFun(new Date(item.createTime)),
               layerTaskUuid: item.layerTaskUuid,
               FatherTaskUuId: curr.taskUuid,
+              FatherSceneName: curr.taskName,
               fatherIndex
             }
           }) : []
           return {
             id: curr.taskNo,
-            sceneName: curr.taskName,
+            sceneName: curr.fileName,
             status: itemDownloadStatus(curr.renderStatus),
             viewProject: curr.projectName,
             renderingTime: consum(curr.useTime),
@@ -463,13 +473,14 @@
       height: 87vh;
 
       .btn {
+        position: relative;
         font-size: 16px;
         color: rgba(27, 83, 244, 1);
         font-family: 'PingFangSCRegular';
         padding: 10px 30px;
-        width: 116px;
-        text-shadow: 0px 0px 6px rgba(256, 256, 256, 0.4);
+        /*width: 116px;*/
         background-color: rgba(255, 255, 255, 1);
+        box-shadow: 0px 0px 6px 1px rgba(27, 83, 244, 0.3);
         border-radius: 8px 8px 0px 0px;
       }
 
@@ -498,6 +509,7 @@
       }
     }
   }
+
   .s {
     font-size: 14px;
     cursor: pointer;

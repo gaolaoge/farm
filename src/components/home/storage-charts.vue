@@ -36,7 +36,7 @@
             top: 'center'
           },
           angleAxis: {
-            max: this.user.totalCapacity, // 满分
+            // max: this.user.totalCapacity, // 满分
             clockwise: true, // 逆时针
             // 隐藏刻度线
             axisLine: {
@@ -121,7 +121,7 @@
               radius: '50%',
               center: ['50%', '50%'],
               label: {
-                formatter: '{per|{d}}{abg|}\n{hr|}\n  {a|{b}} ',
+                formatter: '{per|{c}}\n{hr|}\n{a|{b}} ',
                 rich: {
                   a: {
                     color: 'rgba(22, 29, 37, 0.49)',
@@ -156,6 +156,7 @@
               data: [
                 {
                   value: this.user.usedCapacity,
+                  // value: 7,
                   name: '已用',
                   itemStyle: {
                     color: 'rgba(255,255,255,0)'
@@ -163,6 +164,7 @@
                 },
                 {
                   value: this.user.haveCapacity,
+                  // value: 12,
                   name: '剩余',
                   itemStyle: {
                     color: 'rgba(255,255,255,0)'

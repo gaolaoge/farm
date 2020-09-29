@@ -449,7 +449,10 @@
         <!--下一步-->
         <div class="btnGroup-btn confirm"
              :class="[
-               {'cannotTrigger': stepOneBase.index == 1 ? stepOneBase.local.filelist.length == 0 : stepOneBase.netdisc.sceneFileSelection.length == 0}
+               {'cannotTrigger': stepOneBase.index == 1 ?
+                  (stepOneBase.local.filelist.length == 0 ) :
+                  (stepOneBase.netdisc.sceneFileSelection.length == 0 && stepOneBase.netdisc.pathV && stepOneBase.netdisc.pathV != '选择工程路径')
+               }
               ]"
              @click="goToMode('next')">
           <span class="nextStep">{{ btn.next }}</span>
@@ -1379,15 +1382,15 @@
       },
       // 1.选择渲染文件 - 我的电脑 -【添加】新场景文件
       operateBtnAddMore() {
+        if (!this.socket_plugin) {
+          this.$store.commit('WEBSOCKET_PLUGIN_INIT', true)
+          return false
+        }
         if (this.stepOneBase.local.filelist.length == 20) {
           messageFun('info', '操作失败，不能选择超过20个场景文件！')
           return false
         }
-        if (!this.socket_backS) {
-          messageFun('error', '插件连接失败，无法选择文件')
-          return false
-        }
-        if (this.socket_backS === 'err') {
+        if (this.socket_plugin === 'err') {
           messageFun('error', '插件连接中，请稍后重试')
           return false
         }
@@ -1598,16 +1601,13 @@
       goToMode(dire) {
         if (dire == 'previous') this.stepBtnActive = 2
         else {
-          if (this.stepOneBase.index == 0 && this.stepOneBase.netdisc.sceneFileSelection.length == 0) {
+          if (this.stepOneBase.index == 0 && this.stepOneBase.netdisc.sceneFileSelection.length == 0 && this.stepOneBase.netdisc.pathV && this.stepOneBase.netdisc.pathV != '选择工程路径') {
             // 我的资产
             messageFun('error', '尚未选择场景文件')
-            return false
           } else if (this.stepOneBase.index == 1 && this.stepOneBase.local.filelist.length == 0) {
             // 我的电脑
             messageFun('error', '尚未选择场景文件')
-            return false
-          }
-          this.stepBtnActive = 2
+          } else this.stepBtnActive = 2
         }
       },
       // 0.预备事件

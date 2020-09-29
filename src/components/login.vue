@@ -895,13 +895,8 @@
       },
       // 帐号 登录
       async accountloginFun() {
-        if (this.login.formStatus.password === false) return false
         let {account, password, isAutoLogin} = this.login.accountForm
-        // 验证
-        if (!account || !password) {
-          messageFun('error', this.$t('login_page.message.ac_ps_null'));
-          return false
-        }
+        if (this.login.formStatus.password === false || !account || !password) return false
         try {
           let data = await accountLogin({account, password, isAutoLogin})
           if (data.data.code == '4032') {

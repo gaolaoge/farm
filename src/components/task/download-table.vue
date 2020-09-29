@@ -129,6 +129,7 @@
           width="150"/>
         <!--帧范围-->
         <el-table-column
+          v-if="zone == 1"
           prop="frameRange"
           label="帧范围"
           sortable
@@ -136,6 +137,7 @@
           width="110"/>
         <!--间隔帧-->
         <el-table-column
+          v-if="zone == 1"
           prop="intervalFrame"
           label="间隔帧"
           sortable
@@ -150,6 +152,7 @@
           label="相机"/>
         <!--层名-->
         <el-table-column
+          v-if="zone == 1"
           prop="layerName"
           label="层名"
           sortable
@@ -280,6 +283,7 @@
     itemStart,
     itemArchive,
     itemDelete,
+    getTaskItemList,
     compressionFiles,
     seeBalance,
     getRenderTSeeMore
@@ -393,6 +397,16 @@
       }
     },
     methods: {
+      // 获取项目列表 暂时关闭
+      async getTaskItemListFun() {
+        let data = await getTaskItemList()
+        this.table.itemList = data.data.data.map(curr => {
+          return {
+            value: curr.taskProjectUuid,
+            text: curr.projectName
+          }
+        })
+      },
       // 清除筛选条件
       clearFilterF(type) {
         this.$refs.renderTableImportant.clearFilter(type)
@@ -521,20 +535,23 @@
       },
       // 【非业务逻辑】全选
       selectAll(selection) {
-        if (!('children' in selection[0])) {
+        console.log(selection)
+        // 取消全选
+        if (!selection.length) {
           this.table.renderSelectionList = []
-          this.table.RenderDownloadData.forEach(curr => curr.children.forEach(item => this.$refs.renderTableImportant.toggleRowSelection(item, false)))
-          return false
-        }
-        let data = []
-        this.table.RenderDownloadData.forEach(curr => {
-          data.push(curr)
-          curr.children.forEach(item => {
-            data.push(item)
-            this.$refs.renderTableImportant.toggleRowSelection(item, true)
+          this.table.RenderDownloadData.forEach(curr => curr.children && curr.children.forEach(item => this.$refs.renderTableImportant.toggleRowSelection(item, false)))
+        } else {
+          // 全选
+          let data = []
+          this.table.RenderDownloadData.forEach(curr => {
+            data.push(curr)
+            curr.children && curr.children.forEach(item => {
+              data.push(item)
+              this.$refs.renderTableImportant.toggleRowSelection(item, true)
+            })
           })
-        })
-        this.table.renderSelectionList = data
+          this.table.renderSelectionList = data
+        }
       },
       // 渲染下载详情查看
       showDetails(row, column, event) {
@@ -882,7 +899,7 @@
       // 操作 - 全部渲染
       renderAllFun() {
         if (!this.table.renderSelectionList.length) return false
-        this.$confirm('选中项将开始全部渲染, 是否继续?', '提示信息', {
+        this.$confirm('确认进行全部渲染吗？建议您在确认优先渲染的测试帧无误后再进行', '提示信息', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -1017,22 +1034,24 @@
       // 操作 - 下载完成帧
       async downloadFils() {
         if (!this.table.renderSelectionList.length) return false
-        if (!this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_INIT', true)
-        // let r = await seeBalance()
-        // if (r.data.code == 1001) {
-        //   messageFun('info', `当前账户余额为${r.data.data}，请先进行充值！`);
-        //   return false
+        else if (!this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_INIT', true)
+          // let r = await seeBalance()
+          // if (r.data.code == 1001) {
+          //   messageFun('info', `当前账户余额为${r.data.data}，请先进行充值！`);
+          //   return false
         // }
-        let list = this.computedResult()
-        for (const taskItem of list) {
-          if (taskItem.FatherId) {
-            let val = `transferType=2&userID=${this.user.id}&isRender=1&parent=&taskUuid=${taskItem['FatherTaskUuId']}&layerTaskUuid=${taskItem['taskUuid']}&fileName=${taskItem['FatherSceneName']}`,
-              data = await downloadCompleteFrame(val)
-            this.$store.commit('WEBSOCKET_PLUGIN_SEND', data.data.data)
-          } else {
-            let val = `transferType=2&userID=${this.user.id}&isRender=1&parent=${taskItem['id'] + '-' + taskItem['sceneName']}&taskUuid=${taskItem['taskUuid']}&layerTaskUuid=&fileName=${taskItem['sceneName']}`,
-              data = await downloadCompleteFrame(val)
-            this.$store.commit('WEBSOCKET_PLUGIN_SEND', data.data.data)
+        else {
+          let list = this.computedResult()
+          for (const taskItem of list) {
+            if (taskItem.FatherId) {
+              let val = `transferType=2&userID=${this.user.id}&isRender=1&parent=&taskUuid=${taskItem['FatherTaskUuId']}&layerTaskUuid=${taskItem['taskUuid']}&fileName=${taskItem['FatherSceneName']}`,
+                data = await downloadCompleteFrame(val)
+              this.$store.commit('WEBSOCKET_PLUGIN_SEND', data.data.data)
+            } else {
+              let val = `transferType=2&userID=${this.user.id}&isRender=1&parent=${taskItem['id'] + '-' + taskItem['sceneName']}&taskUuid=${taskItem['taskUuid']}&layerTaskUuid=&fileName=${taskItem['sceneName']}`,
+                data = await downloadCompleteFrame(val)
+              this.$store.commit('WEBSOCKET_PLUGIN_SEND', data.data.data)
+            }
           }
         }
       },
@@ -1045,11 +1064,6 @@
         this.$refs.drawer.setParameterNext(data.data)
         this.$refs.drawer.isCopy = true
         this.showDrawer = true
-      },
-      // 打包后下载
-      async downloadingFun(path) {
-        let data = await compressionFiles(path)
-        exportDownloadFun(data, data.headers.file, 'zip')
       },
       // 展开项目组
       unfoldFun(row) {
@@ -1120,6 +1134,7 @@
     },
     mounted() {
       if (!this.$route.params.name) setTimeout(() => this.getList(), 100)
+      this.getTaskItemListFun()
     },
     computed: {
       ...mapState(['zoneId', 'zone', 'user', 'socket_plugin']),

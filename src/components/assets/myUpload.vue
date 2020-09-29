@@ -247,14 +247,6 @@
           if (data.code == 100 || data.code == 101) this.getAssetsCatalog(this.path, this.searchInputVal)
         }
       },
-      '$route': {
-        handler: function (val) {
-          console.log(val)
-          if (val.name == 'assets' && !this.socket_plugin)
-            this.$store.commit('WEBSOCKET_PLUGIN_INIT', true)
-        },
-        immediate: true
-      }
     },
     methods: {
       // 刷新
@@ -420,7 +412,7 @@
         let type = ['zip', 'rar', 'tar', 'tar.gz', 'tar.bz2', 'tar.Z']
         if (this.table.selectionList.length != 1) messageFun('info', '压缩动作只能针对单一文件，操作失败')
         else if (this.table.selectionList[0]['ing']) messageFun('info', '目标正在上传中，无法操作')
-        else if (!type.some(curr => curr == this.table.selectionList[0]['type'])) messageFun('info', '非压缩文件，无法操作')
+        else if (!type.some(curr => curr == this.table.selectionList[0]['fileType'])) messageFun('info', '非压缩文件，无法操作')
         else this.unzipAction(this.table.selectionList[0]['position'], password)
       },
       unzipAction(unzipFilePath, password) {

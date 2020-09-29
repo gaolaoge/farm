@@ -152,7 +152,6 @@
                width="80%">
       <!--关闭窗口-->
       <img src="@/icons/shutDialogIcon.png"
-           alt=""
            @click="dialogTable.status = false"
            class="shutDialogIcon">
       <!--窗口主体-->
@@ -357,23 +356,23 @@
         t.downloadTableBtnDownload = true       // 渲染下载 - 下载完成帧
         t.downloadTableBtnRenderAll = false     // 渲染下载 - 全部渲染
         t.downloadTableBtnRenderAgain = true    // 渲染下载 - 重新渲染
-        t.downloadTableBtnArchive = true        // 渲染下载 - 归档
+        t.downloadTableBtnArchive = false       // 渲染下载 - 归档
         if (val.includes(this.$t('task.status.render_ing'))) {            // 渲染中
           t.downloadTableBtnDelete = false
-          t.downloadTableBtnArchive = false
         }
         if (val.includes(this.$t('task.status.render_timeOut'))) {        // 渲染暂停
-          t.downloadTableBtnArchive = false
+
         }
         if (val.includes(this.$t('task.status.render_all'))) {            // 待全部渲染
-          t.downloadTableBtnArchive = false
+
         }
         if (val.includes(this.$t('task.status.render_done'))) {           // 渲染完成
 
         }
-        if(val.every(item => item == this.$t('task.status.render_timeOut'))) t.downloadTableBtnStart = true  // 全部为【暂停】可点击开始
-        if(val.every(item => item == this.$t('task.status.render_ing'))) t.downloadTableBtnPause = true      // 全部为【渲染中】可点击暂停
-        if(val.every(item => item == this.$t('task.status.render_all'))) t.downloadTableBtnRenderAll = true  // 全部为【待全部渲染】可点击全部渲染
+        if (val.every(item => item == this.$t('task.status.render_timeOut'))) t.downloadTableBtnStart = true  // 全部为【暂停】可点击开始
+        if (val.every(item => item == this.$t('task.status.render_ing'))) t.downloadTableBtnPause = true      // 全部为【渲染中】可点击暂停
+        if (val.every(item => item == this.$t('task.status.render_all'))) t.downloadTableBtnRenderAll = true  // 全部为【待全部渲染】可点击全部渲染
+        if (val.every(item => item == this.$t('task.status.render_done'))) t.downloadTableBtnArchive = true   // 全部为【渲染完成】可点击归档
         if (val.length == 1) t.downloadTableBtnCopy = true                // 渲染下载 - 拷贝
         else t.downloadTableBtnCopy = false
       },
@@ -468,7 +467,7 @@
       },
       'redirectToTask': {
         handler: function (obj) {
-          if(!obj) return false
+          if (!obj) return false
           // taskID: "SWT-511"
           // type: "analyse"
           if (obj.type == 'analyse') {
@@ -490,9 +489,9 @@
         immediate: true
       },
       '$route.params': {
-        handler: function(val){
-          if(!val) return false
-          this.$nextTick(()=>{   //此处使用这个可以等节点渲染后再获取节点
+        handler: function (val) {
+          if (!val) return false
+          this.$nextTick(() => {   //此处使用这个可以等节点渲染后再获取节点
             if (val.name) switch (val.name) {
               case this.$t('task.status.toBeSet'):          // 待设置参数
                 sessionStorage.setItem('taskListActive', '0')
@@ -742,6 +741,13 @@
 
     /deep/ .el-dialog {
       background-color: rgba(238, 242, 249, 1);
+
+      .shutDialogIcon {
+        position: absolute;
+        top: 16px;
+        z-index: 9;
+        width: 12px;
+      }
     }
   }
 
@@ -752,3 +758,4 @@
   /*  }*/
   /*}*/
 </style>
+

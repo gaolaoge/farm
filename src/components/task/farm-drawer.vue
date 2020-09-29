@@ -705,7 +705,7 @@
                    @click="moreOperateFun(item.text)"
                    v-for="(item,index) in result.operateMoreBtnList"
                    :key="index">
-                <img :src="item.imgUrl" alt="" v-if="item.imgUrl">
+                <img :src="item.imgUrl" v-if="item.imgUrl">
                 <span class="text">
                 {{ item.text }}
               </span>
@@ -938,7 +938,6 @@
 
         </div>
       </div>
-
     </div>
   </div>
 </template>
@@ -1451,7 +1450,7 @@
             endDate: createDateFun(new Date(curr.endTime)),       // 渲染结束时间
             percent: '-',                                         // CPU利用率
             RAM: '-',                                             // 内存峰值
-            times: curr.downloadCount,                                           // 已下载次数
+            times: curr.downloadCount,                            // 已下载次数
             layerTaskUuid: curr.layerTaskUuid,                    // 层uuid
             frameTaskUuid: curr.frameTaskUuid,                    // 帧uuid
             taskTaskUuid: curr.taskUuid,                          // 主uuid
@@ -1469,9 +1468,9 @@
         this.result.happen[3]['num'] = data_.frameCount['done']
         this.result.happen[4]['num'] = data_.frameCount['fail']
         Object.assign(this.result.dataO, {
-          costVal: data_.taskInfo['cost'].toFixed(3),
-          totalVal: consum(data_.taskInfo['useTime']),
-          averageVal: data_.frameCount['done'] ? consum(data_.taskInfo['useTime'] / data_.frameCount['done']) : '-'
+          costVal: data_.topInfo['allCost'].toFixed(3),
+          totalVal: consum(data_.topInfo['allTime']),
+          averageVal: consum(data_.topInfo['useTime'])
         })
 
         Object.assign(this.result.statusList, {
@@ -1484,7 +1483,7 @@
           resolutionVal: data_.taskInfo.width + '*' + data_.taskInfo.height,           // 分辨率
           formatVal: data_.taskInfo.formatName,                                        // 输出格式
           cameraVal: data_.taskInfo.camera,                                            // 相机
-          modeVal: data_.taskInfo.core + '核' + '-' + data_.taskInfo.memory + 'G' + '（' + data_.taskInfo.patternName + '）', // 渲染模式
+          modeVal: data_.taskInfo.patternName,                                         // 渲染模式
           founderVal: data_.taskInfo.account,                                          // 创建人
           creationTimeVal: createDateFun(new Date(data_.taskInfo.createTime))          // 创建时间
         })
@@ -1954,6 +1953,7 @@
       // 渲染结果 - 详情 - 操作 - 返回
       moreOperateBack() {
         this.result.showDetails = false
+        this.demo = null
       },
       // 渲染结果 - 详情 - 操作 - 下载日志
       async moreOperateDownload() {
