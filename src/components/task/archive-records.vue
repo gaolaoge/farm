@@ -169,6 +169,20 @@
       ...mapState(['zoneId'])
     },
     methods: {
+      // 获取选中的主任务和单独层任务
+      computedResult() {
+        let fatId = [],
+          fatItem = [],
+          sonItem = []
+        // 因为指定主任务顺序肯定在其层任务前 所以无需先识别全部主任务
+        this.dialogTable.dialogTableSelection.forEach(curr => {
+          if ('selfIndex' in curr) {
+            fatId.push(curr['id'])
+            fatItem.push(curr)
+          } else if (!fatId.some(item => item == curr.FatherId)) sonItem.push(curr)
+        })
+        return [...fatItem, ...sonItem]
+      },
       // 操作
       operatFun(val) {
         if (!this.dialogTable.dialogTableSelection.length) return false

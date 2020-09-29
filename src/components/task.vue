@@ -378,7 +378,6 @@
           t.downloadTableBtnStart = false
           t.downloadTableBtnPause = false
           t.downloadTableBtnRenderAll = false
-          t.downloadTableBtnDownload = false
         }
         if (val.includes(this.$t('task.status.wait'))) {                  // 等待
           t.downloadTableBtnPause = false
