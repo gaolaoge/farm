@@ -208,7 +208,7 @@
           upTopLabel: '充值金额',
           upTopVal: '',
           realLabel: '充值到账金币',
-          realVal: '200.000',
+          realVal: '160.000',
           modeLabel: '充值方式',
           modeVal: '',
           listActive: 0,

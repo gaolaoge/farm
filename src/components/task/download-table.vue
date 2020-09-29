@@ -606,8 +606,6 @@
             // let status
             // switch(item.layerTaskStatus){
             //   case 1:
-            //     status = '等待'
-            //     break
             //   case 2:
             //     status = '渲染中'
             //     break

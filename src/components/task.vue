@@ -351,38 +351,29 @@
           t.downloadTableBtnCopy = false         // 渲染下载 - 拷贝
           return false
         }
-        t.downloadTableBtnStart = false      // 渲染下载 - 开始
-        t.downloadTableBtnPause = true       // 渲染下载 - 暂停
-        t.downloadTableBtnDelete = true      // 渲染下载 - 删除
-        t.downloadTableBtnDownload = true    // 渲染下载 - 下载完成帧
-        t.downloadTableBtnRenderAll = true   // 渲染下载 - 全部渲染
-        t.downloadTableBtnRenderAgain = true // 渲染下载 - 重新渲染
-        t.downloadTableBtnArchive = true     // 渲染下载 - 归档
+        t.downloadTableBtnStart = false         // 渲染下载 - 开始
+        t.downloadTableBtnPause = false         // 渲染下载 - 暂停
+        t.downloadTableBtnDelete = true         // 渲染下载 - 删除
+        t.downloadTableBtnDownload = true       // 渲染下载 - 下载完成帧
+        t.downloadTableBtnRenderAll = false     // 渲染下载 - 全部渲染
+        t.downloadTableBtnRenderAgain = true    // 渲染下载 - 重新渲染
+        t.downloadTableBtnArchive = true        // 渲染下载 - 归档
         if (val.includes(this.$t('task.status.render_ing'))) {            // 渲染中
           t.downloadTableBtnDelete = false
-          t.downloadTableBtnStart = false
           t.downloadTableBtnArchive = false
         }
         if (val.includes(this.$t('task.status.render_timeOut'))) {        // 渲染暂停
-          t.downloadTableBtnStart = true
-          t.downloadTableBtnPause = false
-          t.downloadTableBtnRenderAll = false
           t.downloadTableBtnArchive = false
         }
         if (val.includes(this.$t('task.status.render_all'))) {            // 待全部渲染
-          t.downloadTableBtnStart = false
-          t.downloadTableBtnPause = false
           t.downloadTableBtnArchive = false
         }
         if (val.includes(this.$t('task.status.render_done'))) {           // 渲染完成
-          t.downloadTableBtnStart = false
-          t.downloadTableBtnPause = false
-          t.downloadTableBtnRenderAll = false
+
         }
-        if (val.includes(this.$t('task.status.wait'))) {                  // 等待
-          t.downloadTableBtnPause = false
-        }
-        if(val.every(item => item == this.$t('task.status.render_all')))  t.downloadTableBtnStart = false  // 渲染下载
+        if(val.every(item => item == this.$t('task.status.render_timeOut'))) t.downloadTableBtnStart = true  // 全部为【暂停】可点击开始
+        if(val.every(item => item == this.$t('task.status.render_ing'))) t.downloadTableBtnPause = true      // 全部为【渲染中】可点击暂停
+        if(val.every(item => item == this.$t('task.status.render_all'))) t.downloadTableBtnRenderAll = true  // 全部为【待全部渲染】可点击全部渲染
         if (val.length == 1) t.downloadTableBtnCopy = true                // 渲染下载 - 拷贝
         else t.downloadTableBtnCopy = false
       },

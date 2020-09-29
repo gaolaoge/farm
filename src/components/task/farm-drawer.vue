@@ -1641,7 +1641,7 @@
       handleSelectionChange(val) {
         this.result.selectionResult = val
         let t = val.map(curr => curr.status)
-        let s = this.result.operateBtnList[0],   // 开始
+        let s = this.result.operateBtnList[0], // 开始
           p = this.result.operateBtnList[1],   // 暂停
           d = this.result.operateBtnList[2],   // 下载完成帧
           a = this.result.operateBtnList[3]    // 重新渲染
@@ -1650,7 +1650,7 @@
           s['classState'] = false
         } else s['classState'] = true
 
-        if (t.length > 0 && t.every(item => ['渲染成功', '渲染失败'].includes(item))) {
+        if (t.length > 0 && t.every(item => ['渲染成功', '渲染中', '渲染失败'].includes(item))) {
           a['classState'] = false
         } else a['classState'] = true
 
@@ -1658,7 +1658,7 @@
           p['classState'] = false
         } else p['classState'] = true
 
-        if (t.length > 0) {
+        if (t.length > 0 && t.every(item => '渲染成功' == item)) {
           d['classState'] = false
         } else d['classState'] = true
 

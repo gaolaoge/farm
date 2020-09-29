@@ -185,8 +185,6 @@ const renderingRange = function (min, max, interval) {
 const itemDownloadStatus = function (num) {
   switch (num) {
     case 1:
-      return '等待'
-      break
     case 2:
       return '渲染中'
       break
