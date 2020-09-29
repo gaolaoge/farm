@@ -71,36 +71,6 @@
               label="所属项目"
               show-overflow-tooltip
               width="180"/>
-            <!--渲染中-->
-            <el-table-column
-              prop="rendering"
-              sortable
-              width="100"
-              label="渲染中"/>
-            <!--等待-->
-            <el-table-column
-              prop="wait"
-              sortable
-              width="100"
-              label="等待"/>
-            <!--暂停-->
-            <el-table-column
-              prop="timeOut"
-              sortable
-              width="100"
-              label="暂停"/>
-            <!--完成-->
-            <el-table-column
-              prop="carryOut"
-              sortable
-              width="100"
-              label="完成"/>
-            <!--失败-->
-            <el-table-column
-              prop="failure"
-              label="失败"
-              width="100"
-              sortable/>
             <!--渲染时长-->
             <el-table-column
               prop="renderingTime"
@@ -113,50 +83,6 @@
               label="渲染费用（金币）"
               sortable
               width="156"/>
-            <!--帧范围-->
-            <el-table-column
-              prop="frameRange"
-              label="帧范围"
-              sortable
-              width="100"/>
-            <!--间隔帧-->
-            <el-table-column
-              prop="intervalFrame"
-              label="间隔帧"
-              sortable
-              width="100"/>
-            <!--相机-->
-            <el-table-column
-              prop="camera"
-              label="相机"
-              sortable
-              show-overflow-tooltip
-              width="120"/>
-            <!--层名-->
-            <el-table-column
-              prop="layerName"
-              label="层名"
-              sortable
-              show-overflow-tooltip
-              width="140"/>
-            <!--下载情况-->
-            <el-table-column
-              prop="downloadStatus"
-              label="下载情况"
-              sortable
-              width="110"/>
-            <!--渲染开始时间-->
-            <el-table-column
-              prop="renderDateStart"
-              label="渲染开始时间"
-              sortable
-              width="180"/>
-            <!--渲染结束时间-->
-            <el-table-column
-              prop="renderDateEnd"
-              label="渲染结束时间"
-              sortable
-              width="180"/>
             <!--创建人-->
             <el-table-column
               prop="person"
@@ -169,6 +95,11 @@
               label="创建时间"
               sortable
               width="180"/>
+            <el-table-column label="操作" width="100">
+              <template slot-scope="scope">
+                <span class="s">查看详情</span>
+              </template>
+            </el-table-column>
 
           </el-table>
           <!--分页-->
@@ -264,17 +195,23 @@
               let dataList = [],
                 fat = []
               this.dialogTable.dialogTableSelection.forEach(curr => {
-                if ('selfIndex' in curr) {
-                  fat.push(curr['taskUuid']);
-                  return false
-                }
-                let dataListIndex = dataList.findIndex(item => item.taskUuid == curr.FatherTaskUuId)
-                if (dataListIndex == -1) {
+                if (('selfIndex' in curr) && !curr['secretChild']) fat.push(curr['taskUuid'])
+                else if (curr['secretChild']) {
+                  console.log(curr)
+                  fat.push(curr.secretChild[0]['FatherTaskUuId'])
                   dataList.push({
-                    taskUuid: curr.FatherTaskUuId,
-                    layerUuidList: [curr.taskUuid]
+                    taskUuid: curr.secretChild[0]['FatherTaskUuId'],
+                    layerUuidList: [curr.secretChild[0]['layerTaskUuid']]
                   })
-                } else dataList[dataListIndex]['layerUuidList'].push(curr.taskUuid)
+                } else {
+                  let dataListIndex = dataList.findIndex(item => item.taskUuid == curr.FatherTaskUuId)
+                  if (dataListIndex == -1) {
+                    dataList.push({
+                      taskUuid: curr.FatherTaskUuId,
+                      layerUuidList: [curr.taskUuid]
+                    })
+                  } else dataList[dataListIndex]['layerUuidList'].push(curr.taskUuid)
+                }
               })
               dataList.forEach(curr => {
                 if (!fat.some(item => item == curr.taskUuid)) curr.taskUuid = ''
@@ -290,15 +227,19 @@
             },
             () => messageFun('info', '已取消删除')
           )
-          .catch(() => messageFun('error', '报错，操作失败'))
+          .catch(error => {
+            messageFun('error', '报错，操作失败')
+            console.log('---------【归档记录-删除】报错-----------')
+            console.log(error)
+          })
       },
       // 操作 - 下载完成帧
       async downloadLayerFun() {
         let r = await seeBalance()
-        if (r.data.code == 1001) {
-          messageFun('info', `当前账户余额为${r.data.data}，请先进行充值！`);
-          return false
-        }
+        // if (r.data.code == 1001) {
+        //   messageFun('info', `当前账户余额为${r.data.data}，请先进行充值！`);
+        //   return false
+        // }
         let taskList = []
         this.dialogTable.dialogTableSelection.forEach(curr => {
           if ('selfIndex' in curr) {
@@ -313,37 +254,8 @@
             if (i == -1) taskList.push({taskUuid: curr.FatherTaskUuId, layerUuidList: [curr.layerTaskUuid]})
           }
         })
-        taskList = taskList.map(curr => {
-          if (curr['hasFather']) return {'taskUuid': curr.taskUuid, 'layerUuidList': []}
-          else return {'taskUuid': '', 'layerUuidList': curr['layerUuidList']}
-        })
-        messageFun('success', '发起文件打包请求')
-        let code = UuidFun(),
-          // socket_ = new WebSocket(`ws://192.168.1.182:5000/professional/websocket/package/${code}`)
-          socket_ = new WebSocket(`ws://223.80.107.190:5000/professional/websocket/package/${code}`)
-        socket_.addEventListener('open', function () {
-          socket_.send(JSON.stringify({
-            'message': {
-              type: 3,
-              taskList
-            }
-          }))
-        })
-        socket_.addEventListener('message', e => {
-          let data = JSON.parse(e.data)
-          if (data.code == 200) {
-            this.downloadingFun(data.data)
-          }
-          if (data.code == 209) {
-            socket_.close();
-            this.downloadingFun(data.data)
-          }
-        })
-      },
-      // 打包后下载
-      async downloadingFun(path) {
-        let data = await compressionFiles(path)
-        exportDownloadFun(data, data.headers.file, 'zip')
+
+
       },
       // 操作 - 还原到渲染下载
       reductionFUn() {
@@ -413,24 +325,24 @@
         if (!('FatherId' in row) && result) {
           selectionList.push(row)
           // 勾选全部子项
-          tableData[row.selfIndex]['children'].forEach(son => {
+          tableData[row.selfIndex]['children'] ? tableData[row.selfIndex]['children'].forEach(son => {
             // 将此子项勾选
             if (!selection.some(item => item.rowId == son.rowId)) {
               table.toggleRowSelection(son, true)
               selectionList.push(son)
             }
-          })
+          }) : null
         }
         if (!('FatherId' in row) && !result) {
           // 取消勾选全部子项
-          tableData[row.selfIndex]['children'].forEach(son => {
+          tableData[row.selfIndex]['children'] ? tableData[row.selfIndex]['children'].forEach(son => {
             // 将此子项取消勾选
             let sonDefault = selection.some(item => item.rowId == son.rowId)
             if (sonDefault != -1) {
               table.toggleRowSelection(son, false)
               selectionList.splice(sonDefault, 1)
             }
-          })
+          }) : null
           // 取消自身勾选
           selectionList.splice(selection.findIndex(curr => curr.rowId == row.rowId), 1)
           table.toggleRowSelection(row, false)
@@ -466,8 +378,7 @@
           data = await getRecordList(t)
         this.dialogTable.total = data.data.total
         this.dialogTable.tableData = data.data.data.map((curr, fatherIndex) => {
-          let children
-          if (curr['historyLayerTaskDTOList'] != null) children = curr.historyLayerTaskDTOList.map(item => {
+          let children = curr.historyLayerTaskDTOList ? curr.historyLayerTaskDTOList.map(item => {
             let downloadStatus = ''
             switch (item.downloadStatus) {
               case 0:
@@ -485,17 +396,11 @@
               sceneName: '-',
               status: itemDownloadStatus(item.downloadStatus),
               viewProject: item.projectName,
-              rendering: item.renderRunning,
-              wait: item.renderWaiting,
-              timeOut: item.renderPause,
-              carryOut: item.renderFinished,
-              failure: item.renderFailed,
               renderingTime: consum(item.useTime),
               renderingCost: item.cost,
               frameRange: item.frameStart + '-' + item.frameEnd,
               intervalFrame: item.frameInterval,
               rowId: item.taskUuid + '-' + item.layerTaskUuid,
-              camera: item.camera,
               layerName: item.layerName,
               downloadStatus,
               renderDateStart: createDateFun(new Date(item.startTime)),
@@ -506,24 +411,19 @@
               FatherTaskUuId: curr.taskUuid,
               fatherIndex
             }
-          })
+          }) : []
           return {
             id: curr.taskNo,
             sceneName: curr.taskName,
             status: itemDownloadStatus(curr.renderStatus),
             viewProject: curr.projectName,
-            rendering: curr.renderRunning,
-            wait: curr.renderWaiting,
-            timeOut: curr.renderPause,
-            carryOut: curr.renderFinished,
-            failure: curr.renderFailed,
             renderingTime: consum(curr.useTime),
             renderingCost: curr.cost,
             frameRange: '-',
             intervalFrame: '-',
-            children,
+            children: children.length > 1 ? children : null,
+            secretChild: children.length == 1 ? children : null,
             rowId: curr.taskUuid,
-            camera: '-',
             layerName: '-',
             downloadStatus: '-',
             renderDateStart: createDateFun(new Date(curr.startTime)),
@@ -583,5 +483,11 @@
         }
       }
     }
+  }
+  .s {
+    font-size: 14px;
+    cursor: pointer;
+    color: rgba(0, 97, 255, 1);
+    text-decoration: underline;
   }
 </style>

@@ -411,9 +411,7 @@
                 if (type == 1) this.getList()
                 if (type == 2) this.getLayerList()
                 if (type == 3) this.getFrameList()
-              } else {
-                messageFun('error', '报错，操作失败')
-              }
+              } else messageFun('error', '报错，操作失败')
             },
             () => {
               messageFun('info', '已取消删除');

@@ -34,3 +34,11 @@ export function setCopySetData(data) {
     data
   })
 }
+
+// 下载完成帧
+export function downloadCompleteFrame(data) {
+  return businessServer({
+    url: `/professional/download/getDownloadPath?${data}`,
+    method: 'GET'
+  })
+}

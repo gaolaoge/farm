@@ -358,7 +358,7 @@
         t.downloadTableBtnRenderAll = true   // 渲染下载 - 全部渲染
         t.downloadTableBtnRenderAgain = true // 渲染下载 - 重新渲染
         t.downloadTableBtnArchive = true     // 渲染下载 - 归档
-        if (val.includes(this.$t('task.status.render_ing'))) {                    // 渲染中
+        if (val.includes(this.$t('task.status.render_ing'))) {            // 渲染中
           t.downloadTableBtnDelete = false
           t.downloadTableBtnStart = false
           t.downloadTableBtnArchive = false
@@ -383,7 +383,8 @@
         if (val.includes(this.$t('task.status.wait'))) {                  // 等待
           t.downloadTableBtnPause = false
         }
-        if (val.length == 1) t.downloadTableBtnCopy = true     // 渲染下载 - 拷贝
+        if(val.every(item => item == this.$t('task.status.render_all')))  t.downloadTableBtnStart = false  // 渲染下载
+        if (val.length == 1) t.downloadTableBtnCopy = true                // 渲染下载 - 拷贝
         else t.downloadTableBtnCopy = false
       },
       // 【归档记录】触发重新获取数据
@@ -464,6 +465,7 @@
       'table.navListActiveIndex': {
         handler: function (val) {
           sessionStorage.setItem('taskListActive', val)
+          val == 0 ? this.$refs.uploadMode.searchFun() : this.$refs.renderMode.searchFun()
         },
       },
       'socket_backS_msg': {

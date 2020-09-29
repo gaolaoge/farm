@@ -215,12 +215,12 @@
                        :placeholder="$t('login_page.forgetMode.ps_new')"
                        class="farm-input"/>
                 <!--查看密码-->
-                <div class="swicthPWI">
-                  <img src="@/icons/openPW.png" alt="" v-show="login.forgetMode.passwordEye"
-                       @click="login.forgetMode.passwordEye = false">
-                  <img src="@/icons/shuPW.png" alt="" v-show="!login.forgetMode.passwordEye"
-                       @click="login.forgetMode.passwordEye = true">
-                </div>
+<!--                <div class="swicthPWI">-->
+<!--                  <img src="@/icons/openPW.png" alt="" v-show="login.forgetMode.passwordEye"-->
+<!--                       @click="login.forgetMode.passwordEye = false">-->
+<!--                  <img src="@/icons/shuPW.png" alt="" v-show="!login.forgetMode.passwordEye"-->
+<!--                       @click="login.forgetMode.passwordEye = true">-->
+<!--                </div>-->
                 <span class="warnInfo" v-show="login.formStatus.newPassWord === false">
                   {{ login.forgetMode.warnInfo.newPassWord }}
                 </span>
@@ -240,12 +240,12 @@
                        :placeholder="$t('login_page.forgetMode.ps_again')"
                        class="farm-input"/>
                 <!--查看密码-->
-                <div class="swicthPWI">
-                  <img src="@/icons/openPW.png" alt="" v-show="login.forgetMode.passwordEyeAgain"
-                       @click="login.forgetMode.passwordEyeAgain = false">
-                  <img src="@/icons/shuPW.png" alt="" v-show="!login.forgetMode.passwordEyeAgain"
-                       @click="login.forgetMode.passwordEyeAgain = true">
-                </div>
+<!--                <div class="swicthPWI">-->
+<!--                  <img src="@/icons/openPW.png" alt="" v-show="login.forgetMode.passwordEyeAgain"-->
+<!--                       @click="login.forgetMode.passwordEyeAgain = false">-->
+<!--                  <img src="@/icons/shuPW.png" alt="" v-show="!login.forgetMode.passwordEyeAgain"-->
+<!--                       @click="login.forgetMode.passwordEyeAgain = true">-->
+<!--                </div>-->
                 <span class="warnInfo" v-show="login.formStatus.newPassWordAgain === false">
                   {{ login.forgetMode.warnInfo.newPassWordAgain }}
                 </span>
@@ -1034,13 +1034,16 @@
       psFormat() {
         let t = this.login.forgetMode,
           f = this.login.formStatus
-        if (!this.reg.passwordReg1.test(t.newPassWord) || !this.reg.passwordReg2.test(t.newPassWord)) {
-          t.warnInfo.newPassWord = this.$t('login_page.message.psTypeErr_one')
+        if (!this.reg.passwordReg1.test(t.newPassWord)) {
+          t.warnInfo.newPassWord = this.$t('login_page.message.ps_verif_one')
           f.newPassWord = false
-          return false
+        } else if (!this.reg.passwordReg2.test(t.newPassWord)) {
+          t.warnInfo.newPassWord = this.$t('login_page.message.ps_verif_two')
+          f.newPassWord = false
+        } else {
+          f.newPassWord = true
+          this.npsFormat()
         }
-        f.newPassWord = true
-        this.npsFormat()
       },
       // 找回密码 验证第二次输入新密码
       npsFormat() {

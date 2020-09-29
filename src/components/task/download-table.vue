@@ -286,7 +286,8 @@
   } from '@/api/api'
   import {
     uploadTabGetList,
-    getCopySetData
+    getCopySetData,
+    downloadCompleteFrame
   } from '@/api/task-api'
   import {
     mapState
@@ -567,7 +568,6 @@
         //   uploadStatus '',         // 渲染状态
         //   renderStatus: ''         // 工程ID
         // }
-        console.log(obj)
         if (obj && obj.renderStatus) this.table.renderStatus = [obj.renderStatus]
         if (obj && obj.projectUuid) this.table.projectUuid = [obj.projectUuid]
         if (obj && obj.renderStatusFormHome) switch (obj.renderStatusFormHome) {
@@ -628,6 +628,7 @@
             return {
               id: item.layerNo,                                                // 任务ID
               sceneName: curr.fileName + '-' + item.layerName,        // 场景名
+              FatherSceneName: curr.fileName,                        // 主任务场景名
               status,                           // 状态
               renderingProgress: item.frameCount.done + '/' + item.frameCount.total,    //渲染进度
               percent: curr.frameCount.total == null ? 0 : Math.floor(item.frameCount.done / item.frameCount.total * 100),
@@ -736,6 +737,7 @@
             // if(status == '渲染暂停' && item.result == 5) status = '待全部渲染'
             return {
               id: '-',                                               // 任务ID
+              FatherSceneName: curr.fileName,                        // 主任务场景名
               sceneName: curr.fileName + '-' + item.fileName,        // 场景名
               status,                                                // 状态
               renderingProgress: item.win + '/' + itemTotal,        //渲染进度
@@ -836,15 +838,16 @@
                 "instructType": 1,
                 "instructTaskList": dataList
               })
-              if (data.data.code == 1001) {
-                messageFun('info', '您已欠费');
-                return false
-              }
-              if (data.data.code == 200) messageFun('success', '操作成功')
+              if (data.data.code == 1001) messageFun('info', '您已欠费')
+              else if (data.data.code == 200) messageFun('success', '操作成功')
             },
             () => messageFun('info', '已取消操作')
           )
-          .catch(() => messageFun('error', '报错，操作失败'))
+          .catch(error => {
+            messageFun('error', '报错，操作失败')
+            console.log('---------【开始】报错-----------')
+            console.log(error)
+          })
       },
       // 操作 - 归档
       archiveFun() {
@@ -872,9 +875,11 @@
             },
             () => messageFun('info', '已取消归档')
           )
-          .catch(() => messageFun('error', '报错，操作失败'))
-
-
+          .catch(error => {
+            messageFun('error', '报错，操作失败')
+            console.log('---------【归档】报错-----------')
+            console.log(error)
+          })
       },
       // 操作 - 全部渲染
       renderAllFun() {
@@ -888,7 +893,7 @@
             async () => {
               let dataList = []
               this.table.renderSelectionList.forEach(curr => {
-                if (('selfIndex' in curr) && !('secretChild' in curr)) return false
+                if (('selfIndex' in curr) && !(curr['secretChild'])) return false
                 let dataListIndex = dataList.findIndex(item => item.taskUuid == curr.FatherTaskUuId)
                 if (dataListIndex == -1) {
                   if ('secretChild' in curr) {
@@ -910,7 +915,11 @@
             },
             () => messageFun('info', '已取消操作')
           )
-          .catch(() => messageFun('error', '报错，操作失败'))
+          .catch(error => {
+            messageFun('error', '报错，操作失败')
+            console.log('---------【全部渲染】报错-----------')
+            console.log(error)
+          })
       },
       // 操作 - 删除
       deleteFun() {
@@ -956,7 +965,11 @@
             },
             () => messageFun('info', '已取消删除')
           )
-        // .catch(() => messageFun('error', '报错，操作失败'))
+          .catch(error => {
+            messageFun('error', '报错，操作失败')
+            console.log('---------【删除】报错-----------')
+            console.log(error)
+          })
       },
       // 操作 - 暂停
       pauseFun() {
@@ -993,7 +1006,11 @@
             },
             () => messageFun('info', '已取消暂停')
           )
-          .catch(() => messageFun('error', '报错，操作失败'))
+          .catch(error => {
+            messageFun('error', '报错，操作失败')
+            console.log('---------【暂停】报错-----------')
+            console.log(error)
+          })
       },
       // 操作 - 重新渲染
       renderAgainFun() {
@@ -1010,72 +1027,14 @@
         // }
         let list = this.computedResult()
         for (const taskItem of list) {
-          let fileList = []
           if (taskItem.FatherId) {
-            // 层任务
-            let parameter = `taskUuid=${taskItem.FatherTaskUuId}&layerTaskUuid=${taskItem.taskUuid}&keyword=&pageIndex=1&pageSize=999`,
-              data = await getRenderTSeeMore(parameter),
-              list_ = data.data.data.frameList.filter(item => item['outFilePath'])
-            fileList = list_.map(item => {
-              let index_ = item['outFilePath'].indexOf(item['taskUuid'])
-              return {
-                path: '\\' + item['outFilePath'].slice(index_) + item['fileName'],
-                taskID: taskItem['id'],             // 任务ID
-                fileName: taskItem['sceneName']     // 场景名
-              }
-            })
-            this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
-              'transferType': 2,
-              'userID': this.user.id,
-              parent: '',
-              isRender: 1,
-              fileList
-            })
-          } else if (taskItem.secretChild) {
-            let sonItem = taskItem.secretChild
-            // 主任务且没有层任务
-            let parameter = `taskUuid=${sonItem.FatherTaskUuId}&layerTaskUuid=${sonItem.taskUuid}&keyword=&pageIndex=1&pageSize=999`,
-              data = await getRenderTSeeMore(parameter),
-              list_ = data.data.data.frameList.filter(item => item['outFilePath'])
-            fileList = list_.map(item => {
-              let index_ = item['outFilePath'].indexOf(item['taskUuid'])
-              return {
-                path: '\\' + item['outFilePath'].slice(index_) + item['fileName'],
-                taskID: sonItem['id'],             // 任务ID
-                fileName: sonItem['sceneName']     // 场景名
-              }
-            })
-            this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
-              'transferType': 2,
-              'userID': this.user.id,
-              parent: taskItem['id'] + '-' + taskItem['sceneName'],
-              isRender: 1,
-              fileList
-            })
-          } else if (taskItem.children) {
-            // 主任务且有数个层任务
-            let sonList = []
-            for (const sonItem of taskItem.children) {
-              let parameter = `taskUuid=${sonItem.FatherTaskUuId}&layerTaskUuid=${sonItem.taskUuid}&keyword=&pageIndex=1&pageSize=999`,
-                data = await getRenderTSeeMore(parameter),
-                list_ = data.data.data.frameList.filter(item => item['outFilePath'])
-              fileList = list_.map(item => {
-                let index_ = item['outFilePath'].indexOf(item['taskUuid'])
-                return {
-                  path: '\\' + item['outFilePath'].slice(index_) + item['fileName'],
-                  taskID: sonItem['id'],             // 任务ID
-                  fileName: sonItem['sceneName']     // 场景名
-                }
-              })
-              sonList.push(fileList)
-            }
-            this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
-              'transferType': 2,
-              'userID': this.user.id,
-              parent: taskItem['id'] + '-' + taskItem['sceneName'],
-              isRender: 1,
-              fileList: sonList
-            })
+            let val = `transferType=2&userID=${this.user.id}&isRender=1&parent=&taskUuid=${taskItem['FatherTaskUuId']}&layerTaskUuid=${taskItem['taskUuid']}&fileName=${taskItem['FatherSceneName']}`,
+              data = await downloadCompleteFrame(val)
+            this.$store.commit('WEBSOCKET_PLUGIN_SEND', data.data.data)
+          } else {
+            let val = `transferType=2&userID=${this.user.id}&isRender=1&parent=${taskItem['id'] + '-' + taskItem['sceneName']}&taskUuid=${taskItem['taskUuid']}&layerTaskUuid=&fileName=${taskItem['sceneName']}`,
+              data = await downloadCompleteFrame(val)
+            this.$store.commit('WEBSOCKET_PLUGIN_SEND', data.data.data)
           }
         }
       },
