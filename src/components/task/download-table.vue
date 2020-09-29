@@ -537,7 +537,7 @@
       selectAll(selection) {
         console.log(selection)
         // 取消全选
-        if (!selection.length) {
+        if (!('children' in selection[0])) {
           this.table.renderSelectionList = []
           this.table.RenderDownloadData.forEach(curr => curr.children && curr.children.forEach(item => this.$refs.renderTableImportant.toggleRowSelection(item, false)))
         } else {
