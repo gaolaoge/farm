@@ -25,7 +25,8 @@ export default {
     },
     // 账号验证
     account_verif: {
-      ac_placeholder: '请输入账号/手机号',
+      // ac_placeholder: '请输入账号/手机号',
+      ac_placeholder: '请输入账号',
       ps_placeholder: '请输入密码',
       auto_login: '5天内自动登录',
       forgetPw: '忘记密码',

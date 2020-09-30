@@ -111,9 +111,9 @@
             </div>
           </div>
         </div>
-        <!--计费说明-->
+        <!--计费说明 影视-->
         <div class="billingInstructions"
-             v-show="navListActiveIndex == 1">
+             v-show="navListActiveIndex == 1 && zone == 1">
           <!--CPU-->
           <div class="t">
             <div class="card">{{ cpuCard }}</div>
@@ -123,12 +123,15 @@
                 <p class="accumulative"> {{ item.total }} </p>
                 <p class="price">{{ form.unit }}<span class="num">{{ item.price }}</span>{{ form.unitPrice }}</p>
                 <p class="k">
-                  <!--相当于16核32线程节点机-->
-                  <span style="display: block">{{ item.dir1 }}</span>
-                  <!--包含每小时收费3.04元-->
-                  <span style="display: block">{{ form.dir4 }}<span class="v">{{ item.unitPrice }}</span>{{ form.dir2 }}</span>
-                  <!--包含50G 存储空间-->
-                  {{ form.f }}<span class="v">{{ item.RAM }}</span>{{ form.dir3 }}
+<!--                  &lt;!&ndash;相当于16核32线程节点机&ndash;&gt;-->
+<!--                  <span style="display: block">{{ item.dir1 }}</span>-->
+<!--                  &lt;!&ndash;包含每小时收费3.04元&ndash;&gt;-->
+<!--                  <span style="display: block">{{ form.dir4 }}<span class="v">{{ item.unitPrice }}</span>{{ form.dir2 }}</span>-->
+<!--                  &lt;!&ndash;包含50G 存储空间&ndash;&gt;-->
+<!--                  {{ form.f }}<span class="v">{{ item.RAM }}</span>{{ form.dir3 }}-->
+                  <span style="display: block" class="v">全新硬件</span>
+                  <span style="display: block" class="v">发烧级性能</span>
+                  <span style="display: block" class="v">限时<span style="color: #000">5折</span>巨惠</span>
                 </p>
               </div>
             </div>
@@ -136,6 +139,53 @@
 
           <!--GPU-->
           <div class="t">
+            <div class="card">{{ gpuCrad }}</div>
+            <div class="priceList gpuPriceList">
+              <div class="item" v-for="(item,index) in form.gpuList" :key="index">
+                <h6>{{ item.userLevel }}</h6>
+                <p class="accumulative"> {{ item.total }} </p>
+                <p class="price">{{ form.unit }}<span class="num">{{ item.price }}</span>{{ form.unitPrice2 }}</p>
+                <p class="k">
+<!--                  <span style="display: block">{{ item.dir1 }}</span>-->
+<!--                  <span style="display: block">{{ form.dir4 }}<span-->
+<!--                    class="v">{{ item.price }}</span>{{ form.dir2 }}</span>-->
+<!--                  {{ form.f }}<span class="v">{{ item.RAM }}</span>{{ form.dir3 }}-->
+                  <span style="display: block" class="v"><span style="color: #000">RTX6000</span>显卡</span>
+                  <span style="display: block" class="v">光线追踪</span>
+                  <span style="display: block" class="v">性能怪兽</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--计费说明 效果图-->
+        <div class="billingInstructions"
+             v-show="navListActiveIndex == 1 && zone == 2">
+          <!--CPU-->
+          <div class="t">
+            <div class="card">{{ cpuCard }}</div>
+            <div class="priceList cpuPriceList">
+              <div class="item" v-for="(item,index) in form.cpuList" :key="index">
+                <h6>{{ item.userLevel }}</h6>
+                <p class="accumulative"> {{ item.total }} </p>
+                <p class="price">{{ form.unit }}<span class="num">{{ item.price }}</span>{{ form.unitPrice }}</p>
+                <p class="k">
+<!--                  &lt;!&ndash;相当于16核32线程节点机&ndash;&gt;-->
+<!--                  <span style="display: block">{{ item.dir1 }}</span>-->
+<!--                  &lt;!&ndash;包含每小时收费3.04元&ndash;&gt;-->
+<!--                  <span style="display: block">{{ form.dir4 }}<span class="v">{{ item.unitPrice }}</span>{{ form.dir2 }}</span>-->
+<!--                  &lt;!&ndash;包含50G 存储空间&ndash;&gt;-->
+<!--                  {{ form.f }}<span class="v">{{ item.RAM }}</span>{{ form.dir3 }}-->
+                  <span style="display: block" class="v">全新硬件</span>
+                  <span style="display: block" class="v">发烧级性能</span>
+                  <span style="display: block" class="v">限时<span style="color: #000">5折</span>巨惠</span>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!--GPU-->
+          <div class="t" v-if="false">
             <div class="card">{{ gpuCrad }}</div>
             <div class="priceList gpuPriceList">
               <div class="item" v-for="(item,index) in form.gpuList" :key="index">
@@ -414,7 +464,7 @@
       }
     },
     computed: {
-      ...mapState(['user'])
+      ...mapState(['user', 'zone'])
     },
     mounted() {
       if (/\?/.test(this.$route.fullPath))

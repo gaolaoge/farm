@@ -203,7 +203,8 @@
           this.info.sexVal = user.sex
           this.info.birthdayVal = user.birthday ? new Date(user.birthday) : null
         },
-        deep: true
+        deep: true,
+        immediate: true
       }
     },
   }

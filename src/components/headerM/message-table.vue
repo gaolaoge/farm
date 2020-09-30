@@ -150,9 +150,9 @@
       ...mapState['zoneId', 'user']
     },
     methods: {
+      // 打开消息详情
       tableClick(row, column, event) {
-        console.log(row)
-        let taskID = JSON.parse(row.noticeParam)['taskDetails'].split('_')[0],
+        let taskUuid = JSON.parse(row.noticeParam)['taskUuid'],
           taskZoneID = row.noticeData.split('&').find(item => item.split('=')[0] == 'zoneUuid').split('=')[1],
           pageIndex = row.noticeData.split('&').find(item => item.split('=')[0] == 'pageIndex').split('=')[1],
           type = row.noticeUrl
@@ -169,7 +169,7 @@
 
           this.$store.commit('newRedirectToTask', {
             type,
-            taskID,
+            taskUuid,
             pageIndex
           })
         }

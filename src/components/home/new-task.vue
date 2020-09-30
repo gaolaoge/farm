@@ -161,10 +161,9 @@
                     label="场景名"
                     show-overflow-tooltip
                     width="180"/>
-                  <!--工程路径-->
+                  <!--工程路径 :render-header="renderHeader"-->
                   <el-table-column
                     prop="address"
-                    :render-header="renderHeader"
                     label="工程路径">
                     <template slot-scope="scope">
                       <div class="f"
@@ -798,7 +797,7 @@
           // 其它设置
           other: {
             cCLabel: '颜色通道图',
-            bCLabel: '分相机',
+            bCLabel: '分相机渲染',
             cCVal: '1',
             bCVal: '1',
             title: '其他设置',

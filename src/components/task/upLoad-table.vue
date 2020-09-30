@@ -195,16 +195,16 @@
     },
     methods: {
       // 清除筛选条件
-      clearFilterF(type){
+      clearFilterF(type) {
         this.$refs.uploadTableImportant.clearFilter(type)
       },
-      filterChangeF(val){
-        if(Object.keys(val)[0] == 'status') this.$emit('changeFilter', {
+      filterChangeF(val) {
+        if (Object.keys(val)[0] == 'status') this.$emit('changeFilter', {
           'tab': 'upload',
           'type': 'status',
           'val': val['status']
         })
-        else if(Object.keys(val)[0] == 'founder') this.$emit('changeFilter', {
+        else if (Object.keys(val)[0] == 'founder') this.$emit('changeFilter', {
           'tab': 'upload',
           'type': 'founder',
           'val': val['founder']
@@ -281,6 +281,7 @@
       },
       // 获取 table 列表
       async getList(obj) {
+        if (!obj) this.closeDrawer()
         const loading = this.$loading({
           lock: true,
           text: 'Loading',
@@ -298,7 +299,8 @@
         // }
         let parametersToBeSet = (obj && obj.parametersToBeSet) ? obj.parametersToBeSet : '',
           projectUuid = (obj && obj.projectUuid) ? [obj.projectUuid] : ''
-        if(obj && obj.type) switch (obj.type) {
+        if (obj && obj.pageIndex) this.table.current = obj.pageIndex
+        if (obj && obj.type) switch (obj.type) {
           case 'waitSetUpParam':       // 待设置参数
             parametersToBeSet = 1
             break
@@ -390,6 +392,7 @@
         // this.table.statusList = [...statusList].map(curr => { return {'text': curr, 'value':curr }})
         this.table.uploadTableTotal = data.data.total
         this.$emit('uploadTableTotalItem', data.data.total)
+        // if (obj && obj.taskUuid) this.$refs.uploadTableImportant.toggleRowSelection(this.table.UploadAnalysisData.find(item => item['taskUuid'] == obj['taskUuid']), true)
         loading.close()
       },
       // 关键字检索
@@ -455,7 +458,7 @@
     },
     watch: {
       'zoneId': function (val) {
-        this.getList()
+        this.getList(null)
       }
     },
     computed: {

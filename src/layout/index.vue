@@ -138,7 +138,7 @@
       },
       // 跳转到下载
       w() {
-        window.open('http://223.80.107.190:8084/Setup.exe', '_blank')
+        window.open('http://www.chinamoviecloud.cn:8085/CloudTransfer.exe', '_blank')
       },
       // 触发插件
       triggerPlugin() {

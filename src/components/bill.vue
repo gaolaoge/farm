@@ -178,6 +178,14 @@
     },
     computed: {
       ...mapState(['user'])
+    },
+    watch: {
+      '$route.params': {
+        handler: function(val){
+          if(val.index) this.table.navListActiveIndex = val.index
+        },
+        immediate: true
+      }
     }
   }
 </script>

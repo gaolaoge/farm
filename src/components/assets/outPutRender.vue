@@ -315,7 +315,6 @@
         this.fullscreenLoading = false
         this.table.nextTbaleType = 'null'
         this.table.outPutData = data.data.data.map(curr => {
-          console.log(curr)
           let fileType = curr.fileName.split('.')
           return {
             fileName: curr.fileName,                        // 文件名
@@ -368,14 +367,14 @@
         //   messageFun('info', `当前账户余额为${r.data.data}，请先进行充值！`);
         //   return false
         // }
-        else this.$confirm('将下载选中选, 是否继续?', '提示信息', {
+        this.$confirm('将下载选中选, 是否继续?', '提示信息', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         })
           .then(
             async () => {
-              for (const taskItem of this.table.selectionList) {
+              if (this.table.selectionList[0]['type'] == 'layer' || this.table.selectionList[0]['type'] == 'task') for (const taskItem of this.table.selectionList) {
                 if (taskItem.type == 'layer') {
                   let val = `transferType=2&userID=${this.user.id}&isRender=1&parent=&taskUuid=${taskItem['mainUuid']}&layerTaskUuid=${taskItem['itemUuid']}&fileName=${taskItem['mainTaskSceneName']}`,
                     data = await downloadCompleteFrame(val)
@@ -384,22 +383,22 @@
                   let val = `transferType=2&userID=${this.user.id}&isRender=1&parent=${taskItem['id'] + '-' + taskItem['taskSceneName']}&taskUuid=${taskItem['taskUuid']}&layerTaskUuid=&fileName=${taskItem['taskSceneName']}`,
                     data = await downloadCompleteFrame(val)
                   this.$store.commit('WEBSOCKET_PLUGIN_SEND', data.data.data)
-                } else if (taskItem.type == 'frame') {
-                  let fileList = this.result.selectionResult.map(item => {
-                    return {
-                      path: '\\' + item['itemUuid'] + '\\' + item['layerFileName'] + '\\' + item['fileName'],
-                      taskID: item['layerNo'],                                         // 任务ID
-                      fileName: item['taskFileName'] + '-' + item['layerFileName']     // 场景名
-                    }
-                  })
-                  this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
-                    'transferType': 2,
-                    'userID': this.user.id,
-                    isRender: 1,
-                    parent: '',
-                    fileList
-                  })
                 }
+              } else {
+                let fileList = this.table.selectionList.map(item => {
+                  return {
+                    path: '\\' + item['itemUuid'] + '\\' + item['layerFileName'] + '\\' + item['fileName'],
+                    taskID: item['layerNo'],                                         // 任务ID
+                    fileName: item['layerFileName']     // 场景名
+                  }
+                })
+                this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
+                  'transferType': 2,
+                  'userID': this.user.id,
+                  isRender: 1,
+                  parent: '',
+                  fileList
+                })
               }
             },
             () => messageFun('info', '已取消下载')

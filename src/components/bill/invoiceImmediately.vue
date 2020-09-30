@@ -343,7 +343,7 @@
           } else list[1]['errInfo'] = false
         } else if (type == 'phone' && list[4]['Val']) {  // 纳税人识别号
           if (!this.regExp.phone.test(list[4]['Val'])) {
-            messageFun('error', '请输入15-20位数字或字母')
+            messageFun('error', '请输入正确的手机号')
             list[4]['errInfo'] = true
           } else list[4]['errInfo'] = false
         }
@@ -530,6 +530,9 @@
           this.getRechargeList()
           this.checked = null
           this.recordingSelection = []
+          this.$router.push({name: 'bill', params: {
+            index: 2
+            }})
         }
       },
       // 复位

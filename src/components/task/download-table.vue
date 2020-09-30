@@ -228,7 +228,7 @@
         :current-page.sync="table.current"
         :total="table.renderTableTotal">
       </el-pagination>
-      <div class="farm-primary-form-btn btn" @click="getList()">
+      <div class="farm-primary-form-btn btn" @click="getList(null)">
         <span>{{ refresh }}</span>
       </div>
     </div>
@@ -573,10 +573,11 @@
       closeDrawer() {
         this.showDrawer = false
         let d = this.$refs.downLoadTable.getElementsByClassName('farmTableSelected')[0]
-        d.classList.remove('farmTableSelected')
+        if(d) d.classList.remove('farmTableSelected')
       },
       // 获取列表
       async getList(obj) {
+        if(!obj) this.closeDrawer()
         // {
         //   zoneUuid: '',            // 分区ID
         //   keyword: '',             // 关键字
@@ -601,8 +602,7 @@
             this.table.renderStatus = [3]
             break
         }
-        let f = `/${this.zoneId}/${this.table.current}/${this.table.pageSize}`,
-          data = this.zone == 1 ? await getRenderTableList({
+        let data = this.zone == 1 ? await getRenderTableList({
             zoneUuid: this.zoneId,
             keyword: this.searchInput,
             pageIndex: this.table.current,
@@ -758,11 +758,11 @@
               status = itemDownloadStatus(item.layerTaskStatus)
             // if(status == '渲染暂停' && item.result == 5) status = '待全部渲染'
             return {
-              id: '-',                                               // 任务ID
+              id: item.layerNo,                                      // 任务ID
               FatherSceneName: curr.fileName,                        // 主任务场景名
-              sceneName: curr.fileName + '-' + item.fileName,        // 场景名
+              sceneName: item.fileName,                              // 场景名
               status,                                                // 状态
-              renderingProgress: item.win + '/' + itemTotal,        //渲染进度
+              renderingProgress: item.win + '/' + itemTotal,         //渲染进度
               percent: itemTotal == null ? 0 : Math.floor(item.win / itemTotal * 100),
               viewProject: curr.projectName,                         // 所属项目
               rendering: item.rendering,                             // 渲染中
@@ -819,11 +819,12 @@
             renderingEndTime: createDateFun(new Date(curr.endTime)),                        // 渲染结束时间
             founder: curr.account,                                 // 创建人
             creationTime: createDateFun(new Date(curr.createTime)),// 创建时间
-            children,
+            children: children.length == 1 ? null : children,
             rowId: curr.taskNo,                                    // 唯一值
             selfIndex: fatherIndex,
             isExpire: 0,                                           // 未过期
-            inFilePath: curr.inFilePath
+            inFilePath: curr.inFilePath,
+            secretChild: children.length == 1 ? children : null,   // 伪child列表
           }
         })
         this.table.usersList = [...usersList].map(curr => {
@@ -1160,6 +1161,7 @@
       },
       'zoneId': function (val) {
         this.getList()
+        this.closeDrawer()
       }
     },
   }

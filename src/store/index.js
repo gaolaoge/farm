@@ -97,7 +97,7 @@ export default new Vuex.Store({
         this.commit('toZore', 'socket_plugin_time')
       })
       state.socket_plugin.addEventListener('error', () => {
-        if (state.socket_plugin_time >= 5) {
+        if (state.socket_plugin_time >= 3) {
           console.log('--与插件连接失败--')
           this.commit('becomeErr', 'socket_plugin')
           if(triggerPlugin) this.commit('openPluginDialog', true)

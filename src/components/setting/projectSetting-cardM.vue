@@ -153,6 +153,9 @@
             <span class="label">{{ editProject.nameL }}：</span>
             <input type="text"
                    class="name v"
+                   :class="[{'err': editNameErr}]"
+                   @focus="editNameErr = false"
+                   @keyup.enter="editSaveBtnFun"
                    v-model="editProject.nameV">
           </div>
           <!--项目状态-->
@@ -172,7 +175,7 @@
               <span>{{ btnCancel }}</span>
             </div>
             <div class="farm-btn save"
-                 :class="[{'cannotBeGo': !editProject.nameV}]"
+                 :class="[{'cannotBeGo': editVerif}]"
                  @click="editSaveBtnFun">
               <span>{{ btnSave }}</span>
             </div>
@@ -203,6 +206,7 @@
     data() {
       return {
         newNameErr: false,     // 新建项目 项目名状态
+        editNameErr: false,    // 编辑项目 项目名状态
         tableData: [],
         tableOperateBtn: ['编辑', '设为当前项目'],
         btnGroup: [
@@ -231,7 +235,7 @@
         editProject: {
           tit: '编辑项目',
           nameL: '项目名称',
-          nameV: null,
+          nameV: '',
           statusL: '项目状态',
           statusV: null,
           thumbnail: null,
@@ -369,7 +373,7 @@
       // 编辑项目 - 保存
       async editSaveBtnFun() {
         let c = this.editProject
-        if (!c.nameV) return false
+        if (!this.editVerif) return false
         let data = await editTask({
           'projectName': c.nameV,
           'projectStatus': c.statusV,
@@ -451,6 +455,9 @@
     computed: {
       verif() {
         return (Boolean(this.newNameErr) || !Boolean(this.createProject.name.trim()))
+      },
+      editVerif() {
+        return (Boolean(this.editNameErr) || !Boolean(this.editProject.nameV.trim()))
       }
     }
   }

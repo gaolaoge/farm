@@ -132,7 +132,7 @@
           <!--标题-->
           <div class="farm-drawer-body-item-header">
             <span class="farm-drawer-body-item-header-main">
-              {{ setting.num.title }}
+              {{ zone == 1 ? setting.num.title1 : setting.num.title2 }}
             </span>
             <span class="farm-drawer-body-item-header-assist">
               {{ setting.num.miniTitO }}{{ setting.num.selected.length }}{{ setting.num.miniTitT }}
@@ -148,7 +148,7 @@
                 inactive-value=0>
               </el-switch>
               <span class="switchLayeredText" :class="[{'active': setting.num.singleChoice}]">
-                {{ setting.num.singleChoice }}
+                {{ zone == 1 ? setting.num.singleChoice1 : setting.num.singleChoice2 }}
               </span>
               <el-tooltip class="item"
                           popper-class="t"
@@ -380,9 +380,9 @@
             <span class="farm-drawer-body-item-header-main">
               {{ setting.mode.title }}
             </span>
-            <span class="farm-drawer-body-item-header-assist">
-              {{ setting.mode.miniTitO }}<span class="rule">{{ setting.mode.rule }}</span>{{ setting.mode.miniTitT }}
-            </span>
+<!--            <span class="farm-drawer-body-item-header-assist">-->
+<!--              {{ setting.mode.miniTitO }}{{ setting.mode.miniTitT }}-->
+<!--            </span>-->
           </div>
           <div class="farm-drawer-body-item-d">
             <el-radio-group v-model="setting.mode.mode">
@@ -1023,11 +1023,13 @@
           t: '设置参数',
           // 渲染层数
           num: {
-            title: '渲染层数',
+            title1: '渲染层数',
+            title2: '渲染相机',
             miniTitO: '（已选择',
             miniTitT: '个层）',
             val: '2',
-            singleChoice: '启动分层渲染',
+            singleChoice1: '启动分层渲染',
+            singleChoice2: '启动分相机渲染',
             // 分层渲染
             singleChoiceVal: '0',
             tableData: [

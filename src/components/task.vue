@@ -480,19 +480,15 @@
           // taskID: "SWT-511"
           // type: "analyse"
           if (obj.type == 'analyse') {
-            this.table.navListActiveIndex = 0
-            this.btnGroup.searchInputUpload = obj.taskID
-            setTimeout(() => {
-              this.searchUploadInput()
-              this.btnGroup.searchInputUpload = ''
-            }, 0)
+            this.$refs.uploadMode.getList({
+              pageIndex: obj.pageIndex,
+              taskUuid: obj.taskUuid
+            })
           } else if (obj.type == 'render') {
-            this.table.navListActiveIndex = 1
-            this.btnGroup.searchInputDownload = obj.taskID
-            setTimeout(() => {
-              this.searchRenderInput()
-              this.btnGroup.searchInputDownload = ''
-            }, 0)
+            this.$refs.renderMode.getList({
+              pageIndex: obj.pageIndex,
+              taskUuid: obj.taskUuid
+            })
           }
         },
         immediate: true
