@@ -163,11 +163,8 @@
           this.$store.commit('changeEmail', this.emailVal)
           this.sucCountdown()
           this.reset()
-        } else if (data.data.msg == '邮箱验证码无效') {
-          messageFun('error', '邮箱验证码无效')
-        } else if (data.data.msg == '手机号验证码无效') {
-          messageFun('error', '手机号验证码无效')
-        }
+        } else if (data.data.msg == '邮箱验证码无效') messageFun('error', '邮箱验证码无效')
+        else if (data.data.msg == '手机号验证码无效') messageFun('error', '手机号验证码无效')
 
       },
       // 复位
@@ -183,12 +180,14 @@
           this.countdown.num--
           if (this.countdown.num > 0) this.sucCountdown()
           else this.countdownFun()
+          //
         }, 1000)
       },
       countdownFun() {
         this.countdown.fun = null
         this.countdown.num = 3
         this.editing = true
+        this.cancelFun()
       },
       // 获取手机号验证码
       async getPhoneCode() {

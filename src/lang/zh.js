@@ -176,7 +176,7 @@ export default {
     myUploadBtnGroup: ['上传', '新建文件夹', '下载'],
     outPutBtnGroup: ['下载', '删除'],
     moreBtnText: '更多',
-    moreBtnList: ['移动到', '复制到', '重命名', '解压'],
+    moreBtnList: ['移动到', '复制到', '重命名'],  // , '解压'
     howToCreateBtn: ['手动创建资产目录', '自动创建资产目录'],
     info: [
       '温馨提示：上传的资产有效期为20天，20天后系统会自动清除，请在有效期截止前进行渲染或下载，如有特殊需求，可联系在线客服。',

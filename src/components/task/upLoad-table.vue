@@ -110,7 +110,7 @@
         layout="prev, pager, next, jumper"
         :total="table.uploadTableTotal">
       </el-pagination>
-      <div class="farm-primary-form-btn btn" @click="getList(null)">
+      <div class="farm-primary-form-btn btn" @click="getList(null, true)">
         <span>{{ refresh }}</span>
       </div>
     </div>
@@ -280,8 +280,8 @@
         if (!this.$route.params.name) this.getList()
       },
       // 获取 table 列表
-      async getList(obj) {
-        if (!obj) this.closeDrawer()
+      async getList(obj, reset) {
+        if (reset) this.closeDrawer()
         const loading = this.$loading({
           lock: true,
           text: 'Loading',

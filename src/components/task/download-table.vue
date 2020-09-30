@@ -228,7 +228,7 @@
         :current-page.sync="table.current"
         :total="table.renderTableTotal">
       </el-pagination>
-      <div class="farm-primary-form-btn btn" @click="getList(null)">
+      <div class="farm-primary-form-btn btn" @click="getList(null, true)">
         <span>{{ refresh }}</span>
       </div>
     </div>
@@ -576,8 +576,8 @@
         if(d) d.classList.remove('farmTableSelected')
       },
       // 获取列表
-      async getList(obj) {
-        if(!obj) this.closeDrawer()
+      async getList(obj, reset) {
+        if(reset) this.closeDrawer()
         // {
         //   zoneUuid: '',            // 分区ID
         //   keyword: '',             // 关键字

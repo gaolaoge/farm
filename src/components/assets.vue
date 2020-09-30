@@ -466,7 +466,7 @@
 
     .moreBtnList {
       left: 378px;
-      height: 116px;
+      height: 90px;
     }
 
     .uploadBtnList {

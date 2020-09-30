@@ -24,7 +24,7 @@
                width="360px">
       <header class="dl_header">
         <span>{{ pluginDialog_.title }}</span>
-        <img src="@/icons/shutDialogIcon.png" class="closeIcon" @click="$store.commit('openPluginDialog', false)">
+        <img src="@/icons/shutDialogIcon.png" class="closeIcon" @click="">
       </header>
       <div class="dl_wrapper">
         <span class="main">
@@ -113,7 +113,7 @@
       iv
     },
     computed: {
-      ...mapState(['login', 'user', 'thumb', 'socket_plugin', 'pluginDialog', 'remoteLoginDate'])
+      ...mapState(['login', 'user', 'thumb', 'socket_plugin', 'pluginDialog', 'remoteLoginDate', 'socket_backS_msg'])
     },
     watch: {
       '$route': {
@@ -129,7 +129,16 @@
         if(!date) return false
         this.remoteLoginDialog.date = createDateFun(new Date(date), null, true)
         this.remoteLoginDialog.show = true
-      }
+      },
+      'socket_backS_msg': {
+        handler: function (e) {
+          let data = JSON.parse(e.data)
+          if (data.code == 858) {
+            this.$store.commit('remoteLoginFun', new Date().getTime())
+          }
+          else return false
+        },
+      },
     },
     methods: {
       shutRemoteLogin(editPS){
@@ -150,7 +159,7 @@
       // 打开【传输列表】
       openPlugin() {
         if (this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_SEND', 'open')
-        else this.$store.commit('openPluginDialog', true)
+        else this.$store.commit('WEBSOCKET_PLUGIN_INIT', true)
       }
     }
   }

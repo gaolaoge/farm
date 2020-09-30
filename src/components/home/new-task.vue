@@ -594,7 +594,7 @@
           </div>
           <!--按钮-->
           <div class="btnGroup">
-            <div class="btnGroup-btn save" @click="taskDefine" :class="[{'disable-self': !disableSelf}]">
+            <div class="btnGroup-btn save" @click="taskDefine" :class="[{'disable-self': !disableSelf || !dialogAdd.nList.length}]">
               <span>{{ dialogAdd.save }}</span>
             </div>
             <div class="btnGroup-btn cancel" @click="innerVisible = false">
@@ -1316,7 +1316,7 @@
       async taskDefine() {
         let val
         // 若表格未填写完整 返回
-        if (!this.disableSelf) return false   // 验证表格是否填写完整
+        if (!this.disableSelf || !this.dialogAdd.nList.length) return false   // 验证表格是否填写完整
         switch (this.dialogAdd.editOrAdd) {
           // 新建模板
           case 'addMore':

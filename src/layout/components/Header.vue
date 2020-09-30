@@ -251,6 +251,7 @@
     mapState
   } from 'vuex'
   import messageTable from '@/components/headerM/message-table'
+  import {messageFun} from "../../assets/common";
 
   export default {
     name: 'headerM',
@@ -305,7 +306,10 @@
         guideShow: false,                       // 显示【渲染指引】
         guideShowStep: 1,                       // 【渲染指引】步骤
         uptop: this.$t('header.uptopBtn'),
-        bulletin: [],                           // 公告
+        bulletin: [{
+          'tit': null,
+          'detail': '暂无公告'
+        }],                           // 公告
         bulletinRealLength: null,               // 公告真实长度
         bulletinIndex: 0                        // 显示的公告索引
       }
@@ -366,8 +370,9 @@
           // if (!val || this.socket_backS) return false
           if (!val) return false
           this.getBulletinF()   // 获取公告
-          this.$store.commit('WEBSOCKET_BACKS_INIT', val)
+          // this.$store.commit('WEBSOCKET_BACKS_INIT', val)
           this.$refs.messageTable.getMessageListF()
+          this.$store.commit('WEBSOCKET_BACKS_INIT', val)
         },
         immediate: true
       },
@@ -417,7 +422,7 @@
       },
       // 跳转到帮助网站
       w() {
-        window.open('http://223.80.107.190:8081', '_blank')
+        window.open('http://help.chinamoviecloud.cn/', '_blank')
       },
       showGuide() {
         this.guideShow = false
@@ -433,17 +438,10 @@
           .then(() => {
             sessionStorage.setItem('token', '')
             this.$router.push('/login')
-            this.$message({
-              type: 'success',
-              message: this.$t('message.sucExit')
-            })
+            messageFun('success', this.$t('message.sucExit'))
+            this.$store.commit('reset')
           })
-          .catch(() => {
-            this.$message({
-              type: 'info',
-              message: this.$t('message.cancelExit')
-            })
-          })
+          .catch(() => messageFun('ino', this.$t('message.cancelExit')))
 
       },
       // 工作台 下拉框

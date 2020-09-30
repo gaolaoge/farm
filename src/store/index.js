@@ -104,7 +104,7 @@ export default new Vuex.Store({
         } else {
           this.commit('addOne', 'socket_plugin_time')
           console.log('--与插件连接失败，尝试重新连接--')
-          this.commit('WEBSOCKET_PLUGIN_INIT')
+          this.commit('WEBSOCKET_PLUGIN_INIT', triggerPlugin)
         }
       })
       state.socket_plugin.addEventListener('message', data => state.socket_plugin_msg = data)
@@ -120,9 +120,41 @@ export default new Vuex.Store({
       state.socket_plugin.close()
       state.socket_plugin = null
     },
+    // 与后台的websocket断开连接
+    WEBSOCKET_BACKS_CLOSE(state) {
+      if (!state.socket_backS) return false
+      state.socket_backS.close()
+      state.socket_backS = null
+    },
+    // vuex 数据复位
+    reset(s){
+      Object.assign(s.user, {
+        name: null,           // 昵称
+        account: null,        // 账号
+        phone: null,
+        avatar: null,  // 头像
+        token: '',
+        balance: '0.000',     // 金币余额
+        totalCapacity: 0,     // 总容量
+        usedCapacity: 0,      // 已用容量
+        haveCapacity: '0.000',// 剩余容量
+        payAmount: '0.000',   // 累计支付金币
+        goldCoins: '0.000',   // 累计到账金币
+        consumption: '0.00',  // 累计消费金币
+        totalInvoiceAmount: 0,// 已开票金额
+        totalInvoiceAble: 0,  // 可开票金额
+        level: null,
+        birthday: null,
+        email: null,
+        sex: null,
+        id: null
+      })
+    },
     // 触发异地登录弹窗
     remoteLoginFun(s, date){
       s.remoteLoginDate = date
+      this.commit('WEBSOCKET_BACKS_CLOSE')
+      this.commit('reset')
     },
     // 总容量
     changeTotalCapacity(s, num){

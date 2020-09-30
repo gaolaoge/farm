@@ -373,7 +373,7 @@
       // 编辑项目 - 保存
       async editSaveBtnFun() {
         let c = this.editProject
-        if (!this.editVerif) return false
+        if (this.editVerif) return false
         let data = await editTask({
           'projectName': c.nameV,
           'projectStatus': c.statusV,
