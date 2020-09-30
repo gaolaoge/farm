@@ -300,31 +300,6 @@
                 {{ stepThreeBase.priority.bottomLabel }}
               </span>
                 </div>
-                <!--自定义-->
-                <div class="item-switch" v-show="setting.num.singleChoiceVal != '1'">
-                  <el-switch
-                    style="vertical-align: inherit"
-                    v-model="setting.priority.selfVal"
-                    @change="val => {if(val == 0) setting.priority.customize = ''}"
-                    inactive-color="RGBA(200, 202, 203, 1)"
-                    active-color="rgba(10, 98, 241, 1)"
-                    active-value='1'
-                    inactive-value='0'/>
-                  <span class="item-switch-label"
-                        :class="[{'active': setting.priority.selfVal}]"
-                        style="vertical-align: inherit">
-                {{ setting.priority.selfLabel }}
-              </span>
-                  <el-input class='customizeInput'
-                            :class="[{customizeInputError: setting.priority.customizeInputError}]"
-                            v-show="setting.priority.selfVal == 1"
-                            v-model="setting.priority.customize"
-                            @blur="verifFormat"
-                            @focus="setting.priority.customizeInputError = false"
-                            :placeholder="setting.priority.inputPlaceholder"/>
-                </div>
-
-
               </div>
               <!--提示-->
               <span class="info">

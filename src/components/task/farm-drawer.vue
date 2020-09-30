@@ -1359,6 +1359,8 @@
           else if (this.taskData.status == '上传暂停') this.details.valProgress = '上传暂停，您可点击下方【传输列表】，启动插件后，查看详情。'
           else if (this.taskData.status == '上传失败') this.details.valProgress = '上传失败，您可点击下方【传输列表】，启动插件后，查看详情。'
           this.loading.close()
+        } else if (this.taskData.status.match('分析')) {
+          if (this.taskData.status == '分析中...') this.details.valProgress = '分析中，请稍后……'
         } else {
           // 分析状态
           this.details.showProgress = false
@@ -1794,7 +1796,7 @@
             aoChannel: this.zone == 1 ? 0 : 0,                       // AO通道。影视版固定值0
             renderPattern: tt.mode.modeList.find(curr => curr.val == tt.mode.mode).id,   // 选中的配置编号 渲染模式
             testRender: this.zone == 1 ? {                                               // 测试帧对象
-              testRendering: tt.priority.topVal == '1' || tt.priority.middleVal == '1' || tt.priority.bottomVal == '1' ? '1' : '0',        // 是否开启测试帧（优先渲染）1是0否
+              testRendering: tt.priority.topVal == '1' || tt.priority.middleVal == '1' || tt.priority.bottomVal == '1' || tt.priority.selfVal == '1' ? '1' : '0',        // 是否开启测试帧（优先渲染）1是0否
               frameFirst: tt.priority.topVal,                        // 首帧 1是 0否
               frameMiddle: tt.priority.middleVal,                    // 中间帧
               frameFinally: tt.priority.bottomVal                    // 末帧
@@ -1820,7 +1822,7 @@
           aoChannel: this.zone == 1 ? 0 : 0,                    // AO通道。影视版固定值0
           renderPattern: tt.mode.modeList.find(curr => curr.val == tt.mode.mode).id,   // 选中的配置编号 渲染模式
           testRender: this.zone == 1 ? {                                            // 测试帧对象
-            testRendering: tt.priority.topVal == '1' || tt.priority.middleVal == '1' || tt.priority.bottomVal == '1' ? '1' : '0',        // 是否开启测试帧（优先渲染）1是0否
+            testRendering: tt.priority.topVal == '1' || tt.priority.middleVal == '1' || tt.priority.bottomVal == '1' || tt.priority.selfVal == '1' ? '1' : '0',        // 是否开启测试帧（优先渲染）1是0否
             frameFirst: tt.priority.topVal,                        // 首帧 1是 0否
             frameMiddle: tt.priority.middleVal,                    // 中间帧
             frameFinally: tt.priority.bottomVal                    // 末帧
