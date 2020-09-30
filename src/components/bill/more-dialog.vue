@@ -250,6 +250,8 @@
 
       .closeBtn {
         position: relative;
+        top: 12px;
+        right: 20px;
         z-index: 9;
         float: right;
         width: 18px;

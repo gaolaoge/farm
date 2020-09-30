@@ -334,6 +334,7 @@
             type: 'frame'
           }
         })
+        // console.log(this.table.outPutData)
         this.table.outPutTableTotal = data.data.total
       },
       // nav change
@@ -414,12 +415,15 @@
         })
           .then(
             async () => {
-              let type = 3
-              if (this.table.nextTbaleType == 'layer') type = 1
-              if (this.table.nextTbaleType == 'frame') type = 2
+              let type = 3   // 帧任务
+              if (this.table.nextTbaleType == 'layer') type = 1   // 主任务
+              if (this.table.nextTbaleType == 'frame') type = 2   // 层任务
               let data = await assetsDeleteItem({
                 type,
-                uuidList: this.table.selectionList.map(item => item.itemUuid)
+                uuidList: this.table.selectionList.map(item => {
+                  if(type == 3) return item.frameTaskUuid
+                    return item.itemUuid
+                })
               })
 
               if (data.data.code == 204) {
@@ -429,10 +433,7 @@
                 if (type == 3) this.getFrameList()
               } else messageFun('error', '报错，操作失败')
             },
-            () => {
-              messageFun('info', '已取消删除');
-              return false
-            }
+            () => messageFun('info', '已取消删除')
           )
       }
     },

@@ -73,6 +73,9 @@
     appMain
   } from './components'
   import {
+    getInfo
+  } from '@/api/api'
+  import {
     createDateFun
   } from '@/assets/common'
   import iv from '@/components/home/Info&Vip'
@@ -133,10 +136,7 @@
       'socket_backS_msg': {
         handler: function (e) {
           let data = JSON.parse(e.data)
-          if (data.code == 858) {
-            this.$store.commit('remoteLoginFun', new Date().getTime())
-          }
-          else return false
+          if (data.code == 858) setTimeout(() => getInfo(), 1000)
         },
       },
     },
