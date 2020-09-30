@@ -66,7 +66,7 @@
           label="下载情况"
           sortable
           show-overflow-tooltip
-          v-if="table.nextTbaleType == 'layer'"
+          v-if="table.nextTbaleType == 'layer' && false"
           width="140"/>
         <!--下载次数 -->
         <el-table-column
@@ -78,6 +78,7 @@
           width="140"/>
         <!--剩余有效期-->
         <el-table-column
+          v-if="false"
           prop="date"
           label="剩余有效期（天）"
           sortable
@@ -118,6 +119,9 @@
     assetsDeleteItem,
     seeBalance
   } from '@/api/api'
+  import {
+    downloadCompleteFrame
+  } from '@/api/task-api'
   import {
     consum,
     createDateFun,
@@ -246,13 +250,16 @@
           return {
             id: curr.taskNo,                                    // 任务ID
             fileName: curr.taskNo + ' _ ' + curr.fileName,      // 文件名
+            taskSceneName: curr.fileName,                       // 场景名
+            taskUuid: curr.taskUuid,                            // Uuid
             project: curr.projectName,                          // 所属项目
             fileSize: '-',                                      // 文件大小
             fileType: '文件夹',                                  // 文件类型
             downLoadTime,                                       // 下载状态
             date: '-',                                          // 剩余有效期（天）
             upDate: createDateFun(new Date(curr.updateTime)),   // 更新时间
-            itemUuid: curr.taskUuid
+            itemUuid: curr.taskUuid,
+            type: 'task'
           }
         })
         this.projectList = [...projectList].map(item => {
@@ -278,16 +285,18 @@
         this.table.nextTbaleType = 'frame'
         this.table.outPutData = data.data.data.map(curr => {
           return {
-            id: curr.layerNo,                    // 任务ID
-            fileName: curr.layerName,            // 文件名
-            project: this.table.objectName,      // 所属项目
-            fileSize: curr.fileSize,             // 文件大小
-            fileType: '文件夹',                   // 文件类型
+            id: curr.layerNo,                   // 任务ID
+            fileName: curr.layerName,           // 文件名
+            project: this.table.objectName,     // 所属项目
+            fileSize: curr.fileSize,            // 文件大小
+            fileType: '文件夹',                  // 文件类型
             downLoadTime: '-',                  // 下载次数
             date: '',                           // 剩余有效期（天）
             upDate: createDateFun(new Date(curr.updateTime)),  // 更新时间
             itemUuid: curr.layerTaskUuid,       // 层任务Uuid
-            mainUuid: curr.taskUuid             // 主任务Uuid
+            mainUuid: curr.taskUuid,            // 主任务Uuid
+            mainTaskSceneName: curr.fileName,   // 主场景文件
+            type: 'layer'
           }
         })
         this.table.outPutTableTotal = data.data.total
@@ -306,6 +315,7 @@
         this.fullscreenLoading = false
         this.table.nextTbaleType = 'null'
         this.table.outPutData = data.data.data.map(curr => {
+          console.log(curr)
           let fileType = curr.fileName.split('.')
           return {
             fileName: curr.fileName,                        // 文件名
@@ -316,9 +326,13 @@
             date: curr.indate == 0 ? '-' : consum(curr.indate - new Date().getTime()), // 剩余有效期（天）
             upDate: createDateFun(new Date(curr.updateTime)),                        // 更新时间
             itemUuid: curr.taskUuid,
+            layerNo: curr.layerNo,
             frameTaskUuid: curr.frameTaskUuid,
             layerTaskUuid: curr.layerTaskUuid,
-            outputPath: curr.outputPath
+            taskFileName: curr.taskFileName,
+            layerFileName: curr.layerName,
+            outputPath: curr.outputPath,
+            type: 'frame'
           }
         })
         this.table.outPutTableTotal = data.data.total
@@ -348,44 +362,49 @@
       // 下载item 申请打包
       async downloadFun() {
         if (!this.table.selectionList.length) return false
-        else if (!this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_INIT', true)
+        // else if (!this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_INIT', true)
         // let r = await seeBalance()
         // if (r.data.code == 1001) {
         //   messageFun('info', `当前账户余额为${r.data.data}，请先进行充值！`);
         //   return false
         // }
-        this.$confirm('将下载选中选, 是否继续?', '提示信息', {
+        else this.$confirm('将下载选中选, 是否继续?', '提示信息', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         })
           .then(
             async () => {
-              let type = 3  // 帧任务
-              if (this.table.nextTbaleType == 'layer') type = 1  // 主任务
-              else if (this.table.nextTbaleType == 'frame') type = 2  // 层任务
-              let fileList = this.table.selectionList.map(item => {
-                let path
-                if(type == 1) path = item['itemUuid'] + '\\'
-                else if(type == 2) path = item['mainUuid'] + '\\' + item['fileName'] + '\\'
-                else path = item['itemUuid'] + '\\' + item['outFilePath'].split(item['itemUuid'])[1] + item['fileName']
-                console.log(item)
-                return {
-                  path
-                }
-              })
-
-              this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
-                'transferType': 2,
-                'userID': this.user.id,
-                isRender: 1,
-                fileList
-              })
-            },
-            () => {
-              messageFun('info', '已取消下载');
+              console.log(this.table.selectionList)
               return false
-            }
+              for (const taskItem of this.table.selectionList) {
+                if (taskItem.type == 'layer') {
+                  let val = `transferType=2&userID=${this.user.id}&isRender=1&parent=&taskUuid=${taskItem['mainUuid']}&layerTaskUuid=${taskItem['itemUuid']}&fileName=${taskItem['mainTaskSceneName']}`,
+                    data = await downloadCompleteFrame(val)
+                  this.$store.commit('WEBSOCKET_PLUGIN_SEND', data.data.data)
+                } else if (taskItem.type == 'task') {
+                  let val = `transferType=2&userID=${this.user.id}&isRender=1&parent=${taskItem['id'] + '-' + taskItem['taskSceneName']}&taskUuid=${taskItem['taskUuid']}&layerTaskUuid=&fileName=${taskItem['taskSceneName']}`,
+                    data = await downloadCompleteFrame(val)
+                  this.$store.commit('WEBSOCKET_PLUGIN_SEND', data.data.data)
+                } else if (taskItem.type == 'frame') {
+                  let fileList = this.result.selectionResult.map(item => {
+                    return {
+                      path: '\\' + item['itemUuid'] + '\\' + item['layerFileName'] + '\\' + item['fileName'],
+                      taskID: item['layerNo'],                                         // 任务ID
+                      fileName: item['taskFileName'] + '-' + item['layerFileName']     // 场景名
+                    }
+                  })
+                  this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
+                    'transferType': 2,
+                    'userID': this.user.id,
+                    isRender: 1,
+                    parent: '',
+                    fileList
+                  })
+                }
+              }
+            },
+            () => messageFun('info', '已取消下载')
           )
       },
       // 删除item

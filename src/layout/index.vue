@@ -29,7 +29,7 @@
       <div class="dl_wrapper">
         <span class="main">
           {{ pluginDialog_.dialogMainText }} <span class="blue"
-                                                   @click="triggerPlugin">{{ pluginDialog_.triggerText }}</span> {{ pluginDialog_.dialogMainText2 }}
+                                                   @click="triggerPlugin">{{ pluginDialog_.triggerText }}</span>
         </span>
         <div class="download_btn" @click="w"><span>{{ pluginDialog_.downloadText }}</span></div>
         <div class="warnInfo">
@@ -88,9 +88,8 @@
           title: '提示信息',
           dialogMainText: '需要安装传输插件才能进行文件传输若已安装过插件，请点此',
           triggerText: '启动传输插件',
-          dialogMainText2: '并刷新此页面',
           downloadText: '下载传输插件',
-          warnInfo: '若已启用，依然无法传输，\n' + '请联系24小时在线客服0531-2635521',
+          warnInfo: '若已启用，依然无法传输，\n' + '请联系24小时在线客服18560651927',
         },
         remoteLoginDialog: {
           show: false,

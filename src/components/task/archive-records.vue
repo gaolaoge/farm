@@ -1,6 +1,6 @@
 <template>
   <div class="archive-records">
-    <div class="tableBox">
+    <div class="tableBox" v-show="!showDetailsDOM">
       <!--标签-->
       <div class="btn">
         {{ dialogTable.text }}（{{ dialogTable.total }}）
@@ -103,7 +103,7 @@
               width="180"/>
             <el-table-column label="操作" width="100">
               <template slot-scope="scope">
-                <span class="s">查看详情</span>
+                <span class="s" @click="seeDetails(scope.row)">查看详情</span>
               </template>
             </el-table-column>
 
@@ -119,6 +119,9 @@
           </div>
         </div>
       </div>
+    </div>
+    <div class="taskDetails" v-show="showDetailsDOM">
+      <resultCardM />
     </div>
   </div>
 </template>
@@ -146,6 +149,7 @@
   import {
     mapState
   } from 'vuex'
+  import resultCardM from '@/components/task/drawer/result-cardM'
 
   export default {
     name: 'archive-records',
@@ -171,13 +175,19 @@
           dialogTableSelection: [],
           searchInputVal: ''
         },
-        attribution: 'drawer'
+        attribution: 'drawer',
+        showDetailsDOM: false,
       }
     },
     computed: {
       ...mapState(['zoneId', 'socket_plugin', 'user'])
     },
     methods: {
+      // 查看详情
+      seeDetails(row){
+        console.log(row)
+        this.showDetailsDOM = true
+      },
       // 获取选中的主任务和单独层任务
       computedResult() {
         let fatId = [],
@@ -463,6 +473,9 @@
     mounted() {
       createTableIconList()
       this.getList()
+    },
+    components: {
+      resultCardM
     }
   }
 </script>
@@ -471,6 +484,7 @@
   .archive-records {
     .tableBox {
       height: 87vh;
+      padding-bottom: 20px;
 
       .btn {
         position: relative;
@@ -515,5 +529,9 @@
     cursor: pointer;
     color: rgba(0, 97, 255, 1);
     text-decoration: underline;
+  }
+
+  .taskDetails {
+    height: 87vh;
   }
 </style>

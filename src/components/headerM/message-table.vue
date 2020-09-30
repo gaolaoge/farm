@@ -147,12 +147,14 @@
       }
     },
     computed: {
-      ...mapState['zoneId']
+      ...mapState['zoneId', 'user']
     },
     methods: {
       tableClick(row, column, event) {
-        let taskID = JSON.parse(row.noticeParam)['taskDetails'],
+        console.log(row)
+        let taskID = JSON.parse(row.noticeParam)['taskDetails'].split('_')[0],
           taskZoneID = row.noticeData.split('&').find(item => item.split('=')[0] == 'zoneUuid').split('=')[1],
+          pageIndex = row.noticeData.split('&').find(item => item.split('=')[0] == 'pageIndex').split('=')[1],
           type = row.noticeUrl
         // analyse  =>  分析页面
         // render   =>  渲染页面
@@ -162,11 +164,13 @@
         else if (type == 'recharge') this.$router.push('/upTop')
         else {
           sessionStorage.setItem('taskListActive', type == 'analyse' ? 0 : 1)
-          this.$route.path == '/task' ? null : this.$router.push('/task')
+          if(this.$route.path != '/task') this.$router.push('/task')
           if(this.zoneId != taskZoneID) this.$store.commit('changeZoneId', taskZoneID)
+
           this.$store.commit('newRedirectToTask', {
             type,
-            taskID
+            taskID,
+            pageIndex
           })
         }
         readMessages({
@@ -262,7 +266,7 @@
     },
     mounted() {
       this.getMessageListF()  // 获取站内信列表
-    }
+    },
   }
 </script>
 

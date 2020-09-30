@@ -56,6 +56,7 @@
           width="140"/>
         <!--剩余有效期-->
         <el-table-column
+          v-if="false"
           prop="validPeriod"
           label="剩余有效期（天）"
           sortable

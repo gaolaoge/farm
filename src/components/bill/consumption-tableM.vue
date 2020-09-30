@@ -343,7 +343,7 @@
           }
           let {year, month, day, hour, minutes, seconds} = createCalendar(new Date(curr.updateTime))
           return {
-            id: curr.layerTaskUuid,               //任务ID
+            id: curr.layerNo,                    //任务ID
             scenesName: curr.fileName,           //场景名
             status: tableStatus,                  //状态
             statusDefault: curr.layerTaskStatus,

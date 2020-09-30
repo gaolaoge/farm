@@ -300,6 +300,31 @@
                 {{ stepThreeBase.priority.bottomLabel }}
               </span>
                 </div>
+                <!--自定义-->
+                <div class="item-switch" v-show="setting.num.singleChoiceVal != '1'">
+                  <el-switch
+                    style="vertical-align: inherit"
+                    v-model="setting.priority.selfVal"
+                    @change="val => {if(val == 0) setting.priority.customize = ''}"
+                    inactive-color="RGBA(200, 202, 203, 1)"
+                    active-color="rgba(10, 98, 241, 1)"
+                    active-value='1'
+                    inactive-value='0'/>
+                  <span class="item-switch-label"
+                        :class="[{'active': setting.priority.selfVal}]"
+                        style="vertical-align: inherit">
+                {{ setting.priority.selfLabel }}
+              </span>
+                  <el-input class='customizeInput'
+                            :class="[{customizeInputError: setting.priority.customizeInputError}]"
+                            v-show="setting.priority.selfVal == 1"
+                            v-model="setting.priority.customize"
+                            @blur="verifFormat"
+                            @focus="setting.priority.customizeInputError = false"
+                            :placeholder="setting.priority.inputPlaceholder"/>
+                </div>
+
+
               </div>
               <!--提示-->
               <span class="info">
@@ -974,10 +999,10 @@
     },
     methods: {
       // 1.选择渲染文件 - 我的资产 - 工程文件 - 树状图 - 操作
-      treeOperateFun(val){
+      treeOperateFun(val) {
         let n = this.stepOneBase.netdisc
-        if(val == 'cancel') n.pathVTemporary = null
-        else if(val == 'confirm') n.pathV = n.pathVTemporary
+        if (val == 'cancel') n.pathVTemporary = null
+        else if (val == 'confirm') n.pathV = n.pathVTemporary
         this.stepOneBase.showMe = false
       },
       // 1.选择渲染文件 - 我的资产 - 工程文件 - 树状图 - 进入文件夹
@@ -1067,7 +1092,7 @@
       // 1.选择渲染文件 - 切换选择场景文件方式
       changeFileSelection(index) {
         this.stepOneBase.index = index
-        if(index == 1 && !this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_INIT', true)
+        if (index == 1 && !this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_INIT', true)
       },
       // 1.选择渲染文件 - 我的电脑 = 工程路径 问号提示
       renderHeader(h, {column}) {
@@ -1370,7 +1395,7 @@
       },
       // 1.选择渲染文件 - 我的资产 - 展开网盘目录
       expandDiskDirectory() {
-        if(this.stepOneBase.showMe) this.stepOneBase.showMe = false
+        if (this.stepOneBase.showMe) this.stepOneBase.showMe = false
         else {
           this.stepOneBase.showMe = true
           this.$store.commit('WEBSOCKET_BACKS_SEND', {
@@ -1403,20 +1428,11 @@
       // 1.选择渲染文件 - 我的电脑 -【删除】新场景文件
       operateBtnDelete() {
         let r = this.stepOneBase.local.selectionR
-        if (!r.length) messageFun('error', '没有选中项')
-        else this.$confirm('此操作将永久删除该记录, 是否继续?', '提示信息', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
+        if (!r.length) return false
+        else r.forEach(curr => {
+          let index = this.stepOneBase.local.filelist.findIndex((c, index) => c.id == curr.id)
+          this.stepOneBase.local.filelist.splice(index, 1)
         })
-          .then(() => {
-            r.forEach(curr => {
-              let index = this.stepOneBase.local.filelist.findIndex((c, index) => c.id == curr.id)
-              this.stepOneBase.local.filelist.splice(index, 1)
-            })
-            messageFun('success', '删除成功')
-          })
-          .catch(() => messageFun('info', '已取消删除'))
       },
       // 4.提交
       async confirmFun() {
@@ -1477,12 +1493,14 @@
                 }
               })
             })
-            pushTaskID({'pathList': fir.local.filelist.map((curr, index) => {
-              return {
-                'fileName': curr.absolutePath,            // 场景文件
-                'taskUuid': data.data.data[index]
-              }
-            })})
+            pushTaskID({
+              'pathList': fir.local.filelist.map((curr, index) => {
+                return {
+                  'fileName': curr.absolutePath,            // 场景文件
+                  'taskUuid': data.data.data[index]
+                }
+              })
+            })
           }
         }
         this.confirmLock = true
@@ -1981,6 +1999,7 @@
                       color: rgba(22, 29, 37, 0.5);
                       margin-right: 30px;
                       cursor: pointer;
+
                       &:hover {
                         color: rgba(22, 29, 37, 1);
                       }

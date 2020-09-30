@@ -50,6 +50,7 @@
            v-show="table.navListActiveIndex == 1">
         <div class="farm-primary-form-btn"
              :class="item.class"
+             v-show="!(zone == 2 && item['text'] == '全部渲染')"
              @click="renderOperating(item['text'])"
              v-for="(item,index) in btnGroup.renderBtnGroup"
              :key="index">
@@ -147,7 +148,9 @@
     </div>
     <!--弹窗 归档记录-->
     <el-dialog :visible.sync="dialogTable.status"
+               v-if="dialogTable.status"
                :show-close="false"
+               :before-close="shutDialogTable"
                top="5vh"
                width="80%">
       <!--关闭窗口-->
@@ -326,7 +329,7 @@
         }
         if (val.includes(this.$t('task.status.upload_timeOut'))) t.uploadTableBtnAgain = false
         if (val.includes(this.$t('task.status.upload_err'))) t.uploadTableBtnAgain = false
-        if (val.includes(this.$t('task.status.canceled'))) t.uploadTableBtnAgain = false
+        // if (val.includes(this.$t('task.status.canceled'))) t.uploadTableBtnAgain = false
         if (val.includes(this.$t('task.status.giveUp'))) t.uploadTableBtnAgain = false
         // if(val.includes('分析警告')) ''
         // if(val.includes('待设置参数')) ''
@@ -449,6 +452,11 @@
       searchRenderInput() {
         this.$refs.renderMode.searchFun(this.btnGroup.searchInputDownload)
       },
+      //
+      shutDialogTable(){
+        this.dialogTable.status = false
+        this.$refs.archiveTable.showDetailsDOM = false
+      },
     },
     watch: {
       'table.navListActiveIndex': {
@@ -553,7 +561,7 @@
       createTableIconList()  // 图标
     },
     computed: {
-      ...mapState(['socket_backS_msg', 'redirectToTask'])
+      ...mapState(['socket_backS_msg', 'redirectToTask', 'zone'])
     }
   }
 </script>
@@ -749,6 +757,10 @@
         width: 12px;
       }
     }
+  }
+
+  /deep/.el-dialog__body {
+    padding: 0px;
   }
 
   /*@media screen and (orientation: portrait) {*/

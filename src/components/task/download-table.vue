@@ -535,7 +535,6 @@
       },
       // 【非业务逻辑】全选
       selectAll(selection) {
-        console.log(selection)
         // 取消全选
         if (!('children' in selection[0])) {
           this.table.renderSelectionList = []
@@ -609,7 +608,14 @@
             pageSize: this.table.pageSize,
             renderStatus: this.table.renderStatus,
             projectUuid: this.table.projectUuidList
-          }) : await uploadTabGetList(f),
+          }) : await uploadTabGetList({
+            "zoneUuid": this.zoneId,
+            "pageIndex": 1,
+            "pageSize": 10,
+            "projectUuid": this.table.projectUuidList,
+            "status": this.table.renderStatus,
+            "keyword": this.searchInput,
+          }),
           usersList = new Set()
         this.table.renderTableTotal = data.data.total              // 【渲染下载】翻页长度
         this.$emit('renderTableTotalItem', data.data.total)  // 【渲染下载】标签后显示长度
