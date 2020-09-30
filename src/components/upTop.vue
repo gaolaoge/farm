@@ -176,6 +176,32 @@
     <el-dialog :visible.sync="rechargeIframe">
       <div ref="dom"></div>
     </el-dialog>
+    <!--充值窗口-->
+    <el-dialog title="" width="600px" :visible.sync="dialogNode">
+      <header class="dl_header">
+        <span>{{ dialogNodeText.title }}</span>
+        <img src="@/icons/shutDialogIcon.png" class="closeIcon" @click="dialogNode = false">
+      </header>
+      <div class="dl_wrapper">
+        <p class="f">亲爱的 {{ user.account }} ，您好！</p>
+        <p class="f s">因服务更新原因，烦请您联系客服进行线下充值～</p>
+        <div class="e">
+          <p>24小时客服电话：18560651927</p>
+          <p>QQ客服：3181225749</p>
+          <p>售后邮箱：ENJINECG@163.com</p>
+        </div>
+        <div class="k">
+          <div class="c">
+            <img src="@/assets/w.png">
+            <p>CloudRender客服</p>
+          </div>
+          <div class="c">
+            <img src="@/assets/e.png">
+            <p>已臻化境企业号</p>
+          </div>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -338,14 +364,18 @@
         },
         rechargeIframe: false,
         cpuCard: 'CPU',
-        gpuCrad: 'GPU'
+        gpuCrad: 'GPU',
+        dialogNode: false,
+        dialogNodeText: {
+          title: '充值提示',
+        }
       }
     },
     watch: {
       'form.ChineseYuan': function (val) {
         let reg = /^\d+$/,
           num = this.form.ChineseYuan
-        if(!num) this.form.ChineseYuanVerif = null
+        if (!num) this.form.ChineseYuanVerif = null
         else this.form.ChineseYuanVerif = reg.test(num)
         if (val == 100) this.form.realVal = '160.000'
         else if (val == 500) this.form.realVal = '900.000'
@@ -365,7 +395,9 @@
       },
       // 立即充值
       payFun() {
-        if(!this.form.ChineseYuanVerif) return false
+        if (!this.form.ChineseYuanVerif) return false
+        this.dialogNode = true
+        return false
         if (this.payMethods == 'zfb') this.aLiPayFun()
         if (this.payMethods == 'wx') this.wxPayFun()
       },
@@ -486,6 +518,7 @@
       .in {
         width: 460px;
         margin-top: 30px;
+
         &.error {
           color: rgba(255, 62, 77, 1);
         }
@@ -652,9 +685,97 @@
       border: 1px solid rgba(22, 29, 37, 1);
       color: rgba(22, 29, 37, 1);
       cursor: no-drop;
+
       &:hover {
         background-color: rgba(255, 255, 255, 1);
       }
     }
+  }
+
+  .dl_header {
+    height: 36px;
+    text-align: center;
+    background-color: rgba(241, 244, 249, 1);
+    box-shadow: 0px 1px 6px 0px rgba(27, 83, 244, 0.3);
+    padding: 0px 30px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    span {
+      font-size: 14px;
+      font-weight: 600;
+      color: rgba(22, 29, 37, 1);
+    }
+
+    img {
+      cursor: pointer;
+    }
+  }
+
+  .dl_wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    .f {
+      font-size: 14px;
+      font-family: PingFangSC-Medium, PingFang SC;
+      font-weight: 500;
+      color: rgba(22, 29, 37, 1);
+      margin-left: 59px;
+      margin-top: 32px;
+
+      .s {
+        font-weight: 400;
+      }
+    }
+
+    .e {
+      margin-left: 59px;
+      margin-top: 42px;
+
+      p {
+        font-size: 14px;
+        font-family: PingFangSC-Medium, PingFang SC;
+        font-weight: 500;
+        color: rgba(27, 83, 244, 1);
+        line-height: 27px;
+      }
+    }
+
+    .k {
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      margin-top: 34px;
+      margin-bottom: 20px;
+
+      .c {
+        background-color: rgba(27, 83, 244, 0.1);
+        padding: 15px;
+        border-radius: 8px;
+        text-align: center;
+
+        p {
+          font-size: 14px;
+          font-family: PingFangSC-Regular, PingFang SC;
+          font-weight: 400;
+          color: rgba(22, 29, 37, 1);
+          margin-top: 12px;
+        }
+      }
+    }
+  }
+
+  /deep/ .el-dialog__body {
+    padding: 0px 0px 20px 0px;
+    background-color: rgba(255, 255, 255, 1);
+  }
+
+  /deep/ .el-dialog {
+    border-radius: 8px;
+    overflow: hidden;
   }
 </style>

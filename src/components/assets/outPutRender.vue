@@ -362,7 +362,7 @@
       // 下载item 申请打包
       async downloadFun() {
         if (!this.table.selectionList.length) return false
-        // else if (!this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_INIT', true)
+        if (!this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_INIT', true)
         // let r = await seeBalance()
         // if (r.data.code == 1001) {
         //   messageFun('info', `当前账户余额为${r.data.data}，请先进行充值！`);
@@ -375,8 +375,6 @@
         })
           .then(
             async () => {
-              console.log(this.table.selectionList)
-              return false
               for (const taskItem of this.table.selectionList) {
                 if (taskItem.type == 'layer') {
                   let val = `transferType=2&userID=${this.user.id}&isRender=1&parent=&taskUuid=${taskItem['mainUuid']}&layerTaskUuid=${taskItem['itemUuid']}&fileName=${taskItem['mainTaskSceneName']}`,

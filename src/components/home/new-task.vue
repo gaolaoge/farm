@@ -1536,8 +1536,9 @@
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           inputPlaceholder: '请输入项目名称',
-          inputPattern: /^\w+$/,
-          inputErrorMessage: '项目名格式不正确'
+          inputPattern: /[^ ]+/,
+          inputErrorMessage: '项目名格式不正确',
+          closeOnClickModal: false
         })
           .then(
             value => {
@@ -1547,10 +1548,7 @@
                 isDefault: 1
               })
             },
-            () => {
-              messageFun('info', '取消输入')
-              return Promise.reject()
-            }
+            () => Promise.reject()
           )
           .then(
             data => {

@@ -102,13 +102,13 @@
           }
         ],
         systemList: [
-          {
-            link: '/statisticsM',
-            iconUrl: require('@/icons/console-icon-statistics-h.png'),
-            iconsUrlDefault: require('@/icons/console-icon-statistics.png'),
-            text: this.$t('navbar')[4],
-            align: 'bottom'
-          },
+          // {
+          //   link: '/statisticsM',
+          //   iconUrl: require('@/icons/console-icon-statistics-h.png'),
+          //   iconsUrlDefault: require('@/icons/console-icon-statistics.png'),
+          //   text: this.$t('navbar')[4],
+          //   align: 'bottom'
+          // },
           {
             link: '/setting',
             iconUrl: require('@/icons/console-icon-set-h.png'),

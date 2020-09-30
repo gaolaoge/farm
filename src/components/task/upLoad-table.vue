@@ -48,7 +48,7 @@
           <span v-if="scope.row.status == '分析警告' || scope.row.status == '上传暂停'" style="color: rgba(255, 191, 0, 1)">
             {{ scope.row.status }}
           </span>
-          <span v-if="scope.row.status == '上传失败' || scope.row.status == '已放弃'" style="color: #555">
+          <span v-if="scope.row.status == '已放弃'" style="color: #555">
             {{ scope.row.status }}
           </span>
           <span v-if="scope.row.status == '上传中...' || scope.row.status == '上传成功' || scope.row.status == '分析中...'">

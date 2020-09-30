@@ -809,6 +809,7 @@
                 <!--width="120" />-->
                 <!--下载次数-->
                 <el-table-column
+                  v-if="false"
                   prop="times"
                   label="下载次数"
                   sortable
@@ -1182,10 +1183,10 @@
               imgUrl: require('@/icons/back_icon.png'),
               text: '返回'
             },
-            {
-              imgUrl: require('@/icons/download_icon.png'),
-              text: '下载日志'
-            }
+            // {
+            //   imgUrl: require('@/icons/download_icon.png'),
+            //   text: '下载日志'
+            // }
           ],
           // 主 table 数据
           tableData: [
@@ -1318,7 +1319,7 @@
             id: item.patternUuid
           }
         })
-        this.setting.mode.mode = this.setting.mode.modeList[0]['val']
+        if(this.setting.mode.modeList.length) this.setting.mode.mode = this.setting.mode.modeList[0]['val']
       },
       // 上传分析 - 重新分析BTN
       async renderAgainBtnFun() {
@@ -1361,6 +1362,7 @@
           this.loading.close()
         } else if (this.taskData.status.match('分析')) {
           if (this.taskData.status == '分析中...') this.details.valProgress = '分析中，请稍后……'
+          this.loading.close()
         } else {
           // 分析状态
           this.details.showProgress = false
@@ -1703,8 +1705,9 @@
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           inputPlaceholder: '请输入项目名称',
-          inputPattern: /^(?=.*\S).+$/,
-          inputErrorMessage: '项目名格式不正确'
+          inputPattern: /[^ ]+/,
+          inputErrorMessage: '项目名格式不正确',
+          closeOnClickModal: false
         })
           .then(
             value => {

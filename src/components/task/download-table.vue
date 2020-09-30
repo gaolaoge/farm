@@ -160,6 +160,7 @@
           width="164"/>
         <!--下载情况-->
         <el-table-column
+          v-if="false"
           label="下载情况"
           show-overflow-tooltip
           :filter-method="filterStatus"

@@ -356,6 +356,7 @@
             checked: 0
           })
           this.getList('', 1, this.page.size)
+          this.createCancelBtnFun()
         } else if (data.data.code == 101) {
           messageFun('info', '项目名已存在')
           this.newNameErr = true
