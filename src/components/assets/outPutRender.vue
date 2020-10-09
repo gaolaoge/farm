@@ -359,7 +359,7 @@
             break
         }
       },
-      // 下载item 申请打包
+      // 下载item
       async downloadFun() {
         if (!this.table.selectionList.length) return false
         if (!this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_INIT', true)

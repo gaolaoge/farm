@@ -18,8 +18,8 @@
               <span class="account"
                     :class="[{'active': login.nav.activeIndex == 2}]"
                     @click="login.nav.activeIndex = 2">
-            {{ $t('login_page.nav_accountText') }}
-          </span>
+              {{ $t('login_page.nav_accountText') }}
+            </span>
             </div>
             <!--短信验证登录模板-->
             <div class="phoneForm" v-show="login.nav.activeIndex == 1">
@@ -89,6 +89,7 @@
                        :placeholder="$t('login_page.account_verif.ac_placeholder')"
                        ref="accountForm_account"
                        @blur="accouVerif('login')"
+                       @input="accouVerif('login', true)"
                        @focus="login.formStatus.account = null"
                        class="farm-input"
                        :class="[{'inputError': login.formStatus.account === false}]"/>
@@ -107,6 +108,7 @@
                        @keyup.enter="accountloginFun"
                        @focus="login.formStatus.password = null"
                        @blur="passwVerif('login')"
+                       @input="passwVerif('login', true)"
                        autocomplete="new-password"
                        type="password"
                        class="farm-input"/>
@@ -215,12 +217,12 @@
                        :placeholder="$t('login_page.forgetMode.ps_new')"
                        class="farm-input"/>
                 <!--查看密码-->
-<!--                <div class="swicthPWI">-->
-<!--                  <img src="@/icons/openPW.png" alt="" v-show="login.forgetMode.passwordEye"-->
-<!--                       @click="login.forgetMode.passwordEye = false">-->
-<!--                  <img src="@/icons/shuPW.png" alt="" v-show="!login.forgetMode.passwordEye"-->
-<!--                       @click="login.forgetMode.passwordEye = true">-->
-<!--                </div>-->
+                <!--                <div class="swicthPWI">-->
+                <!--                  <img src="@/icons/openPW.png" alt="" v-show="login.forgetMode.passwordEye"-->
+                <!--                       @click="login.forgetMode.passwordEye = false">-->
+                <!--                  <img src="@/icons/shuPW.png" alt="" v-show="!login.forgetMode.passwordEye"-->
+                <!--                       @click="login.forgetMode.passwordEye = true">-->
+                <!--                </div>-->
                 <span class="warnInfo" v-show="login.formStatus.newPassWord === false">
                   {{ login.forgetMode.warnInfo.newPassWord }}
                 </span>
@@ -240,12 +242,12 @@
                        :placeholder="$t('login_page.forgetMode.ps_again')"
                        class="farm-input"/>
                 <!--查看密码-->
-<!--                <div class="swicthPWI">-->
-<!--                  <img src="@/icons/openPW.png" alt="" v-show="login.forgetMode.passwordEyeAgain"-->
-<!--                       @click="login.forgetMode.passwordEyeAgain = false">-->
-<!--                  <img src="@/icons/shuPW.png" alt="" v-show="!login.forgetMode.passwordEyeAgain"-->
-<!--                       @click="login.forgetMode.passwordEyeAgain = true">-->
-<!--                </div>-->
+                <!--                <div class="swicthPWI">-->
+                <!--                  <img src="@/icons/openPW.png" alt="" v-show="login.forgetMode.passwordEyeAgain"-->
+                <!--                       @click="login.forgetMode.passwordEyeAgain = false">-->
+                <!--                  <img src="@/icons/shuPW.png" alt="" v-show="!login.forgetMode.passwordEyeAgain"-->
+                <!--                       @click="login.forgetMode.passwordEyeAgain = true">-->
+                <!--                </div>-->
                 <span class="warnInfo" v-show="login.formStatus.newPassWordAgain === false">
                   {{ login.forgetMode.warnInfo.newPassWordAgain }}
                 </span>
@@ -284,6 +286,7 @@
               <input v-model="registered.form.account"
                      :placeholder="$t('login_page.register.ac_placeholder')"
                      @blur="accouVerif('register')"
+                     @input="accouVerif('register', true)"
                      @focus="inputGetFocus('account')"
                      ref="accountRegister"
                      class="farm-input"
@@ -300,6 +303,7 @@
               <input v-model="registered.form.password" type="password"
                      :placeholder="$t('login_page.register.ps_placeholder')"
                      @blur="passwVerif('register')"
+                     @input="passwVerif('register', true)"
                      @focus="inputGetFocus('password')"
                      ref="passwordRegister"
                      class="farm-input"
@@ -457,8 +461,8 @@
           accountForm: {
             // account: 'gaoge1834',
             // password: 'gaoge1834',
-           account: '',
-           password: '',
+            account: '',
+            password: '',
             isAutoLogin: false,
             passwordEye: false
           },
@@ -546,10 +550,10 @@
       }
     },
     mounted() {
-      if(localStorage.getItem('lastLoginPhone')) this.login.phoneForm.phone = localStorage.getItem('lastLoginPhone')
-      if(localStorage.getItem('lastLoginAccount')) this.login.accountForm.account = localStorage.getItem('lastLoginAccount')
+      if (localStorage.getItem('lastLoginPhone')) this.login.phoneForm.phone = localStorage.getItem('lastLoginPhone')
+      if (localStorage.getItem('lastLoginAccount')) this.login.accountForm.account = localStorage.getItem('lastLoginAccount')
 
-        this.$store.commit('changeLogin', true)
+      this.$store.commit('changeLogin', true)
 
       this.screenWidth = document.body.clientWidth
       this.screenHeight = document.body.clientHeight
@@ -677,7 +681,7 @@
         ctx.fill()
       },
       // 注册 - 帐号格式验证
-      async accouVerif(obj) {
+      async accouVerif(obj, type) {
         let rfa, rs, w
         if (obj == 'register') {
           rfa = this.registered.form.account
@@ -691,13 +695,13 @@
         rs.accountInit = false
         // 为空
         if (!rfa) {
-          rs.account = null;
+          rs.account = null
           return false
         }
         // 验证帐号长度
         if (!/^[\w\W]{8,14}$/.test(rfa)) {
           w.account = this.$t('login_page.message.ac_verif_one')
-          rs.account = false
+          type ? rs.account = null : rs.account = false
           return false
         }
         // 验证帐号格式
@@ -705,7 +709,7 @@
           reg2 = /^[\u4E00-\u9FA5\w]+$/
         if (!reg.test(rfa) || !reg2.test(rfa)) {
           w.account = this.$t('login_page.message.ac_verif_two')
-          rs.account = false
+          type ? rs.account = null : rs.account = false
           return false
         }
         // 验证帐号是否可用
@@ -714,43 +718,43 @@
           // 账号未被注册
           if (obj == 'register') rs.account = true
           else {
-            rs.account = false
-            w.account = this.$t('login_page.message.ac_verif_four')
+            if (type) rs.account = null
+            else {
+              rs.account = false
+              w.account = this.$t('login_page.message.ac_verif_four')
+            }
           }
         } else {
           // 账号已被注册
           if (obj == 'login') rs.account = true
           else {
-            rs.account = false
-            w.account = this.$t('login_page.message.ac_verif_three')
+            if (type) rs.account = null
+            else {
+              rs.account = false
+              w.account = this.$t('login_page.message.ac_verif_three')
+            }
           }
         }
       },
-      passwVerif(type) {
+      passwVerif(type, status) {
         // type == 'login' 登录 : 'register' 注册
+        // status == true 为input事件
         let t = type == 'register' ? this.registered.form.password : this.login.accountForm.password,
           s = type == 'register' ? this.registered.status : this.login.formStatus,
           i = type == 'register' ? this.registered.warnInfo : this.login.warnInfo
         s.passwordInit = false
-        // 若密码值为空，不显示校验结果icon提示
         if (!t) {
+          // 若密码值为空，不显示校验结果icon提示
           s.password = null
-          return false
-        }
-        // 验证密码长度
-        if (!this.reg.passwordReg2.test(t)) {
+        } else if (!this.reg.passwordReg2.test(t)) {
+          // 验证密码长度
           i.password = this.$t('login_page.message.ps_verif_two')
-          s.password = false
-          return false
-        }
-        // 验证密码复杂度
-        if (!this.reg.passwordReg1.test(t)) {
+          status ? s.password = null : s.password = false
+        } else if (!this.reg.passwordReg1.test(t)) {
+          // 验证密码复杂度
           i.password = this.$t('login_page.message.ps_verif_one')
-          s.password = false
-          return false
-        }
-        // 密码正确
-        s.password = true
+          status ? s.password = null : s.password = false
+        } else s.password = true    // 密码正确
       },
       // 注册-切换密码显示状态
       changePSType(boolean) {
@@ -770,7 +774,7 @@
         }
         if (!this.reg.phoneReg.test(r.form.phone)) {
           this.registered.warnInfo.phone = this.$t('login_page.message.phoneTypeErr_one')
-          if(ing) r.status.phone = null
+          if (ing) r.status.phone = null
           else r.status.phone = false
           return false
         }
@@ -855,7 +859,7 @@
       // 短信验证登录 - 验证手机格式
       jk() {
         let f = this.login.phoneForm
-        if (!f.phone)f.phoneVerif = null
+        if (!f.phone) f.phoneVerif = null
         else if (!this.reg.phoneReg.test(f.phone)) {
           this.login.warnInfo.phone = this.$t('login_page.SMS_verif.phone_warnInfo')
           f.phoneVerif = false
@@ -868,8 +872,8 @@
           let data = await registerPhone(f.phone)
           //code:200   手机号已存在
           //code:4031  手机号未注册
-          if(data.data.code == 200) f.phoneVerif = true
-          else if(data.data.code == 4031) {
+          if (data.data.code == 200) f.phoneVerif = true
+          else if (data.data.code == 4031) {
             this.login.warnInfo.phone = this.$t('login_page.message.need_to_register')
             f.phoneVerif = false
           }
@@ -975,7 +979,7 @@
         if (!f.phone) return false
         if (!this.reg.phoneReg.test(f.phone)) {
           f.warnInfo.phone = this.$t('login_page.message.phoneTypeErr_one')
-          if(ing) f.phoneFormat = null
+          if (ing) f.phoneFormat = null
           else f.phoneFormat = false
         } else f.phoneFormat = true
       },
@@ -987,7 +991,7 @@
         // 验证码格式不正确
         else if (!this.reg.codeReg.test(f.code)) {
           f.warnInfo.code = this.$t('login_page.message.codeTypeErr_two')
-          if(ing) f.codeFormat = null
+          if (ing) f.codeFormat = null
           else f.codeFormat = false
         } else f.codeFormat = true
       },
@@ -1104,8 +1108,8 @@
       // 5天自动登录 保留账号登录记录
       autoLogin(boolean, phone, account, token) {
         // 勾选
-        if(phone) localStorage.setItem('lastLoginPhone', phone)
-        if(account) localStorage.setItem('lastLoginAccount', account)
+        if (phone) localStorage.setItem('lastLoginPhone', phone)
+        if (account) localStorage.setItem('lastLoginAccount', account)
         if (boolean) {
           document.cookie = `token=${token};max-age=432000`
           if (phone) document.cookie = `phone=${phone};max-age=432000`
@@ -1145,8 +1149,8 @@
         }
       },
       '$route.params': {
-        handler: function(val){
-          if(val.modify) this.login.mode = 'findBack'
+        handler: function (val) {
+          if (val.modify) this.login.mode = 'findBack'
         },
         immediate: true,
         deep: true
@@ -1546,6 +1550,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+
     &.register {
       height: 34px;
     }

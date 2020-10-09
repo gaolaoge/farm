@@ -24,12 +24,12 @@
                width="360px">
       <header class="dl_header">
         <span>{{ pluginDialog_.title }}</span>
-        <img src="@/icons/shutDialogIcon.png" class="closeIcon" @click="">
+        <img src="@/icons/shutDialogIcon.png" class="closeIcon" @click="$store.commit('openPluginDialog', false)">
       </header>
       <div class="dl_wrapper">
         <span class="main">
-          {{ pluginDialog_.dialogMainText }} <span class="blue"
-                                                   @click="triggerPlugin">{{ pluginDialog_.triggerText }}</span>
+          {{ pluginDialog_.dialogMainText }}
+          <span class="blue" @click="triggerPlugin">{{ pluginDialog_.triggerText }}</span>
         </span>
         <div class="download_btn" @click="w"><span>{{ pluginDialog_.downloadText }}</span></div>
         <div class="warnInfo">
@@ -80,6 +80,7 @@
   } from '@/assets/common'
   import iv from '@/components/home/Info&Vip'
   import {mapState} from 'vuex'
+  import {messageFun} from "../assets/common";
 
   export default {
     name: 'layout-wrapper',
@@ -151,6 +152,7 @@
       },
       // 触发插件
       triggerPlugin() {
+
         let son = document.createElement('IFRAME')
         document.body.appendChild(son)
         son.src = 'jhzy://'

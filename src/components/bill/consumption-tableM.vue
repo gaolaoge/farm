@@ -313,7 +313,6 @@
         let f = this.filter,
           t = `pageSize=${this.table.pageSize}&pageIndex=${this.table.currentPage}&layerNo=${f.taskIdVal}&fileName=${f.scenesVal}&projectUuid=${f.projectVal}&beginTime=${f.date ? f.date[0].getTime() : 0}&endTime=${f.date ? f.date[1].getTime() : new Date().getTime()}`
         let data = await getConsumptionTable(t)
-        console.log(data.data.data)
         this.table.rechargeData = data.data.data.map(curr => {
           let tableStatus = ''
           switch (curr.layerTaskStatus) {

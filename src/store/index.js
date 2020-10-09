@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import {messageFun} from "../assets/common"
 
 Vue.use(Vuex)
 
@@ -91,15 +92,18 @@ export default new Vuex.Store({
     },
     // 创建与插件的websocket
     WEBSOCKET_PLUGIN_INIT(state, triggerPlugin) {
+      if(triggerPlugin && state.socket_plugin_time == 0) messageFun('info', '正在启动传输插件，请稍后…')
       state.socket_plugin = new WebSocket(process.env.PLUGIN_WS_API)
       state.socket_plugin.addEventListener('open', () => {
         console.log('--与插件连接成功--')
         this.commit('toZore', 'socket_plugin_time')
+        return true
       })
       state.socket_plugin.addEventListener('error', () => {
         if (state.socket_plugin_time >= 3) {
           console.log('--与插件连接失败--')
           this.commit('becomeErr', 'socket_plugin')
+          this.commit('toZore', 'socket_plugin_time')
           if(triggerPlugin) this.commit('openPluginDialog', true)
         } else {
           this.commit('addOne', 'socket_plugin_time')

@@ -13,7 +13,7 @@
              :class=item.class
              v-for="(item,index) in btnGroup.uploadBtnGroup"
              @click="uploadOperating(item['text'])"
-             :key="index">
+             :key="'uploadBtn-' + index">
           <img :src="item.initialIcon" alt="" v-if="item.initialIcon" class="btnIcon default">
           <img :src="item.selectedIcon" alt="" v-if="item.selectedIcon" class="btnIcon hover">
           <span>
@@ -53,7 +53,7 @@
              v-show="!(zone == 2 && item['text'] == '全部渲染')"
              @click="renderOperating(item['text'])"
              v-for="(item,index) in btnGroup.renderBtnGroup"
-             :key="index">
+             :key="'renderBtn-' + index">
           <img :src="item.initialIcon" v-if="item.initialIcon" class="btnIcon default">
           <img :src="item.selectedIcon" v-if="item.selectedIcon" class="btnIcon hover">
           <span>
@@ -88,7 +88,7 @@
               :class="[{'active': index == table.navListActiveIndex}]"
               @click="table.navListActiveIndex = index"
               v-for="(item,index) in table.navList"
-              :key="index">
+              :key="'table-' + index">
           {{ item.text }} ( {{ item.num }} )
         </span>
         <div class="tableFilterList"
@@ -382,12 +382,12 @@
       },
       // 【归档记录】触发重新获取数据
       x() {
-        this.$refs.renderMode.getList()
+        this.$refs.renderMode.getList(null)
       },
       // 获取归档记录长度
       getArchiveNum(val) {
         this.btnGroup.archiveRecordsNum = val
-        this.$refs.archiveTable.getList()
+        this.$refs.archiveTable.getList(null)
       },
       uploadTableTotalItem(val) {
         this.table.navList[0]['num'] = val
@@ -469,8 +469,8 @@
       'socket_backS_msg': {
         handler: function (e) {
           let data = JSON.parse(e.data)
-          if (data.code == 852) this.$refs.renderMode.getList()           // 渲染列表
-          else if (data.code == 854) this.$refs.uploadMode.getList()      // 分析列表
+          if (data.code == 852) this.$refs.renderMode.getList(null)           // 渲染列表
+          else if (data.code == 854) this.$refs.uploadMode.getList(null)      // 分析列表
           else return false
         },
       },

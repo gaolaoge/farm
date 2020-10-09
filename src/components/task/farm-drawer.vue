@@ -62,8 +62,10 @@
           <!--{{ details.valLog }}-->
           <!--</span>-->
           <!--</div>-->
-
-          <div class="errorList" :style="{'opacity': details.errorList[0] ? 1 : 0}">
+          <!--错误-->
+          <div class="errorList"
+               v-show="!(details.warningList[0] && !details.errorList[0])"
+               :style="{'opacity': details.errorList[0] ? 1 : 0}">
             <div class="farm-drawer-list-item" v-for="(item,index) in details.errorList">
               <div class="icon">
                 <img src="@/icons/errorIcon.png" alt="">
@@ -73,12 +75,17 @@
                   {{ item.title }}
                 </span>
                 <span class="c">
+
+
                   {{ item.content }}
                 </span>
               </div>
             </div>
           </div>
-          <div class="warningList" :style="{'opacity': details.warningList[0] ? 1 : 0}">
+          <!--警告-->
+          <div class="warningList"
+               v-show="!(!details.warningList[0] && details.errorList[0])"
+               :style="{'opacity': details.warningList[0] ? 1 : 0}">
             <div class="farm-drawer-list-item" v-for="(item,index) in details.warningList">
               <div class="icon">
                 <img src="@/icons/warningIcon.png" alt="">
@@ -1929,22 +1936,23 @@
         //   messageFun('error', `当前账户余额为${data.data.data}，请先进行充值！`);
         //   return false
         // }
-        let fileList = this.result.selectionResult.map(item => {
-          let index = item['outFilePath'].indexOf(item.taskTaskUuid)
-          return {
-            path: '\\' + item['outFilePath'].slice(index) + item['fileName'],
-            taskID: this.taskData['id'],             // 任务ID
-            fileName: this.taskData['sceneName']     // 场景名
-          }
-        })
-        this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
-          'transferType': 2,
-          'userID': this.user.id,
-          isRender: 1,
-          parent: '',
-          fileList
-        })
-
+        setTimeout(() => {
+          let fileList = this.result.selectionResult.map(item => {
+            let index = item['outFilePath'].indexOf(item.taskTaskUuid)
+            return {
+              path: '\\' + item['outFilePath'].slice(index) + item['fileName'],
+              taskID: this.taskData['id'],             // 任务ID
+              fileName: this.taskData['sceneName']     // 场景名
+            }
+          })
+          this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
+            'transferType': 2,
+            'userID': this.user.id,
+            isRender: 1,
+            parent: '',
+            fileList
+          })
+        }, 1000)
       },
       // 渲染结果 - 主 - 操作 - 重新渲染
       operateRenderAgain() {

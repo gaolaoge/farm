@@ -35,7 +35,6 @@
         label="状态"
         show-overflow-tooltip
         column-key="status"
-        :filter-method="filterStatus"
         :filters="table.statusList"
         width="120">
         <template slot-scope="scope">
@@ -173,16 +172,16 @@
           analyseStatus: [],            // 分析状态数组
           projectList: [],              // 筛选 - 所属项目数组
           statusList: [
-            {text: '全部', value: '全部'},
+            // {text: '全部', value: '全部'},
             {text: '上传中', value: '上传中...'},
             {text: '上传暂停', value: '上传暂停'},
             {text: '上传失败', value: '上传失败'},
-            {text: '已取消', value: '已取消'},
+            // {text: '已取消', value: '已取消'},
             {text: '分析中', value: '分析中...'},
             {text: '分析警告', value: '分析警告'},
             {text: '待设置参数', value: '待设置参数'},
             {text: '分析失败', value: '分析失败'},
-            {text: '已放弃', value: '已放弃'},
+            // {text: '已放弃', value: '已放弃'},
           ],
           usersList: []
         },
@@ -196,15 +195,40 @@
     methods: {
       // 清除筛选条件
       clearFilterF(type) {
-        this.$refs.uploadTableImportant.clearFilter(type)
+        // this.$refs.uploadTableImportant.clearFilter(type)
+        this.table.uploadStatus = []
+        this.table.analyseStatus = []
+        this.getList(null)
       },
       filterChangeF(val) {
-        if (Object.keys(val)[0] == 'status') this.$emit('changeFilter', {
-          'tab': 'upload',
-          'type': 'status',
-          'val': val['status']
-        })
-        else if (Object.keys(val)[0] == 'founder') this.$emit('changeFilter', {
+        if (Object.keys(val)[0] == 'status') {
+          this.$emit('changeFilter', {
+            'tab': 'upload',
+            'type': 'status',
+            'val': val['status']
+          })
+          this.table.uploadStatus = []
+          this.table.analyseStatus = []
+          val['status'].map(item => {
+            if (item == '上传中...') {
+              this.table.uploadStatus.push(1)
+              this.table.uploadStatus.push(2)
+            } else if (item == '上传成功') this.table.uploadStatus.push(3)
+            else if (item == '上传暂停') this.table.uploadStatus.push(4)
+            else if (item == '上传失败') {
+              this.table.uploadStatus.push(5)
+              this.table.uploadStatus.push(6)
+            } else if (item == '分析中...') {
+              this.table.analyseStatus.push(1)
+              this.table.analyseStatus.push(2)
+              this.table.analyseStatus.push(9)
+            } else if (item == '待设置参数') this.table.analyseStatus.push(3)
+            else if (item == '分析警告') this.table.analyseStatus.push(4)
+            else if (item == '分析失败') this.table.analyseStatus.push(5)
+            else if (item == '已放弃') this.table.analyseStatus.push(6)
+          })
+          this.getList(null)
+        } else if (Object.keys(val)[0] == 'founder') this.$emit('changeFilter', {
           'tab': 'upload',
           'type': 'founder',
           'val': val['founder']
@@ -242,11 +266,6 @@
         let r = new Set()
         val.forEach(curr => r.add(curr.status))
         this.$emit('upLoadSeletedList', [...r])
-      },
-      // 上传分析 - 筛选 - 状态
-      filterStatus(value, row, column) {
-        const property = column['property']
-        return row[property] === value
       },
       // 上传分析 - 打开详情
       showDetails(row, column, event) {

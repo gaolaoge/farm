@@ -35,7 +35,6 @@
         <!--状态-->
         <el-table-column
           label="状态"
-          :filter-method="filterStatus"
           :filters="table.statusList"
           column-key="status"
           show-overflow-tooltip
@@ -75,7 +74,6 @@
           label="所属项目"
           show-overflow-tooltip
           column-key="task"
-          :filter-method="filterStatus"
           :filters="table.itemList"
           width="186"/>
         <!--渲染中-->
@@ -163,7 +161,6 @@
           v-if="false"
           label="下载情况"
           show-overflow-tooltip
-          :filter-method="filterStatus"
           :filters="table.downloadStatusList"
           column-key="download"
           width="116">
@@ -199,7 +196,6 @@
           label="创建人"
           show-overflow-tooltip
           column-key="founder"
-          :filter-method="filterStatus"
           :filters="table.usersList"
           width="100"/>
         <!--创建时间-->
@@ -378,7 +374,7 @@
           usersList: [],                // 筛选 - 创建人
           itemList: [],                 // 筛选 - 所属项目
           statusList: [                 // 筛选 - 状态label
-            {text: '全部', value: '全部'},
+            // {text: '全部', value: '全部'},
             {text: '待全部渲染', value: '待全部渲染'},
             {text: '渲染中', value: '渲染中'},
             {text: '渲染暂停', value: '渲染暂停'},
@@ -410,15 +406,13 @@
       },
       // 清除筛选条件
       clearFilterF(type) {
-        this.$refs.renderTableImportant.clearFilter(type)
+        if(type == 'status') this.table.renderStatus = []
+        else if(type == 'task') this.table.projectUuidList = []
+        this.getList(null)
       },
       // farm-drawer 翻页
       changeTypeInfo(val) {
         this.itemName = val
-      },
-      // 筛选 - 状态
-      filterStatus(value, row) {
-        return row.status === value
       },
       // table 行样式
       tableRowStyle({row, rowIndex}) {
@@ -513,26 +507,43 @@
       },
       // 筛选条件修改
       filterChangeF(val) {
-        if (Object.keys(val)[0] == 'status') this.$emit('changeFilter', {
-          'tab': 'downloadT',
-          'type': 'status',
-          'val': val['status']
-        })
-        else if (Object.keys(val)[0] == 'task') this.$emit('changeFilter', {
-          'tab': 'downloadT',
-          'type': 'task',
-          'val': val['task']
-        })
-        else if (Object.keys(val)[0] == 'download') this.$emit('changeFilter', {
-          'tab': 'downloadT',
-          'type': 'download',
-          'val': val['download']
-        })
-        else if (Object.keys(val)[0] == 'founder') this.$emit('changeFilter', {
-          'tab': 'downloadT',
-          'type': 'founder',
-          'val': val['founder']
-        })
+        if (Object.keys(val)[0] == 'status') {
+          // 状态
+          this.$emit('changeFilter', {
+            'tab': 'downloadT',
+            'type': 'status',
+            'val': val['status']
+          })
+          this.table.renderStatus = val['status'].map(item => {
+            if(item == '渲染中') return 2
+            else if(item == '待全部渲染') return 5
+            else if(item == '渲染暂停' || item == '渲染完成') return 3
+          })
+          this.getList(null)
+        } else if (Object.keys(val)[0] == 'task') {
+          // 所属项目
+          this.$emit('changeFilter', {
+            'tab': 'downloadT',
+            'type': 'task',
+            'val': val['task'].map(task => this.table.itemList.find(li => li['value'] == task)['text'])
+          })
+          this.table.projectUuidList = val['task']
+          this.getList(null)
+        } else if (Object.keys(val)[0] == 'download') {
+          // 下载情况
+          this.$emit('changeFilter', {
+            'tab': 'downloadT',
+            'type': 'download',
+            'val': val['download']
+          })
+        } else if (Object.keys(val)[0] == 'founder') {
+          // 创建人
+          this.$emit('changeFilter', {
+            'tab': 'downloadT',
+            'type': 'founder',
+            'val': val['founder']
+          })
+        }
       },
       // 【非业务逻辑】全选
       selectAll(selection) {
@@ -595,7 +606,7 @@
           case 'waitAllRender':       // 待全部渲染
             this.table.renderStatus = [5]
             break
-          case 'renderPause':         // 渲染失败
+          case 'renderPause':         // 渲染暂停
             this.table.renderStatus = [3]
             break
           case 'finishRender':        // 渲染完成
@@ -1040,15 +1051,15 @@
         this.dialogTableVisible = true
       },
       // 操作 - 下载完成帧
-      async downloadFils() {
+      downloadFils() {
         if (!this.table.renderSelectionList.length) return false
-        else if (!this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_INIT', true)
+        if (!this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_INIT', true)
           // let r = await seeBalance()
           // if (r.data.code == 1001) {
           //   messageFun('info', `当前账户余额为${r.data.data}，请先进行充值！`);
           //   return false
         // }
-        else {
+        setTimeout(async () => {
           let list = this.computedResult()
           for (const taskItem of list) {
             if (taskItem.FatherId) {
@@ -1061,7 +1072,7 @@
               this.$store.commit('WEBSOCKET_PLUGIN_SEND', data.data.data)
             }
           }
-        }
+        }, 1000)
       },
       // 操作 - 拷贝
       async copyFun() {
@@ -1162,7 +1173,7 @@
       'zoneId': function (val) {
         this.getList()
         this.closeDrawer()
-      }
+      },
     },
   }
 </script>

@@ -117,7 +117,7 @@
                           <!--文件夹-->
                           <span v-show="data.type == 'folder'" @click="scenesTreeNodeClick(data.label)">
                             <img src="@/icons/folder-icon.png" alt="">
-                            <span>{{ node.label }}{{ stepOneBase.netdisc.folderText }}</span>
+                            <span>{{ node.label }}</span>
                           </span>
                        </span>
                       </el-tree>
@@ -311,11 +311,11 @@
               <!--标题-->
               <div class="farm-drawer-body-item-header">
                 <span class="farm-drawer-body-item-header-main">{{ stepThreeBase.mode.title }}</span>
-                <span class="farm-drawer-body-item-header-assist">
-                  {{ stepThreeBase.mode.miniTitO }}
-                  <span class="rule">{{ stepThreeBase.mode.rule }}</span>
-                  {{ stepThreeBase.mode.miniTitT }}
-                </span>
+                <!--                <span class="farm-drawer-body-item-header-assist">-->
+                <!--                  {{ stepThreeBase.mode.miniTitO }}-->
+                <!--                  <span class="rule">{{ stepThreeBase.mode.rule }}</span>-->
+                <!--                  {{ stepThreeBase.mode.miniTitT }}-->
+                <!--                </span>-->
               </div>
               <div class="farm-drawer-body-item-d">
                 <el-radio-group v-model="stepThreeBase.mode.mode">
@@ -594,7 +594,8 @@
           </div>
           <!--按钮-->
           <div class="btnGroup">
-            <div class="btnGroup-btn save" @click="taskDefine" :class="[{'disable-self': !disableSelf || !dialogAdd.nList.length}]">
+            <div class="btnGroup-btn save" @click="taskDefine"
+                 :class="[{'disable-self': !disableSelf || !dialogAdd.nList.length}]">
               <span>{{ dialogAdd.save }}</span>
             </div>
             <div class="btnGroup-btn cancel" @click="innerVisible = false">
@@ -975,9 +976,18 @@
       // 1.选择渲染文件 - 我的资产 - 工程文件 - 树状图 - 操作
       treeOperateFun(val) {
         let n = this.stepOneBase.netdisc
-        if (val == 'cancel') n.pathVTemporary = null
-        else if (val == 'confirm') n.pathV = n.pathVTemporary
-        this.stepOneBase.showMe = false
+        if (val == 'cancel') {
+          // 取消
+          n.pathVTemporary = null
+          this.stepOneBase.showMe = false
+        } else if (val == 'confirm') {
+          // 确定 判断跟路径是否为 c 或 z
+          if ((n.pathVTemporary.length >= 2) && (n.pathVTemporary.slice(0, 2).toLowerCase() == 'c/' || n.pathVTemporary.slice(0, 2).toLowerCase() == 'z/')) messageFun('error', '请不要选择C、Z盘，这会影响渲染结果')
+          else {
+            n.pathV = n.pathVTemporary
+            this.stepOneBase.showMe = false
+          }
+        }
       },
       // 1.选择渲染文件 - 我的资产 - 工程文件 - 树状图 - 进入文件夹
       catalogDataGetChildNode(node, resolve) {
@@ -1042,7 +1052,9 @@
       },
       // 1.选择渲染文件 - 我的电脑 插件 修改场景文件对应的【工程路径】
       pluginEditProjectPath(data) {
-        this.stepOneBase.local.filelist[data.sceneFile].address = data.path
+        // 确定 判断跟路径是否为 c 或 z
+        if (data.path.length >= 2 && (data.path.slice(0, 2).toLowerCase() == 'c/' || data.path.slice(0, 2).toLowerCase() == 'z/')) messageFun('error', '请不要选择C、Z盘，这会影响渲染结果')
+        else this.stepOneBase.local.filelist[data.sceneFile].address = data.path
       },
       // 1.选择渲染文件 - 我的电脑 插件 操作接收的【场景文件列表】
       pluginFilterFile(file) {
@@ -1381,23 +1393,14 @@
       },
       // 1.选择渲染文件 - 我的电脑 -【添加】新场景文件
       operateBtnAddMore() {
-        if (!this.socket_plugin) {
-          this.$store.commit('WEBSOCKET_PLUGIN_INIT', true)
-          return false
-        }
-        if (this.stepOneBase.local.filelist.length == 20) {
-          messageFun('info', '操作失败，不能选择超过20个场景文件！')
-          return false
-        }
-        if (this.socket_plugin === 'err') {
-          messageFun('error', '插件连接中，请稍后重试')
-          return false
-        }
+        if (!this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_INIT', true)
+        else if (this.stepOneBase.local.filelist.length == 20) messageFun('info', '操作失败，不能选择超过20个场景文件！')
+        else if (this.socket_plugin === 'err') messageFun('error', '插件连接中，请稍后重试')
         // 通知插件选择本地文件
-        this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
-          transferType: 3,                  // 传输类型
-          suffix: this.renderFileTypeList   // 文件后缀
-        })
+        else this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
+            transferType: 3,                  // 传输类型
+            suffix: this.renderFileTypeList   // 文件后缀
+          })
       },
       // 1.选择渲染文件 - 我的电脑 -【删除】新场景文件
       operateBtnDelete() {

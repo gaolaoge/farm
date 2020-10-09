@@ -48,9 +48,12 @@
                     </span>
                   </div>
                   <div class="t">
-                    <span class="remark">
-                      {{ item.remark }}
-                    </span>
+                    <p class="remark">
+                      {{ item.remark1 }}
+                    </p>
+                    <p class="remark">
+                      {{ item.remark2 }}
+                    </p>
                   </div>
                   <div class="selected" :style="{backgroundImage: 'url(' + require('../icons/x.png') + ')'}">
                     <span>{{ item.ChineseYuan }}</span>
@@ -237,7 +240,7 @@
         <p class="f s">因服务更新原因，烦请您联系客服进行线下充值～</p>
         <div class="e">
           <p>24小时客服电话：18560651927</p>
-          <p>QQ客服：3181225749</p>
+          <p>QQ客服：2860177580</p>
           <p>售后邮箱：ENJINECG@163.com</p>
         </div>
         <div class="k">
@@ -291,18 +294,27 @@
           list: [
             {
               ChineseYuan: '100',
-              remark: '充值100元送60金币 实际到账160金币',
+              remark1: '充值100元送60金币',
+              remark2: '实际到账160金币',
               gold: 160
             },
             {
               ChineseYuan: '500',
-              remark: '充值500元送400金币 实际到账900金币',
+              remark1: '充值500元送400金币',
+              remark2: '实际到账900金币',
               gold: 900
             },
             {
               ChineseYuan: '2000',
-              remark: '充值2000元送1800金币 实际到账3800金币',
+              remark1: '充值2000元送1800金币',
+              remark2: '实际到账3800金币',
               gold: 3800
+            },
+            {
+              ChineseYuan: '5000',
+              remark1: '充值5000元送5000金币',
+              remark2: '实际到账10000金币',
+              gold: 10000
             }
           ],
           placeholder: '输入其他金额',
@@ -315,7 +327,7 @@
               r: '充值后不支持退款。'
             },
             {
-              r: '充值其他问题，请联系客服：13176527028'
+              r: '充值其他问题，请联系客服：18560651927'
             }
           ],
           ChineseYuan: 100,
@@ -528,14 +540,16 @@
           }
 
           .t {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 73px;
             .remark {
-              display: inline-block;
-              padding: 15px 20px;
-              width: 136px;
+              padding-left: 20px;
               font-size: 13px;
               font-weight: 400;
               color: rgba(27, 83, 244, 0.6);
-              line-height: 22px;
+              line-height: 1.6em;
             }
           }
 

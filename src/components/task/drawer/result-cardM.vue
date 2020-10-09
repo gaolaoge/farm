@@ -456,19 +456,12 @@
 </template>
 
 <script>
-  import {
-
-  } from '@/api/api'
-  import {
-
-  } from '@/api/task-api'
-  import {
-
-  } from '@/api/newTask-api'
-  import {
-
-  } from '@/assets/common.js'
+  import {} from '@/api/api'
+  import {} from '@/api/task-api'
+  import {} from '@/api/newTask-api'
+  import {} from '@/assets/common.js'
   import {mapState} from 'vuex'
+
   export default {
     name: 'result-cardM',
     data() {
@@ -847,22 +840,23 @@
         //   messageFun('error', `当前账户余额为${data.data.data}，请先进行充值！`);
         //   return false
         // }
-        let fileList = this.result.selectionResult.map(item => {
-          let index = item['outFilePath'].indexOf(item.taskTaskUuid)
-          return {
-            path: '\\' + item['outFilePath'].slice(index) + item['fileName'],
-            taskID: this.taskData['id'],             // 任务ID
-            fileName: this.taskData['sceneName']     // 场景名
-          }
-        })
-        this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
-          'transferType': 2,
-          'userID': this.user.id,
-          isRender: 1,
-          parent: '',
-          fileList
-        })
-
+        setTimeout(() => {
+          let fileList = this.result.selectionResult.map(item => {
+            let index = item['outFilePath'].indexOf(item.taskTaskUuid)
+            return {
+              path: '\\' + item['outFilePath'].slice(index) + item['fileName'],
+              taskID: this.taskData['id'],             // 任务ID
+              fileName: this.taskData['sceneName']     // 场景名
+            }
+          })
+          this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
+            'transferType': 2,
+            'userID': this.user.id,
+            isRender: 1,
+            parent: '',
+            fileList
+          })
+        }, 100)
       },
       // 渲染结果 - 主 - 操作 - 重新渲染
       operateRenderAgain() {
