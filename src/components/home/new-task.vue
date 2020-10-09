@@ -450,7 +450,7 @@
              :class="[
                {'cannotTrigger': stepOneBase.index == 1 ?
                   (stepOneBase.local.filelist.length == 0 ) :
-                  (stepOneBase.netdisc.sceneFileSelection.length == 0 && stepOneBase.netdisc.pathV && stepOneBase.netdisc.pathV != '选择工程路径')
+                  (stepOneBase.netdisc.sceneFileSelection.length == 0 || !stepOneBase.netdisc.pathV || stepOneBase.netdisc.pathV == '选择工程路径')
                }
               ]"
              @click="goToMode('next')">
@@ -978,7 +978,7 @@
         let n = this.stepOneBase.netdisc
         if (val == 'cancel') {
           // 取消
-          n.pathVTemporary = null
+          // n.pathVTemporary = null
           this.stepOneBase.showMe = false
         } else if (val == 'confirm') {
           // 确定 判断跟路径是否为 c 或 z
@@ -1052,16 +1052,19 @@
       },
       // 1.选择渲染文件 - 我的电脑 插件 修改场景文件对应的【工程路径】
       pluginEditProjectPath(data) {
+        if(!data.path) return false
         // 确定 判断跟路径是否为 c 或 z
-        if (data.path.length >= 2 && (data.path.slice(0, 2).toLowerCase() == 'c/' || data.path.slice(0, 2).toLowerCase() == 'z/')) messageFun('error', '请不要选择C、Z盘，这会影响渲染结果')
+        else if (data.path.length >= 2 && (data.path.slice(0, 2).toLowerCase() == 'c:' || data.path.slice(0, 2).toLowerCase() == 'z:')) messageFun('error', '请不要选择C、Z盘，这会影响渲染结果')
         else this.stepOneBase.local.filelist[data.sceneFile].address = data.path
       },
       // 1.选择渲染文件 - 我的电脑 插件 操作接收的【场景文件列表】
       pluginFilterFile(file) {
-        let index = file.lastIndexOf('/') + 1
-        this.stepOneBase.local.filelist.push({
-          address: file.substr(0, index),      // 场景名
-          sceneFile: file.substr(index),            // 工程路径
+        let index = file.lastIndexOf('/') + 1,
+          address = file.substr(0, index)
+        if(address.slice(0, 2).toLowerCase() == 'c:' || address.slice(0, 2).toLowerCase() == 'z:') messageFun('error', '请不要选择C、Z盘，这会影响渲染结果')
+        else this.stepOneBase.local.filelist.push({
+          address,                                  // 工程路径
+          sceneFile: file.substr(index),            // 场景名
           absolutePath: file,                       // 绝对路径
           id: Math.floor(Math.random() * Math.pow(10, 16))
         })
@@ -1594,7 +1597,7 @@
       goToMode(dire) {
         if (dire == 'previous') this.stepBtnActive = 2
         else {
-          if (this.stepOneBase.index == 0 && this.stepOneBase.netdisc.sceneFileSelection.length == 0 && this.stepOneBase.netdisc.pathV && this.stepOneBase.netdisc.pathV != '选择工程路径') {
+          if (this.stepOneBase.index == 0 && (this.stepOneBase.netdisc.sceneFileSelection.length == 0 || !this.stepOneBase.netdisc.pathV || this.stepOneBase.netdisc.pathV == '选择工程路径')) {
             // 我的资产
             messageFun('error', '尚未选择场景文件')
           } else if (this.stepOneBase.index == 1 && this.stepOneBase.local.filelist.length == 0) {

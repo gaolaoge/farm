@@ -30,7 +30,7 @@
                        :placeholder="$t('login_page.SMS_verif.phone_placeholder')"
                        @blur="jk"
                        @input="jkC"
-                       @focus="login.phoneForm.phoneVerif = null"
+                       @focus="login.phoneForm.phoneVerif === false ? login.phoneForm.phoneVerif = null : null"
                        ref="phoneForm_phone"
                        class="farm-input"
                        :class="[{'inputError': login.phoneForm.phoneVerif === false}]"/>
@@ -48,7 +48,8 @@
                        ref="phoneForm_code"
                        type="text"
                        @blur="phoneCodeVerif"
-                       @focus="login.phoneForm.codeVerif = null"
+                       @input="phoneCodeVerif(true)"
+                       @focus="login.phoneForm.codeVerif === false ? login.phoneForm.codeVerif = null : null"
                        class="farm-input farm-cord-input"
                        :class="[{'inputError': login.phoneForm.codeVerif === false}]"/>
                 <!--获取验证码-->
@@ -90,7 +91,7 @@
                        ref="accountForm_account"
                        @blur="accouVerif('login')"
                        @input="accouVerif('login', true)"
-                       @focus="login.formStatus.account = null"
+                       @focus="login.formStatus.account === false ? login.formStatus.account = null : null"
                        class="farm-input"
                        :class="[{'inputError': login.formStatus.account === false}]"/>
                 <span class="warnInfo" v-show="login.formStatus.account === false">{{ login.warnInfo.account }}</span>
@@ -106,7 +107,7 @@
                        ref="accountForm_password"
                        :placeholder="$t('login_page.account_verif.ps_placeholder')"
                        @keyup.enter="accountloginFun"
-                       @focus="login.formStatus.password = null"
+                       @focus="login.formStatus.password === false ? login.formStatus.password = null : null"
                        @blur="passwVerif('login')"
                        @input="passwVerif('login', true)"
                        autocomplete="new-password"
@@ -118,7 +119,7 @@
                   <img src="@/icons/shuPW.png" alt="" v-show="!login.accountForm.passwordEye"
                        @click="login.accountForm.passwordEye = true">
                 </div>
-                <span class="warnInfo" v-show="login.formStatus.password === false">{{ login.warnInfo.password }}</span>
+                <span class="warnInfo" v-show="login.formStatus.password === false">密码错误</span>
                 <img src="@/icons/login-error .png" class="i canClick"
                      v-show="login.formStatus.password === false"
                      @click="loginDeleteInput('accountForm','password')">
@@ -341,7 +342,8 @@
               <input v-model="registered.form.code"
                      :placeholder="$t('login_page.register.code_placeholder')"
                      @blur="codeVerif"
-                     @focus="registered.status.code = null"
+                     @input="codeVerif(true)"
+                     @focus="registered.status.code === false ? registered.status.code = null : null"
                      ref="codeRegister"
                      class="farm-input farm-cord-input"
                      :class="[{'inputError': registered.status.code === false}]"/>
@@ -797,15 +799,13 @@
         r.codeObtained = true
       },
       // 注册-验证验证码
-      codeVerif() {
+      codeVerif(ing) {
         let r = this.registered
         // 若未填写验证码 不做校验
-        if (!r.form.code) {
-          r.status.code = null
-          return false
-        }
+        if (!r.form.code) r.status.code = null
         // 校验
-        if (/^\d{6}$/.test(r.form.code)) r.status.code = true
+        else if (/^\d{6}$/.test(r.form.code)) r.status.code = true
+        else if (ing) r.status.code = null
         else {
           // '请正确输入验证码'
           this.registered.warnInfo.code = this.$t('login_page.message.codeTypeErr_two')
@@ -886,16 +886,13 @@
         this.login.formStatus[item] = null
       },
       // 短信登录-验证验证码
-      phoneCodeVerif() {
+      phoneCodeVerif(type) {
         let r = this.login.phoneForm
         // 若未填写验证码 不做校验
-        if (!r.code) {
-          r.codeVerif = null
-          return false
-        }
+        if (!r.code) r.codeVerif = null
         // 校验
-        if (/^\d{6}$/.test(r.code)) r.codeVerif = true
-        else r.codeVerif = false    // '请正确输入验证码'
+        else if (/^\d{6}$/.test(r.code)) r.codeVerif = true
+        else type ? r.codeVerif = null : r.codeVerif = false    // '请正确输入验证码'
       },
       // 帐号 登录
       async accountloginFun() {
@@ -905,7 +902,7 @@
           let data = await accountLogin({account, password, isAutoLogin})
           if (data.data.code == '4032') {
             this.login.formStatus.password = false
-            return false
+
           } else if (data.data.code == 200) this.loginSuc(isAutoLogin, '', account, data.data.data.token)
         } catch (err) {
           console.log('登录连接失败, ' + err)
