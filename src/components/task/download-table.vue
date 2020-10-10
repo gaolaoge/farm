@@ -854,10 +854,10 @@
             async () => {
               let dataList = []
               this.table.renderSelectionList.forEach(curr => {
-                if (('selfIndex' in curr) && !('secretChild' in curr)) return false
+                if (('selfIndex' in curr) && !curr['secretChild']) return false
                 let dataListIndex = dataList.findIndex(item => item.taskUuid == curr.FatherTaskUuId)
                 if (dataListIndex == -1) {
-                  if ('secretChild' in curr) {
+                  if (curr['secretChild']) {
                     dataList.push({
                       taskUuid: curr.secretChild[0]['FatherTaskUuId'],
                       layerUuidList: [curr.secretChild[0]['taskUuid']]
@@ -930,7 +930,7 @@
                 if (('selfIndex' in curr) && !(curr['secretChild'])) return false
                 let dataListIndex = dataList.findIndex(item => item.taskUuid == curr.FatherTaskUuId)
                 if (dataListIndex == -1) {
-                  if ('secretChild' in curr) {
+                  if (curr['secretChild']) {
                     dataList.push({
                       taskUuid: curr.secretChild[0]['FatherTaskUuId'],
                       layerUuidList: [curr.secretChild[0]['taskUuid']]
@@ -968,8 +968,8 @@
               let dataList = [],
                 fat = []
               this.table.renderSelectionList.forEach(curr => {
-                if (('selfIndex' in curr) && !('secretChild' in curr)) fat.push(curr['taskUuid'])
-                else if ('secretChild' in curr) {
+                if (('selfIndex' in curr) && !curr['secretChild']) fat.push(curr['taskUuid'])
+                else if (('selfIndex' in curr) && curr['secretChild']) {
                   fat.push(curr.secretChild[0]['FatherTaskUuId'])
                   dataList.push({
                     taskUuid: curr.secretChild[0]['FatherTaskUuId'],
@@ -1017,7 +1017,7 @@
             async () => {
               let dataList = []
               this.table.renderSelectionList.forEach(curr => {
-                if (('selfIndex' in curr) && !('secretChild' in curr)) return false
+                if (('selfIndex' in curr) && !curr['secretChild']) return false
                 let dataListIndex = dataList.findIndex(item => item.taskUuid == curr.FatherTaskUuId)
                 if (dataListIndex == -1) {
                   if (curr.secretChild) {
@@ -1107,7 +1107,7 @@
         if (!this.s.length) return false
         let dataList = []
         this.table.renderSelectionList.forEach(curr => {
-          if (('selfIndex' in curr) && !('secretChild' in curr)) return false
+          if (('selfIndex' in curr) && !curr['secretChild']) return false
           let dataListIndex = dataList.findIndex(item => item.taskUuid == curr.FatherTaskUuId)
           if (dataListIndex == -1) {
             if (curr.secretChild) {
