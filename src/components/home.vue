@@ -297,7 +297,6 @@
         let data = await homeT(val),
           d = data.data.data,
           m
-        console.log(d)
         this.taskStatus['list'][1]['num'] = d.ing                 // 任务状态-渲染中
         this.taskStatus['list'][3]['num'] = d.stop                // 任务状态-渲染暂停
         this.taskStatus['list'][4]['num'] = d.finish              // 任务状态-渲染完成
@@ -316,8 +315,6 @@
           m = d.useTime / 3600000 / 60 / 60
           this.statistics.list[1]['unit'] = '秒钟'
         }
-        console.log(m)
-        console.log('..........')
         this.statistics['list'][1]['num'] = m.toFixed(2)          // 数据统计-累计渲染用时
       },
       // 获取曲线图数据
