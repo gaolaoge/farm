@@ -356,12 +356,15 @@
       downloadFile() {
         if (this.table.selectionList.length == 0) return
         else if (this.table.selectionList.some(item => item['ing'])) messageFun('info', '一个或多个目标正在上传中，无法进行此操作')
-        else if (!this.socket_plugin) {
-          this.$store.commit('WEBSOCKET_PLUGIN_INIT', true)
+        else {
+          if (!this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_INIT', true)
           setTimeout(() => this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
             transferType: 2,
             userID: this.user.id,
             isRender: 0,
+
+
+
             fileList: this.table.selectionList.map(item => item.position)
           }), 1000)
         }

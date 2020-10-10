@@ -92,6 +92,7 @@ export default new Vuex.Store({
     },
     // 创建与插件的websocket
     WEBSOCKET_PLUGIN_INIT(state, triggerPlugin) {
+      // console.log(triggerPlugin)
       if(triggerPlugin && state.socket_plugin_time == 0) messageFun('info', '正在启动传输插件，请稍后…')
       state.socket_plugin = new WebSocket(process.env.PLUGIN_WS_API)
       state.socket_plugin.addEventListener('open', () => {

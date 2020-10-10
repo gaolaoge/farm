@@ -188,7 +188,7 @@
               unit: this.$t('home.statistics.list.unit')[0],
               iconImg: require('@/icons/gold.png')
             },
-            {
+            {  // 累计渲染用时
               text: this.$t('home.statistics.list.text')[1],
               num: '0',
               unit: this.$t('home.statistics.list.unit')[1],
@@ -232,6 +232,7 @@
           else if (1000000 > num && num >= 100000) num = (num / 10000).toFixed(3)
           else if (num >= 1000000) num = (num / 10000).toFixed(2)
           this.statistics['list'][0]['num'] = num   //数据统计-累计消费
+          this.getHomeTData(this.zoneId)
         },
         immediate: true,
         deep: true

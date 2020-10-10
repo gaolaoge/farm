@@ -478,6 +478,7 @@
     watch: {
       'zoneId': function (val) {
         this.getList(null)
+        this.closeDrawer()
       }
     },
     computed: {
