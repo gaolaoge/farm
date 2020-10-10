@@ -254,16 +254,8 @@
       // 根据【我的上传】多选改变修改操作按钮状态
       uploadSelectionF(list) {
         let group = this.btnGroup.myUploadBtnGroup
-        if (!list.length) {
-          group[1]['action'] = false     // 删除
-          group[2]['action'] = false     // 下载
-        } else {
-          group[1]['action'] = true
-          group[2]['action'] = true
-        }
-        // 下载
-        if (list.some(item => item['ing'])) group[2]['action'] = false
-        else group[2]['action'] = true
+        group[1]['action'] = list.length ? true : false     // 删除
+        group[2]['action'] = list.length ? true : false     // 下载
       },
       // 根据【渲染输出】多选改变修改操作按钮状态
       renderSelectionF(list) {

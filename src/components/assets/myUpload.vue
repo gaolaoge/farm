@@ -338,9 +338,11 @@
       },
       // 新建文件夹
       createFolder() {
-        this.$prompt('请输入新文件夹名称', '提示', {
+        this.$prompt('请输入文件夹名称', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
+          inputPattern: /\S/,
+          inputErrorMessage: '文件夹名不能为空'
         })
           .then(({value}) => {
             this.$store.commit('WEBSOCKET_BACKS_SEND', {

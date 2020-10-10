@@ -572,6 +572,8 @@
       if (this.login.accountForm.password) this.passwVerif('login')
 
       this.login.nav.activeIndex = localStorage.getItem('loginPageIndex') || '1'
+
+      this.jkC()
       // if(this.login.accountForm.password) this.
 
       // //一、定义一个获取DOM元素的方法
