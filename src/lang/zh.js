@@ -99,8 +99,8 @@ export default {
     },
     // 备案
     record: {
-      text1: '京ICP备11017824号-4 / 京ICP证130164号 北京市公安局朝阳分局备案编号:110105000501',
-      text2: 'Copyright © 2018-2020 国家电影云制作服务平台'
+      text1: '',
+      text2: 'Copyright © 2020 国家电影云制作服务平台 鲁ICP备20027751号-3'
     },
     getCode: '获取验证码',
     getCodeAgain: '重新发送',

@@ -120,7 +120,8 @@
     seeBalance
   } from '@/api/api'
   import {
-    downloadCompleteFrame
+    downloadCompleteFrame,
+    downloadCompleteFrameMini
   } from '@/api/task-api'
   import {
     consum,
@@ -359,15 +360,19 @@
             break
         }
       },
-      // 下载item
-      async downloadFun() {
+      // 下载选中项 - 前期预判
+      downloadFun() {
         if (!this.table.selectionList.length) return false
-        if (!this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_INIT', true)
+        if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.downloadingFun())
+        else this.downloadingFun()
         // let r = await seeBalance()
         // if (r.data.code == 1001) {
         //   messageFun('info', `当前账户余额为${r.data.data}，请先进行充值！`);
         //   return false
         // }
+      },
+      // 下载选中项 - ing
+      async downloadingFun() {
         this.$confirm('将下载选中选, 是否继续?', '提示信息', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -376,36 +381,29 @@
           .then(
             async () => {
               if (this.table.selectionList[0]['type'] == 'layer' || this.table.selectionList[0]['type'] == 'task') for (const taskItem of this.table.selectionList) {
-                if (taskItem.type == 'layer') {
-                  let val = `transferType=2&userID=${this.user.id}&isRender=1&parent=&taskUuid=${taskItem['mainUuid']}&layerTaskUuid=${taskItem['itemUuid']}&fileName=${taskItem['mainTaskSceneName']}`,
-                    data = await downloadCompleteFrame(val)
-                  this.$store.commit('WEBSOCKET_PLUGIN_SEND', data.data.data)
-                } else if (taskItem.type == 'task') {
-                  let val = `transferType=2&userID=${this.user.id}&isRender=1&parent=${taskItem['id'] + '-' + taskItem['taskSceneName']}&taskUuid=${taskItem['taskUuid']}&layerTaskUuid=&fileName=${taskItem['taskSceneName']}`,
-                    data = await downloadCompleteFrame(val)
-                  this.$store.commit('WEBSOCKET_PLUGIN_SEND', data.data.data)
-                }
+                let val
+                if (taskItem.type == 'layer') val = `transferType=2&userID=${this.user.id}&isRender=1&parent=&taskUuid=${taskItem['mainUuid']}&layerTaskUuid=${taskItem['itemUuid']}&fileName=${taskItem['mainTaskSceneName']}`
+                else val = `transferType=2&userID=${this.user.id}&isRender=1&parent=${taskItem['id'] + '-' + taskItem['taskSceneName']}&taskUuid=${taskItem['taskUuid']}&layerTaskUuid=&fileName=${taskItem['taskSceneName']}`
+                let data = await downloadCompleteFrame(val)
+                this.$store.commit('WEBSOCKET_PLUGIN_SEND', data.data.data)
               } else {
-                let fileList = this.table.selectionList.map(item => {
-                  return {
-                    path: '\\' + item['itemUuid'] + '\\' + item['layerFileName'] + '\\' + item['fileName'],
-                    taskID: item['layerNo'],                                         // 任务ID
-                    fileName: item['layerFileName']     // 场景名
-                  }
-                })
-                this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
+                // 下载帧任务
+                let data = await downloadCompleteFrameMini({
                   'transferType': 2,
                   'userID': this.user.id,
                   isRender: 1,
                   parent: '',
-                  fileList
+                  fileName: this.table.selectionList[0]['taskFileName'],
+                  layerTaskUuid: this.table.selectionList[0]['layerTaskUuid'],
+                  frameTaskUuid: this.table.selectionList.map(frame => frame.frameTaskUuid)
                 })
+                this.$store.commit('WEBSOCKET_PLUGIN_SEND', data.data.data)
               }
             },
             () => messageFun('info', '已取消下载')
           )
       },
-      // 删除item
+      // 删除选中项
       deleteFun() {
         if (!this.table.selectionList.length) return false
         this.$confirm('将删除选中选, 是否继续?', '提示信息', {
@@ -421,8 +419,8 @@
               let data = await assetsDeleteItem({
                 type,
                 uuidList: this.table.selectionList.map(item => {
-                  if(type == 3) return item.frameTaskUuid
-                    return item.itemUuid
+                  if (type == 3) return item.frameTaskUuid
+                  return item.itemUuid
                 })
               })
 

@@ -130,7 +130,8 @@
     getFileSize,
   } from '@/assets/common.js'
   import {
-    mapState
+    mapState,
+    mapActions
   } from 'vuex'
 
   export default {
@@ -245,11 +246,19 @@
       'socket_plugin_msg': {
         handler: function (e) {
           let data = JSON.parse(e.data)
-          if (data.code == 100 || data.code == 101) this.getAssetsCatalog(this.path, this.searchInputVal)
+          if (data.code == 100 || data.code == 101) {
+            if (data.result == 0) this.getAssetsCatalog(this.path, this.searchInputVal)
+            else {
+              messageFun('error', '操作失败，请刷新界面后重新点击')
+              if (data.result == 1) console.log('---上传操作失败，向插件WS进行请求时userID为空---')
+              if (data.result == 2) console.log('---上传操作失败，向插件WS进行请求时network为空---')
+            }
+          }
         }
       },
     },
     methods: {
+      ...mapActions(['WEBSOCKET_PLUGIN_INIT']),
       // 刷新
       refreshF() {
         this.getAssetsCatalog(this.path, this.searchInputVal)
@@ -266,13 +275,6 @@
       // 关闭tree窗
       shutDialog() {
         this.dialogVisible = false
-        // Object.assign(this.dl, {
-        //   treeData: [],
-        //   // path: '/',
-        //   // checkPath: '',
-        //   resolve: null,
-        //   dlType: null,
-        // })
       },
       // 弹窗进一步获取结构
       dlGetTreeData(node, resolve) {
@@ -327,14 +329,18 @@
         console.log(value, row, column)
       },
 
-      // 上传
+      // 上传 - 预判
       uploadFun(type) {
-        if (!this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_INIT', true)
-        setTimeout(() => this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
+        if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.uploadingFun(type))
+        else this.uploadingFun(type)
+      },
+      // 上传 - ing
+      uploadingFun(type) {
+        this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
           transferType: type == 'file' ? 0 : 1,
           userID: this.user.id,
           networkPath: this.uploadType == 1 ? '' : this.path,
-        }), 1000)
+        })
       },
       // 新建文件夹
       createFolder() {
@@ -354,22 +360,31 @@
           })
           .catch(() => null)
       },
-      // 下载
+      // 下载 - 预判
       downloadFile() {
         if (this.table.selectionList.length == 0) return
         else if (this.table.selectionList.some(item => item['ing'])) messageFun('info', '一个或多个目标正在上传中，无法进行此操作')
         else {
-          if (!this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_INIT', true)
-          setTimeout(() => this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
-            transferType: 2,
-            userID: this.user.id,
-            isRender: 0,
-
-
-
-            fileList: this.table.selectionList.map(item => item.position)
-          }), 1000)
+          if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.downloadingFile())
+          else this.downloadingFile()
         }
+      },
+      // 下载 - ing
+      downloadingFile() {
+        this.$confirm('将下载选中选, 是否继续?', '提示信息', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+          .then(
+            () => this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
+              transferType: 2,
+              userID: this.user.id,
+              isRender: 0,
+              fileList: this.table.selectionList.map(item => item.position)
+            }),
+            () => messageFun('info', '已取消下载')
+          )
       },
       // 移动到
       moveFile() {
@@ -433,11 +448,20 @@
       },
       // 删除
       deleteFile() {
-        this.$store.commit('WEBSOCKET_BACKS_SEND', {
-          'code': 604,
-          'customerUuid': this.user.id,
-          filePathList: this.table.selectionList.map(item => this.path + item.fileName)
+        this.$confirm('将删除选中选, 是否继续?', '提示信息', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
         })
+          .then(
+            () => this.$store.commit('WEBSOCKET_BACKS_SEND', {
+              'code': 604,
+              'customerUuid': this.user.id,
+              filePathList: this.table.selectionList.map(item => this.path + item.fileName)
+            }),
+            () => messageFun('info', '已取消删除')
+          )
+
       },
       // 获取网盘各级目录
       getAssetsCatalog(filePath, keyword) {

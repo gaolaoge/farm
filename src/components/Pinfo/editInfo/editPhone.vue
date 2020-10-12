@@ -10,14 +10,13 @@
         <ul>
           <li v-for="(item,index) in verificationList"
               :key="index"
-              @click="chooseFun(item)"
               class="veri">
             <img :src="item.imgUrl" alt="">
             <div class="t">
               <h6>{{ item.tit }}</h6>
               <span>{{ item.direSpan }}</span>
             </div>
-            <div class="btn"><span>{{ item.btn }}</span></div>
+            <div class="btn" @click="chooseFun(item)"><span>{{ item.btn }}</span></div>
           </li>
         </ul>
       </div>
@@ -288,8 +287,11 @@
         this.$emit('cancel')
       },
       chooseFun(item) {
-        this.step = item.f
-        this.title = item.tit
+        if(item.f == 'chooseEmail' && !this.user.email) messageFun('info', '您的账号未绑定邮箱，无法通过邮箱验证更换手机')
+        else {
+          this.step = item.f
+          this.title = item.tit
+        }
       },
       saveFun() {
         this.step = 'success'
@@ -584,15 +586,16 @@
             width: 76px;
             height: 32px;
             background-color: rgba(10, 98, 241, 1);
+            border: 1px solid rgba(10, 98, 241, 0.19);
             border-radius: 8px;
             text-align: center;
             margin-right: 30px;
+            cursor: pointer;
 
             span {
               font-size: 14px;
               color: rgba(255, 255, 255, 1);
               line-height: 32px;
-              cursor: pointer;
             }
           }
 

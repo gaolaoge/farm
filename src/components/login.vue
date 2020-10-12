@@ -409,7 +409,7 @@
     </div>
     <!--备案-->
     <div class="record_">
-      <span>{{ $t('login_page.record.text1') }}</span>
+<!--      <span>{{ $t('login_page.record.text1') }}</span>-->
       <span>{{ $t('login_page.record.text2') }}</span>
     </div>
   </div>
@@ -711,8 +711,8 @@
         // 验证帐号格式
         let reg = /^(?![\d]+$)(?![a-z]+$)(?![A-Z]+$)(?![_]+$)(?![\u4E00-\u9FA5]+$)/,
           reg2 = /^[\u4E00-\u9FA5\w]+$/
-        if (!reg.test(rfa) || !reg2.test(rfa)) {
-          w.account = this.$t('login_page.message.ac_verif_two')
+        if ((!reg.test(rfa) || !reg2.test(rfa)) && !this.reg.phoneReg.test(rfa)) {
+          w.account = '请输入正确账号/手机号'
           type ? rs.account = null : rs.account = false
           return false
         }
@@ -1649,12 +1649,13 @@
 
   .record_ {
     position: absolute;
+    width: 480px;
     margin-top: 40px;
     display: flex;
     flex-direction: column;
-    align-items: center;
 
     span {
+      text-align: center;
       font-size: 12px;
       color: rgba(22, 29, 37, 0.4);
       line-height: 22px;

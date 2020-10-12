@@ -34,9 +34,9 @@
           </span>
         </div>
         <!--更多按钮-->
-        <div class="more-btn" v-operating>
+        <div :class="[{'cannotBe': !btnGroup.myUploadBtnGroup[2]['action']}, 'more-btn']" v-operating>
           <span>{{ btnGroup.moreBtnText }}</span>
-          <img :src="btnGroup.moreBtnIcon" alt="">
+          <img :src="btnGroup.moreBtnIcon">
         </div>
         <!--更多List-->
         <div class="moreBtnList" v-show="btnGroup.showMoreBtnList">
@@ -203,6 +203,7 @@
       operating: {
         bind(el, bindings, vnode) {
           let handler = e => {
+            if (!vnode.context.btnGroup.myUploadBtnGroup[2]['action']) return false
             if (el.contains(e.target)) {
               if (!vnode.context.btnGroup.showMoreBtnList) vnode.context.btnGroup.showMoreBtnList = true
               else vnode.context.btnGroup.showMoreBtnList = false
@@ -256,6 +257,12 @@
         let group = this.btnGroup.myUploadBtnGroup
         group[1]['action'] = list.length ? true : false     // 删除
         group[2]['action'] = list.length ? true : false     // 下载
+        list.length == 0 ? this.btnGroup.showMoreBtnList = false : null     // 更多list
+        // 下载 and 更多list
+        if (list.some(item => item['ing'])) {
+          group[2]['action'] = false
+          this.btnGroup.showMoreBtnList = false
+        }
       },
       // 根据【渲染输出】多选改变修改操作按钮状态
       renderSelectionF(list) {
@@ -415,6 +422,19 @@
 
       &:hover {
         border: 1px solid rgba(0, 97, 255, 0.4);
+      }
+
+      &.cannotBe {
+        cursor: no-drop;
+
+        span,
+        img {
+          opacity: 0.39;
+        }
+
+        &:hover {
+          border: 1px solid rgba(22, 29, 37, 0.1);
+        }
       }
     }
 

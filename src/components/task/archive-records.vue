@@ -266,27 +266,29 @@
             console.log(error)
           })
       },
-      // 操作 - 下载完成帧
+      // 操作 - 下载完成帧 - 前期预判
       async downloadLayerFun() {
         if (!this.dialogTable.dialogTableSelection.length) return false
-        else if (!this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_INIT', true)
+        else if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.downloadingLayerFun())
           // let r = await seeBalance()
           // if (r.data.code == 1001) {
           //   messageFun('info', `当前账户余额为${r.data.data}，请先进行充值！`);
           //   return false
         // }
-        else {
-          let list = this.computedResult()
-          for (const taskItem of list) {
-            if (taskItem.FatherTaskUuId) {
-              let val = `transferType=2&userID=${this.user.id}&isRender=1&parent=&taskUuid=${taskItem['FatherTaskUuId']}&layerTaskUuid=${taskItem['layerTaskUuid']}&fileName=${taskItem['FatherSceneName']}`,
-                data = await downloadCompleteFrame(val)
-              this.$store.commit('WEBSOCKET_PLUGIN_SEND', data.data.data)
-            } else {
-              let val = `transferType=2&userID=${this.user.id}&isRender=1&parent=${taskItem['id'] + '-' + taskItem['sceneName']}&taskUuid=${taskItem['taskUuid']}&layerTaskUuid=&fileName=${taskItem['sceneName']}`,
-                data = await downloadCompleteFrame(val)
-              this.$store.commit('WEBSOCKET_PLUGIN_SEND', data.data.data)
-            }
+        else this.downloadingLayerFun()
+      },
+      // 操作 - 下载完成帧 - ing
+      async downloadingLayerFun() {
+        let list = this.computedResult()
+        for (const taskItem of list) {
+          if (taskItem.FatherTaskUuId) {
+            let val = `transferType=2&userID=${this.user.id}&isRender=1&parent=&taskUuid=${taskItem['FatherTaskUuId']}&layerTaskUuid=${taskItem['layerTaskUuid']}&fileName=${taskItem['FatherSceneName']}`,
+              data = await downloadCompleteFrame(val)
+            this.$store.commit('WEBSOCKET_PLUGIN_SEND', data.data.data)
+          } else {
+            let val = `transferType=2&userID=${this.user.id}&isRender=1&parent=${taskItem['id'] + '-' + taskItem['sceneName']}&taskUuid=${taskItem['taskUuid']}&layerTaskUuid=&fileName=${taskItem['sceneName']}`,
+              data = await downloadCompleteFrame(val)
+            this.$store.commit('WEBSOCKET_PLUGIN_SEND', data.data.data)
           }
         }
       },

@@ -223,7 +223,7 @@
       'user': {
         handler: function (val) {
           let num = val.consumption
-          if(num > 10000) this.statistics['list'][0]['unit'] = this.$t('home.statistics.list.unit')[2]
+          if (num > 10000) this.statistics['list'][0]['unit'] = this.$t('home.statistics.list.unit')[2]
           else this.statistics['list'][0]['unit'] = this.$t('home.statistics.list.unit')[0]
           if (num < 100) num = Number(num).toFixed(3)
           else if (100 <= num && num < 1000) num = Number(num).toFixed(2)
@@ -250,10 +250,10 @@
     },
     methods: {
       // 任务列表跳转到task
-      redirectToTask(projectUuid, type, val){
-        if(!val) return false
+      redirectToTask(projectUuid, type, val) {
+        if (!val) return false
         let tableIndex
-        if(type == 'analyzing' || type == 'analyzing' || type == 'analyzing' || type == 'analyzing') tableIndex = 0
+        if (type == 'analyzing' || type == 'analyzing' || type == 'analyzing' || type == 'analyzing') tableIndex = 0
         else tableIndex = 1
         this.$router.push({
           name: 'task',
@@ -700,11 +700,11 @@
               margin-right: 20px;
               width: 403px;
               height: 222px;
-              background-color: rgba(27, 83, 244, 0.9);
+              background-color: rgba(27, 83, 244, 0.15);
               border-radius: 18px;
               padding: 20px;
               box-sizing: border-box;
-              opacity: 0.2;
+
 
               .a {
                 display: flex;
@@ -713,7 +713,7 @@
                   width: 72px;
                   height: 72px;
                   border-radius: 50%;
-                  background-color: rgba(255, 255, 255, 0.19);
+                  background-color: rgba(255, 255, 255, 0.59);
                   display: flex;
                   justify-content: center;
                   align-items: center;
@@ -733,7 +733,7 @@
                     margin-top: 13px;
                     font-size: 16px;
                     font-weight: 500;
-                    color: rgba(255, 255, 255, 1);
+                    color: rgba(27, 83, 244, 0.6);
                     line-height: 24px;
                   }
 
@@ -741,7 +741,7 @@
                     margin-top: 10px;
                     font-size: 12px;
                     font-weight: 400;
-                    color: rgba(255, 255, 255, 0.6);
+                    color: rgba(27, 83, 244, 0.4);
                     line-height: 18px;
                   }
                 }
@@ -761,7 +761,7 @@
                   position: relative;
                   font-size: 14px;
                   font-weight: 400;
-                  color: rgba(255, 255, 255, 0.8);
+                  color: rgba(27, 83, 244, 0.59);
                   line-height: 21px;
 
                   &.worthy {
@@ -775,15 +775,38 @@
                     content: '';
                     width: 1px;
                     height: 9px;
-                    background-color: rgba(255, 255, 255, 1);
-                    box-shadow: 0px 0px 1px 1px rgba(255, 255, 255, 1);
+                    background-color: rgba(27, 83, 244, 0.59);
+                    box-shadow: 0px 0px 1px 1px rgba(27, 83, 244, 0.59);
                   }
                 }
               }
 
               &:hover,
               &.active {
-                opacity: 1;
+                background-color: rgba(27, 83, 244, 1);
+
+                .a .avatarBox {
+                  background-color: rgba(255, 255, 255, 0.19);
+                }
+
+                .a .t {
+                  h6 {
+                    color: rgba(255, 255, 255, 1);
+                  }
+
+                  .date {
+                    color: rgba(255, 255, 255, 0.6);
+                  }
+                }
+
+                .l span {
+                  color: rgba(255, 255, 255, 1);
+
+                  &::before {
+                    background-color: rgba(255, 255, 255, 1);
+                    box-shadow: 0px 0px 1px 1px rgba(255, 255, 255, 1);
+                  }
+                }
               }
             }
           }

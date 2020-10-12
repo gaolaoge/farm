@@ -1384,26 +1384,21 @@
       },
       // 1.选择渲染文件 - 我的资产 - 展开网盘目录
       expandDiskDirectory() {
-        if (this.stepOneBase.showMe) this.stepOneBase.showMe = false
-        else {
-          this.stepOneBase.showMe = true
-          this.$store.commit('WEBSOCKET_BACKS_SEND', {
-            'code': 612,
-            'customerUuid': this.user.id,
-            'path': ''
-          })
-        }
+        this.stepOneBase.showMe = !this.stepOneBase.showMe
       },
-      // 1.选择渲染文件 - 我的电脑 -【添加】新场景文件
+      // 1.选择渲染文件 - 我的电脑 -【添加】新场景文件 - 前期预判
       operateBtnAddMore() {
-        if (!this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_INIT', true)
-        else if (this.stepOneBase.local.filelist.length == 20) messageFun('info', '操作失败，不能选择超过20个场景文件！')
+        if (this.stepOneBase.local.filelist.length == 20) messageFun('info', '操作失败，不能选择超过20个场景文件！')
         else if (this.socket_plugin === 'err') messageFun('error', '插件连接中，请稍后重试')
-        // 通知插件选择本地文件
-        else this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
-            transferType: 3,                  // 传输类型
-            suffix: this.renderFileTypeList   // 文件后缀
-          })
+        else if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.operateBtnAddMoreing())
+        else this.operateBtnAddMoreing()
+      },
+      // 1.选择渲染文件 - 我的电脑 -【添加】新场景文件 - ing
+      operateBtnAddMoreing(){
+        this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
+          transferType: 3,                  // 传输类型
+          suffix: this.renderFileTypeList   // 文件后缀
+        })
       },
       // 1.选择渲染文件 - 我的电脑 -【删除】新场景文件
       operateBtnDelete() {
@@ -1504,7 +1499,6 @@
             }
             return children
           }
-
           this.stepOneBase.netdisc.catalogData = this.stepOneBase.netdisc.catalogData.concat(g(JSON.parse(item)))
         })
       },

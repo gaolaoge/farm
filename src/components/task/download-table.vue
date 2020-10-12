@@ -406,8 +406,8 @@
       },
       // 清除筛选条件
       clearFilterF(type) {
-        if(type == 'status') this.table.renderStatus = []
-        else if(type == 'task') this.table.projectUuidList = []
+        if (type == 'status') this.table.renderStatus = []
+        else if (type == 'task') this.table.projectUuidList = []
         this.getList(null)
       },
       // farm-drawer 翻页
@@ -515,9 +515,9 @@
             'val': val['status']
           })
           this.table.renderStatus = val['status'].map(item => {
-            if(item == '渲染中') return 2
-            else if(item == '待全部渲染') return 5
-            else if(item == '渲染暂停' || item == '渲染完成') return 3
+            if (item == '渲染中') return 2
+            else if (item == '待全部渲染') return 5
+            else if (item == '渲染暂停' || item == '渲染完成') return 3
           })
           this.getList(null)
         } else if (Object.keys(val)[0] == 'task') {
@@ -584,11 +584,11 @@
       closeDrawer() {
         this.showDrawer = false
         let d = this.$refs.downLoadTable.getElementsByClassName('farmTableSelected')[0]
-        if(d) d.classList.remove('farmTableSelected')
+        if (d) d.classList.remove('farmTableSelected')
       },
       // 获取列表
       async getList(obj, reset) {
-        if(reset) this.closeDrawer()
+        if (reset) this.closeDrawer()
         // {
         //   zoneUuid: '',            // 分区ID
         //   keyword: '',             // 关键字
@@ -1050,29 +1050,31 @@
       renderAgainFun() {
         this.dialogTableVisible = true
       },
-      // 操作 - 下载完成帧
+      // 操作 - 下载完成帧 - 前期预判
       downloadFils() {
         if (!this.table.renderSelectionList.length) return false
-        if (!this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_INIT', true)
-          // let r = await seeBalance()
-          // if (r.data.code == 1001) {
-          //   messageFun('info', `当前账户余额为${r.data.data}，请先进行充值！`);
-          //   return false
+        if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.downloadingFile())
+        else this.downloadingFile()
+        // let r = await seeBalance()
+        // if (r.data.code == 1001) {
+        //   messageFun('info', `当前账户余额为${r.data.data}，请先进行充值！`);
+        //   return false
         // }
-        setTimeout(async () => {
-          let list = this.computedResult()
-          for (const taskItem of list) {
-            if (taskItem.FatherId) {
-              let val = `transferType=2&userID=${this.user.id}&isRender=1&parent=&taskUuid=${taskItem['FatherTaskUuId']}&layerTaskUuid=${taskItem['taskUuid']}&fileName=${taskItem['FatherSceneName']}`,
-                data = await downloadCompleteFrame(val)
-              this.$store.commit('WEBSOCKET_PLUGIN_SEND', data.data.data)
-            } else {
-              let val = `transferType=2&userID=${this.user.id}&isRender=1&parent=${taskItem['id'] + '-' + taskItem['sceneName']}&taskUuid=${taskItem['taskUuid']}&layerTaskUuid=&fileName=${taskItem['sceneName']}`,
-                data = await downloadCompleteFrame(val)
-              this.$store.commit('WEBSOCKET_PLUGIN_SEND', data.data.data)
-            }
+      },
+      // 操作 - 下载完成帧 - ing
+      async downloadingFile() {
+        let list = this.computedResult()
+        for (const taskItem of list) {
+          if (taskItem.FatherId) {
+            let val = `transferType=2&userID=${this.user.id}&isRender=1&parent=&taskUuid=${taskItem['FatherTaskUuId']}&layerTaskUuid=${taskItem['taskUuid']}&fileName=${taskItem['FatherSceneName']}`,
+              data = await downloadCompleteFrame(val)
+            this.$store.commit('WEBSOCKET_PLUGIN_SEND', data.data.data)
+          } else {
+            let val = `transferType=2&userID=${this.user.id}&isRender=1&parent=${taskItem['id'] + '-' + taskItem['sceneName']}&taskUuid=${taskItem['taskUuid']}&layerTaskUuid=&fileName=${taskItem['sceneName']}`,
+              data = await downloadCompleteFrame(val)
+            this.$store.commit('WEBSOCKET_PLUGIN_SEND', data.data.data)
           }
-        }, 1000)
+        }
       },
       // 操作 - 拷贝
       async copyFun() {

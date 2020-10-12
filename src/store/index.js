@@ -98,7 +98,6 @@ export default new Vuex.Store({
       state.socket_plugin.addEventListener('open', () => {
         console.log('--与插件连接成功--')
         this.commit('toZore', 'socket_plugin_time')
-        return true
       })
       state.socket_plugin.addEventListener('error', () => {
         if (state.socket_plugin_time >= 3) {
@@ -268,5 +267,31 @@ export default new Vuex.Store({
       s.user.haveCapacity = val
     }
   },
-  actions: {}
+  actions: {
+    WEBSOCKET_PLUGIN_INIT(context, triggerPlugin){
+      return new Promise((resolve, reject) => {
+        if(triggerPlugin && context.state.socket_plugin_time == 0) messageFun('info', '正在启动传输插件，请稍后…')
+        context.state.socket_plugin = new WebSocket(process.env.PLUGIN_WS_API)
+        context.state.socket_plugin.addEventListener('open', () => {
+          console.log('--与插件连接成功--')
+          context.commit('toZore', 'socket_plugin_time')
+          resolve()
+        })
+        context.state.socket_plugin.addEventListener('error', () => {
+          if (context.state.socket_plugin_time >= 3) {
+            console.log('--与插件连接失败--')
+            context.commit('becomeErr', 'socket_plugin')
+            context.commit('toZore', 'socket_plugin_time')
+            if(triggerPlugin) context.commit('openPluginDialog', true)
+          } else {
+            context.commit('addOne', 'socket_plugin_time')
+            console.log('--与插件连接失败，尝试重新连接--')
+            context.dispatch('WEBSOCKET_PLUGIN_INIT', triggerPlugin)
+          }
+        })
+        context.state.socket_plugin.addEventListener('message', data => context.state.socket_plugin_msg = data)
+      })
+    }
+
+  }
 })

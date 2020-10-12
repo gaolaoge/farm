@@ -36,10 +36,19 @@ export function setCopySetData(data) {
   })
 }
 
-// 下载完成帧
+// 主任务 or 层任务【下载完成帧】
 export function downloadCompleteFrame(data) {
   return businessServer({
     url: `/professional/download/getDownloadPath?${data}`,
     method: 'GET'
+  })
+}
+
+// 帧任务【下载完成帧】
+export function downloadCompleteFrameMini(data) {
+  return businessServer({
+    url: `/professional/download/getFrameDownloadPath`,
+    method: 'POST',
+    data
   })
 }

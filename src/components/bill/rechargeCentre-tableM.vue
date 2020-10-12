@@ -129,14 +129,14 @@
           label="实际支付金额（元）"
           show-overflow-tooltip
           sortable
-          width="200"/>
+          width="172"/>
         <!--充值到账（金币）-->
         <el-table-column
           prop="realArrive"
           label="充值到账（金币）"
           sortable
           show-overflow-tooltip
-          width="200"/>
+          width="172"/>
         <!--充值说明 -->
         <el-table-column
           prop="directions"
@@ -148,7 +148,7 @@
           prop="paymentMethod"
           label="充值方式"
           show-overflow-tooltip
-          width="120"/>
+          width="100"/>
         <!--支付单号-->
         <el-table-column
           label="支付单号"
@@ -160,6 +160,12 @@
             </span>
           </template>
         </el-table-column>
+        <!--开票标识-->
+        <el-table-column
+          label="开票标识"
+          prop="invoice"
+          show-overflow-tooltip
+          width="110"/>
         <!--交易时间-->
         <el-table-column
           prop="date"
@@ -170,7 +176,7 @@
         <el-table-column
           label="操作"
           show-overflow-tooltip
-          width="200">
+          width="100">
           <template slot-scope="scope">
             <div class="download-tab"
                  @click="operateFun(scope.row)"
@@ -223,15 +229,16 @@
         table: {
           rechargeData: [
             // {
-            //   id: '',               //交易ID
-            //   state: '',            //交易状态
-            //   realPay: '',          //实际支付金额（元）
-            //   realArrive: '',       //充值到账（金币）
-            //   directions: '',       //充值说明
-            //   paymentMethod: '',    //充值方式
-            //   singleNumber: '',     //支付单号
-            //   date: '',             //交易时间
-            //   operate: ''           //操作
+            //   id: '',               // 交易ID
+            //   state: '',            // 交易状态
+            //   realPay: '',          // 实际支付金额（元）
+            //   realArrive: '',       // 充值到账（金币）
+            //   directions: '',       // 充值说明
+            //   paymentMethod: '',    // 充值方式
+            //   singleNumber: '',     // 支付单号
+            //   date: '',             // 交易时间
+            //   operate: ''           // 操作
+            //   invoice: ''           // 开票标识
             // },
           ],
           outPutTableTotal: 0,
@@ -345,7 +352,7 @@
       // 获取table数据
       async getList() {
         let f = this.filter,
-          t = `paymentStatus=${f.tradingtatusVal}&paymentTitle=${f.paymentMethodVal}&invoice=${f.markVal}&productOrderUuid=${f.singleNumberVal}&beginTime=${f.date ? f.date[0].getTime() : 0}&endTime=${f.date ? f.date[1].getTime() : new Date().getTime()}&sortColumn=1&sortBy=1&pageIndex=${this.table.currentPage}&pageSize=${Number(this.table.pageSize)}`,
+          t = `paymentStatus=${f.tradingtatusVal}&paymentTitle=${f.paymentMethodVal}&invoice=${f.markVal}&productOrderUuid=${f.singleNumberVal}&beginTime=${f.date ? f.date[0].getTime() : 0}&endTime=${f.date ? f.date[1].getTime() : new Date().getTime()}&sortColumn=1&sortBy=0&pageIndex=${this.table.currentPage}&pageSize=${Number(this.table.pageSize)}`,
           data = await getUpTopTable(t)
         this.table.outPutTableTotal = data.data.total
         this.table.rechargeData = data.data.data.map(curr => {
@@ -364,7 +371,22 @@
               break
           }
           if (!curr.actualPayment) curr.actualPayment = '-'
-          let {year, month, day, hour, minutes, seconds} = createCalendar(new Date(curr.updateTime))
+          let {year, month, day, hour, minutes, seconds} = createCalendar(new Date(curr.updateTime)),
+            invoice
+          switch(curr.invoice){
+            case 0:
+              invoice = '不可开票'
+              break
+            case 1:
+              invoice = '未开票'
+              break
+            case 2:
+              invoice = '已开票'
+              break
+            case 3:
+              invoice = '待审核'
+              break
+          }
           return {
             id: curr.outTradeNo,                // 交易ID
             state: curr.paymentStatus,            // 交易状态
@@ -375,7 +397,7 @@
             singleNumber: curr.productOrderUuid ? curr.productOrderUuid : '-',  // 支付单号
             date: `${year}-${month}-${day} ${hour}:${minutes}:${seconds}`,                // 交易时间
             dateDefault: curr.updateTime,
-            invoice: curr.invoice,                // 开票标识
+            invoice,                              // 开票标识
             operate: curr.operate                 // 操作
           }
         })

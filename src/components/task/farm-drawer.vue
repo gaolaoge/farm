@@ -970,6 +970,7 @@
   import {
     getThumbnail,
     setCopySetData,
+    downloadCompleteFrameMini
   } from '@/api/task-api'
   import {
     getRenderMode
@@ -1365,7 +1366,7 @@
           valState: this.taskData.status
         })
         this.details.showProgress = false
-        if(this.taskData.status) switch (this.taskData.status) {
+        if (this.taskData.status) switch (this.taskData.status) {
           case '上传中...':
             this.details.valProgress = '上传中，请稍后……'
             this.details.showProgress = true
@@ -1393,7 +1394,7 @@
         // this.details.showProgress = false
         let data = await upTopTableSeeMore(`taskUuid=${this.taskData.taskUuid}`)
         this.loading.close()
-        if(data.data.data.status) this.details.status = data.data.data.status
+        if (data.data.data.status) this.details.status = data.data.data.status
         this.getItemList()
         if (data.data.data.warningMessage)
           this.details.warningList = data.data.data.warningMessage.map(curr => {
@@ -1541,29 +1542,20 @@
       // 超时提醒改变
       changeSliderVal(e) {
         let n = Number(e.target.value)
-        if (n >= 1 && 72 >= n) {
-          this.setting.other.remindVal = n
-        } else {
-          this.setting.other.remindVal = 12
-        }
+        if (n >= 1 && 72 >= n) this.setting.other.remindVal = n
+        else this.setting.other.remindVal = 12
       },
       // 超时停止改变
       changeStopVal(e) {
         let n = Number(e.target.value)
-        if (n >= 1 && 72 >= n) {
-          this.setting.other.stopVal = n
-        } else {
-          this.setting.other.stopVal = 24
-        }
+        if (n >= 1 && 72 >= n) this.setting.other.stopVal = n
+        else this.setting.other.stopVal = 24
       },
       // 样式 勿改动
       tableRowClassName({row, rowIndex}) {
-        if (rowIndex % 2 == 1) {
-          return 'warning-row';
-        } else if (rowIndex % 2 == 0) {
-          return 'success-row';
-        }
-        return '';
+        if (rowIndex % 2 == 1) return 'warning-row'
+        else if (rowIndex % 2 == 0) return 'success-row'
+        else return ''
       },
       // 帧范围修改
       rangeChange(e, index, val, row) {
@@ -1926,33 +1918,40 @@
           messageFun('error', '报错，操作失败')
         }
       },
-      // 渲染结果 - 主 - 操作 - 下载完成帧
+      // 渲染结果 - 主 - 操作 - 下载完成帧 - 前期预判
       async operateDownloadFrame() {
-        if (this.result.operateBtnList[2]['classState']) return false
-        if (!this.result.selectionResult.length) return false
-        if (!this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_INIT', true)
+        if (!this.result.selectionResult.length || this.result.operateBtnList[2]['classState']) return false
+        else if (!this.socket_plugin)this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.operateDownloadFrameing())
+        else this.operateDownloadFrameing()
         // let data = await seeBalance()
         // if (data.data.code == 1001) {
         //   messageFun('error', `当前账户余额为${data.data.data}，请先进行充值！`);
         //   return false
         // }
-        setTimeout(() => {
-          let fileList = this.result.selectionResult.map(item => {
-            let index = item['outFilePath'].indexOf(item.taskTaskUuid)
-            return {
-              path: '\\' + item['outFilePath'].slice(index) + item['fileName'],
-              taskID: this.taskData['id'],             // 任务ID
-              fileName: this.taskData['sceneName']     // 场景名
-            }
-          })
-          this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
-            'transferType': 2,
-            'userID': this.user.id,
-            isRender: 1,
-            parent: '',
-            fileList
-          })
-        }, 1000)
+      },
+      // 渲染结果 - 主 - 操作 - 下载完成帧 - ing
+      operateDownloadFrameing(){
+        this.$confirm('将下载选中选, 是否继续?', '提示信息', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        })
+          .then(
+            async () => {
+              console.log(this.result.selectionResult[0])
+              let data = await downloadCompleteFrameMini({
+                'transferType': 2,
+                'userID': this.user.id,
+                isRender: 1,
+                parent: '',
+                fileName: this.result.selectionResult[0]['sceneName'],
+                layerTaskUuid: this.result.selectionResult[0]['layerTaskUuid'],
+                frameTaskUuid: this.result.selectionResult.map(frame => frame.frameTaskUuid)
+              })
+              this.$store.commit('WEBSOCKET_PLUGIN_SEND', data.data.data)
+            },
+            () => messageFun('info', '已取消下载')
+          )
       },
       // 渲染结果 - 主 - 操作 - 重新渲染
       operateRenderAgain() {
@@ -1980,17 +1979,20 @@
             messageFun('error', '报错，操作失败')
             console.log(error)
           })
-      },
+      }
+      ,
       // 渲染结果 - 详情 - 操作 - 返回
       moreOperateBack() {
         this.result.showDetails = false
         this.demo = null
-      },
+      }
+      ,
       // 渲染结果 - 详情 - 操作 - 下载日志
       async moreOperateDownload() {
         let data = await downloadLog(`layerTaskUuid=${this.result.detailsTableData[0]['layerTaskUuid']}&frameTaskUuid=${this.result.detailsTableData[0]['frameTaskUuid']}`)
         // exportDownloadFun(data, data.headers.file, 'text')  事件交接给C
-      },
+      }
+      ,
       // 分析结果 - 进入设置参数 - 获取预设信息
       async setParameter() {
         const loading = this.$loading({
@@ -2007,11 +2009,13 @@
           return false
         }
         this.setParameterNext(data)
-      },
+      }
+      ,
       // 翻到指定页 【分析结果-details】【设置参数-setting】【渲染结果-result】
       turnPage(path) {
         this.$emit('changeTypeInfo', path)
-      },
+      }
+      ,
       // 分析结果 - 进入设置参数 - 配置预设信息
       setParameterNext(data) {
         // 翻到【设置参数】
@@ -2062,11 +2066,13 @@
         this.setting.num.tableData = [this.setting.num.tableDataAll[0]]
         // 渲染层数默认选中索引1
         setTimeout(() => this.$refs.renderTable.toggleRowSelection(this.setting.num.tableData[0], true), 0)
-      },
+      }
+      ,
       // 设置参数 - 返回分析结果
       settingBack() {
         this.$emit('changeTypeInfo', 'upload-table')
-      },
+      }
+      ,
       // 设置参数 项目列表
       getItemList(name) {
         getConsumptionSelectList()
@@ -2088,14 +2094,16 @@
             }
 
           })
-      },
+      }
+      ,
       // 设置参数 启动分层渲染按钮 改变
       h() {
         let s = this.setting.num
         this.$refs.renderTable.clearSelection()
         s.selected = []
         s.singleChoiceVal == 1 ? s.tableData = s.tableDataAll : s.tableData = [s.tableDataAll[0]]
-      },
+      }
+      ,
       // 设置参数 - 优先渲染 - 验证自定义帧格式
       verifFormat() {
         let val = this.setting.priority.customize
@@ -2142,7 +2150,8 @@
 
         if (valList.some(item => !result.has(Number(item)))) this.errFun('优先帧超出帧范围，请重新输入')
         else this.setting.priority.customizeInputError = false
-      },
+      }
+      ,
       // 验证报错
       errFun(text) {
         messageFun('error', text)

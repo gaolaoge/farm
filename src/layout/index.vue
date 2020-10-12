@@ -152,7 +152,6 @@
       },
       // 触发插件
       triggerPlugin() {
-
         let son = document.createElement('IFRAME')
         document.body.appendChild(son)
         son.src = 'jhzy://'
@@ -161,7 +160,7 @@
       // 打开【传输列表】
       openPlugin() {
         if (this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_SEND', 'open')
-        else this.$store.commit('WEBSOCKET_PLUGIN_INIT', true)
+        else this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.$store.commit('WEBSOCKET_PLUGIN_SEND', 'open'))
       }
     }
   }

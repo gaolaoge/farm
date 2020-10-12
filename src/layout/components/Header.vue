@@ -2,7 +2,7 @@
   <div class="header-wrapper" :class="[{'non-home': !inHome}]">
     <div class="wrapper">
       <!--公告-->
-      <div class="bulletin" v-show="bulletin.length">
+      <div class="bulletin">
         <div class="c" :style="{'margin-top': bulletinIndex * -44 + 'px'}">
           <div v-for="(item,index) in bulletin" :key="index" class="k">
             <img src="@/icons/bulletin-icon.png" class="bulletin-icon">

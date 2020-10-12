@@ -826,37 +826,37 @@
         if (data.data.code == 200) {
           messageFun('success', '操作成功');
           this.getRenderItemMoreTableF()
-        } else {
-          messageFun('error', '报错，操作失败')
-        }
+        } else messageFun('error', '报错，操作失败')
       },
       // 渲染结果 - 主 - 操作 - 下载完成帧
-      async operateDownloadFrame() {
+      operateDownloadFrame() {
         if (this.result.operateBtnList[2]['classState']) return false
         if (!this.result.selectionResult.length) return false
-        if (!this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_INIT', true)
+        if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.operateDownloadingFrame())
+        else this.operateDownloadingFrame()
         // let data = await seeBalance()
         // if (data.data.code == 1001) {
         //   messageFun('error', `当前账户余额为${data.data.data}，请先进行充值！`);
         //   return false
         // }
-        setTimeout(() => {
-          let fileList = this.result.selectionResult.map(item => {
-            let index = item['outFilePath'].indexOf(item.taskTaskUuid)
-            return {
-              path: '\\' + item['outFilePath'].slice(index) + item['fileName'],
-              taskID: this.taskData['id'],             // 任务ID
-              fileName: this.taskData['sceneName']     // 场景名
-            }
-          })
-          this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
-            'transferType': 2,
-            'userID': this.user.id,
-            isRender: 1,
-            parent: '',
-            fileList
-          })
-        }, 100)
+      },
+      // 渲染结果 - 主 - 操作 - 下载完成帧
+      async operateDownloadingFrame() {
+        let fileList = this.result.selectionResult.map(item => {
+          let index = item['outFilePath'].indexOf(item.taskTaskUuid)
+          return {
+            path: '\\' + item['outFilePath'].slice(index) + item['fileName'],
+            taskID: this.taskData['id'],             // 任务ID
+            fileName: this.taskData['sceneName']     // 场景名
+          }
+        })
+        this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
+          'transferType': 2,
+          'userID': this.user.id,
+          isRender: 1,
+          parent: '',
+          fileList
+        })
       },
       // 渲染结果 - 主 - 操作 - 重新渲染
       operateRenderAgain() {
