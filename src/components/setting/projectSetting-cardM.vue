@@ -123,7 +123,6 @@
         </div>
       </div>
     </div>
-
     <!--编辑项目dialog-->
     <div class="editProject" v-show="editBaseShow">
       <div class="editBase">
@@ -183,7 +182,6 @@
         </div>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -450,8 +448,7 @@
     ,
     components: {
       AvatarCutter,
-    }
-    ,
+    },
     computed: {
       verif() {
         return (Boolean(this.newNameErr) || !Boolean(this.createProject.name.trim()))
@@ -531,7 +528,7 @@
       }
 
       .con {
-        padding: 0px 80px;
+        padding: 0px 30px;
 
         .name {
           height: 36px;
@@ -546,7 +543,7 @@
         }
 
         .btn-group {
-          margin-top: 50px;
+          margin-top: 30px;
           text-align: right;
           width: 100%;
         }
@@ -554,12 +551,12 @@
     }
 
     .createBase {
-      width: 588px;
-      height: 273px;
+      width: 500px;
+      height: 220px;
 
       .con {
         .name {
-          width: 428px;
+          width: 100%;
 
           &.err {
             color: rgba(255, 62, 77, 1);

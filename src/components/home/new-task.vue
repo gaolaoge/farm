@@ -1482,7 +1482,7 @@
       },
       // 4.创建成功
       createSuc() {
-        messageFun('success', '创建成功')
+        messageFun('success', '新建成功，请等待上传分析完成！')
         this.closeDialogFun()
         sessionStorage.setItem('taskListActive', '0')
         this.$router.push('/task')

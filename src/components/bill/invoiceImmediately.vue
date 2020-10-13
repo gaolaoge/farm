@@ -65,12 +65,12 @@
         <!--发票类型-->
         <div class="item">
           <span class="label">{{ typeLabel }}：</span>
-<!--          <el-radio-group v-model="typeVal" class="radio">-->
-<!--            <el-radio :label="item.value"-->
-<!--                      v-for="(item,index) in typeValList"-->
-<!--                      :key="index">{{ item.label }}-->
-<!--            </el-radio>-->
-<!--          </el-radio-group>-->
+          <!--          <el-radio-group v-model="typeVal" class="radio">-->
+          <!--            <el-radio :label="item.value"-->
+          <!--                      v-for="(item,index) in typeValList"-->
+          <!--                      :key="index">{{ item.label }}-->
+          <!--            </el-radio>-->
+          <!--          </el-radio-group>-->
           <span class="typeV">{{ typeV }}</span>
         </div>
         <!--发票抬头-->
@@ -115,7 +115,7 @@
                 width="80"
                 label="是否默认">
                 <template slot-scope="scope">
-                  <span>{{ scope.row.isDefault == 0 ? '非默认' : '默认' }}</span>
+                  <span>{{ scope.row.isDefault == 0 ? '否' : '是' }}</span>
                 </template>
               </el-table-column>
 
@@ -349,7 +349,7 @@
         }
       },
       // 即时验证
-      instantVerif(type){
+      instantVerif(type) {
         let list = this.dialogData.list
         if (type == 'email' && list[2]['Val']) {  // 邮箱
           if (this.regExp.email.test(list[2]['Val'])) list[2]['errInfo'] = false
@@ -386,7 +386,7 @@
         let data = await getInvoiceHeaderListF()
         if (data.data.code == 200) {
           let index = data.data.data.findIndex(item => item.isDefault == 1)
-          if(index) {
+          if (index) {
             data.data.data.unshift(data.data.data[index])
             data.data.data.splice(index + 1, 1)
           }
@@ -416,11 +416,11 @@
         } else if (!list[2]['Val']) {
           messageFun('info', '【邮箱】为必填项')
           return false
-        } else if (list[0]['errInfo'] || list[1]['errInfo'] || list[2]['errInfo'] || list[4]['errInfo']){
+        } else if (list[0]['errInfo'] || list[1]['errInfo'] || list[2]['errInfo'] || list[4]['errInfo']) {
           messageFun('info', '已填项存在错误')
           return false
         }
-          let data = await addInvoiceHeader({
+        let data = await addInvoiceHeader({
           invoiceTitle: list[0]['Val'],                 // 发票抬头
           taxpayerId: list[1]['Val'],                   // 纳税人识别号
           email: list[2]['Val'],                        // 邮箱
@@ -526,13 +526,11 @@
           invoiceSettingUuid: this.invoiceTableData[this.checked]['invoiceSettingUuid']     // 发票抬头uuid
         })
         if (data.data.code == 200) {
-          messageFun('success', '操作成功')
+          messageFun('success', '发票申请已经提交到管理员，我们将会在5个工作日内给您回复，请耐心等待！')
           this.getRechargeList()
           this.checked = null
           this.recordingSelection = []
-          this.$router.push({name: 'bill', params: {
-            index: 2
-            }})
+          this.$router.push({name: 'bill', params: {index: 2}})
         }
       },
       // 复位
@@ -789,7 +787,7 @@
   }
 
   .valTable {
-    /deep/.el-table__body-wrapper{
+    /deep/ .el-table__body-wrapper {
       min-height: 67px;
       height: calc(100vh - 780px);
     }

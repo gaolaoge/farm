@@ -1032,11 +1032,11 @@
       psFormat() {
         let t = this.login.forgetMode,
           f = this.login.formStatus
-        if (!this.reg.passwordReg1.test(t.newPassWord)) {
-          t.warnInfo.newPassWord = this.$t('login_page.message.ps_verif_one')
-          f.newPassWord = false
-        } else if (!this.reg.passwordReg2.test(t.newPassWord)) {
+        if (!this.reg.passwordReg2.test(t.newPassWord)) {
           t.warnInfo.newPassWord = this.$t('login_page.message.ps_verif_two')
+          f.newPassWord = false
+        } else if (!this.reg.passwordReg1.test(t.newPassWord)) {
+          t.warnInfo.newPassWord = this.$t('login_page.message.ps_verif_one')
           f.newPassWord = false
         } else {
           f.newPassWord = true

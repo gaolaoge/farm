@@ -82,7 +82,7 @@
         layout="prev, pager, next, jumper"
         :total="table.total">
       </el-pagination>
-      <div class="farm-primary-form-btn btn" @click="refreshF">
+      <div class="farm-primary-form-btn btn" @click="refreshF(false)">
         <span>{{ refresh }}</span>
       </div>
     </div>
@@ -119,6 +119,32 @@
         </div>
       </div>
     </el-dialog>
+    <!--新建文件夹dialog-->
+    <div class="createProject" v-show="createBaseShow">
+      <div class="createBase">
+        <div class="tit">
+          <span>{{ createProject.tit }}</span>
+          <img src="@/icons/shutDialogIcon.png" @click="createCancelBtnFun">
+        </div>
+        <div class="con">
+          <input type="text"
+                 class="name"
+                 :class="[{'err': newNameErr}]"
+                 @focus="newNameErr = false"
+                 @keyup.enter="createSaveBtnFun"
+                 v-model="createProject.name"
+                 :placeholder="createProject.placeholder">
+          <div class="btn-group">
+            <div class="farm-btn cancel" @click="createCancelBtnFun">
+              <span>{{ btnCancel }}</span>
+            </div>
+            <div class="farm-btn save" :class="[{'cannotBeGo': verif}]" @click="createSaveBtnFun">
+              <span>{{ btnSave }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -166,7 +192,16 @@
           },
           resolve: null,         // 回调函数
         },
-        refresh: '刷新'
+        refresh: '刷新',
+        createBaseShow: false,
+        createProject: {
+          tit: '新建文件夹',
+          name: '',
+          placeholder: '请输入项目名称',
+        },
+        newNameErr: false,       // 新建文件夹
+        btnCancel: '取消',
+        btnSave: '确定',
       }
     },
     props: {
@@ -226,6 +261,7 @@
             // 新建文件夹 创建成功 || 删除
             messageFun('success', '操作成功')
             this.getAssetsCatalog(this.path, this.searchInputVal)
+            this.createCancelBtnFun()
           } else if (data.msg == '6042') {
             // 删除失败
             messageFun('info', data.data)
@@ -260,8 +296,11 @@
     methods: {
       ...mapActions(['WEBSOCKET_PLUGIN_INIT']),
       // 刷新
-      refreshF() {
-        this.getAssetsCatalog(this.path, this.searchInputVal)
+      refreshF(refresh) {
+        if(!refresh) {
+          this.$emit('clearInput', 'upload')
+          this.getAssetsCatalog(this.path, '')
+        } else this.getAssetsCatalog(this.path, this.searchInputVal)
       },
       // 解压 输入密码
       sendPassword() {
@@ -342,23 +381,23 @@
           networkPath: this.uploadType == 1 ? '' : this.path,
         })
       },
-      // 新建文件夹
+      // 新建文件夹 - 显示窗口
       createFolder() {
-        this.$prompt('请输入文件夹名称', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          inputPattern: /\S/,
-          inputErrorMessage: '文件夹名不能为空'
+        this.createBaseShow = true
+      },
+      // 新建文件夹 - 保存
+      async createSaveBtnFun() {
+        if(!this.verif) this.$store.commit('WEBSOCKET_BACKS_SEND', {
+          'code': 603,
+          'customerUuid': this.user.id,
+          filePath: this.path,
+          newFileName: this.createProject.name
         })
-          .then(({value}) => {
-            this.$store.commit('WEBSOCKET_BACKS_SEND', {
-              'code': 603,
-              'customerUuid': this.user.id,
-              filePath: this.path,
-              newFileName: value
-            })
-          })
-          .catch(() => null)
+      },
+      // 新建文件夹 - 取消
+      createCancelBtnFun(){
+        this.createProject.name = ''
+        this.createBaseShow = false
       },
       // 下载 - 预判
       downloadFile() {
@@ -478,7 +517,10 @@
       this.getAssetsCatalog('', this.searchInputVal)
     },
     computed: {
-      ...mapState(['user', 'socket_backS', 'socket_plugin', 'socket_backS_msg', 'socket_plugin_msg'])
+      ...mapState(['user', 'socket_backS', 'socket_plugin', 'socket_backS_msg', 'socket_plugin_msg']),
+      verif() {
+        return (Boolean(this.newNameErr) || !Boolean(this.createProject.name.trim()))
+      },
     }
   }
 </script>
@@ -597,6 +639,85 @@
 
           span {
             color: rgba(22, 29, 37, 0.79);
+          }
+        }
+      }
+    }
+  }
+  .createProject {
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4);
+    user-select: none;
+
+    .createBase {
+      background-color: rgba(255, 255, 255, 1);
+      box-shadow: 0px 1px 6px 0px rgba(27, 83, 244, 0.15);
+      border-radius: 8px;
+      overflow: hidden;
+
+      .tit {
+        height: 36px;
+        text-align: center;
+        background-color: rgba(241, 244, 249, 1);
+        box-shadow: 0px 1px 6px 0px rgba(27, 83, 244, 0.3);
+        padding: 0px 30px;
+        box-sizing: border-box;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+
+        span {
+          font-size: 14px;
+          font-weight: 600;
+          color: rgba(22, 29, 37, 1);
+        }
+
+        img {
+          cursor: pointer;
+        }
+      }
+
+      .con {
+        padding: 0px 30px;
+
+        .name {
+          height: 36px;
+          border-radius: 8px;
+          border: 1px solid rgba(22, 29, 37, 0.4);
+          background-color: transparent;
+          outline: none;
+          margin: 20px 0px;
+          padding-left: 16px;
+          box-sizing: border-box;
+          color: rgba(22, 29, 37, 1);
+        }
+
+        .btn-group {
+          margin-top: 30px;
+          text-align: right;
+          width: 100%;
+        }
+      }
+    }
+
+    .createBase {
+      width: 500px;
+      height: 220px;
+
+      .con {
+        .name {
+          width: 100%;
+
+          &.err {
+            color: rgba(255, 62, 77, 1);
           }
         }
       }

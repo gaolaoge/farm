@@ -30,11 +30,10 @@
               :value="item.value"/>
           </el-select>
         </div>
-        <!--查询时间-->
+        <!--开票时间-->
         <div class="filter-item f">
           <span class="filter-item-label">
             {{ filter.inquireLabel }}：
-            <!--            {{ filter.date }}-->
           </span>
           <el-date-picker
             v-model="filter.date"
@@ -44,7 +43,6 @@
             start-placeholder="开始日期"
             end-placeholder="结束日期">
           </el-date-picker>
-          <!--          <model-calendar style="display: inline-block;" ref="calendar" @changeSelectDate="changeFilterDate"/>-->
         </div>
         <!--查询-->
         <div class="filter-btn primary" @click="getList">
@@ -265,12 +263,12 @@
               break
           }
           return {
-            invoice: curr.invoiceTitle,          // 发票抬头
-            invoiceNum: curr.taxpayerId,         // 纳税人标识号
-            invoiceAmount: curr.invoiceAmount,   // 发票金额（元）
+            invoice: curr.invoiceTitle,                                      // 发票抬头
+            invoiceNum: curr.taxpayerId,                                     // 纳税人标识号
+            invoiceAmount: curr.invoiceAmount.toFixed(2),         // 发票金额（元）
             invoiceType: curr.invoiceType == 0 ? '增值税普票' : '-',           // 发票类型
-            invoiceState: status,                // 发票状态
-            email: curr.email,                   // 邮箱
+            invoiceState: status,                                            // 发票状态
+            email: curr.email,                                               // 邮箱
             date: `${year}-${month}-${day} ${hour}:${minutes}:${seconds}`,   // 开票时间
           }
         })

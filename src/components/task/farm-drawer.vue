@@ -2077,22 +2077,15 @@
       getItemList(name) {
         getConsumptionSelectList()
           .then(data => {
-            this.setting.other.viewList = data.data.data.map(curr => {
-              return {
+            let other = this.setting.other
+            other.viewList = data.data.data.map(curr => Object.assign(curr, {
                 value: curr.taskProjectUuid + '-/-' + curr.projectName,
                 label: curr.projectName,
                 id: curr.taskProjectUuid
-              }
-            })
-            if (!name) {
-              this.setting.other.view = this.setting.other.viewList[0]['value']
-            } else {
-              let obj = this.setting.other.viewList.find(curr => {
-                return curr.label == name
               })
-              this.setting.other.view = obj['value']
-            }
-
+            )
+            if (!name) other.view = other.viewList.find(item => item.isDefault == 1)['value']
+            else other.view = other.viewList.find(curr => curr.label == name)['value']
           })
       }
       ,

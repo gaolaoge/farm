@@ -110,8 +110,7 @@ const sortF = function (a, b) {
 const createTableIconList = function () {
   setTimeout(() => {
     // 筛选图标
-    if (document.getElementsByClassName('iconshaixuan2').length) return false
-    else {
+    if (!document.getElementsByClassName('iconshaixuan2').length) {
       let t = [...document.getElementsByClassName('el-icon-arrow-down')]
       t.forEach(curr => {
         let i = document.createElement('I'),
@@ -125,8 +124,7 @@ const createTableIconList = function () {
       })
     }
     // 排序图标
-    if (document.getElementsByClassName('kkkk').length) return false
-    else {
+    if (!document.getElementsByClassName('kkkk').length) {
       let q = [...document.getElementsByClassName('ascending')]
       q.forEach(curr => {
         let i = document.createElement('I')
@@ -143,9 +141,8 @@ const createTableIconList = function () {
       })
     }
     // 展开图标
-    if (document.getElementsByClassName('iconsanjiaoright').length) return false
-    else {
-      let table = document.getElementsByClassName('download-table')[0],
+    if (!document.getElementsByClassName('iconsanjiaoright').length) {
+      let table = document.querySelector('.download-table'),
         el_table = table.querySelector('.el-table__body-wrapper'),
         list = el_table.querySelectorAll('table tbody .el-table__row .el-table__expand-icon')
       list.forEach(curr => {
@@ -157,7 +154,7 @@ const createTableIconList = function () {
         curr.appendChild(i)
       })
     }
-  }, 300)
+  }, 1000)
 }
 
 // message 信息

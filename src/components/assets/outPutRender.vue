@@ -104,7 +104,7 @@
         layout="prev, pager, next, jumper"
         :total="table.outPutTableTotal">
       </el-pagination>
-      <div class="farm-primary-form-btn btn" @click="refreshF">
+      <div class="farm-primary-form-btn btn" @click="refreshF(false)">
         <span>{{ refresh }}</span>
       </div>
     </div>
@@ -183,11 +183,13 @@
     },
     methods: {
       // 刷新
-      refreshF() {
+      refreshF(refresh) {
+        if(refresh) this.$emit('clearInput', 'render')
         let step = this.table.nextTbaleType
         if (step == 'layer') this.getList()
         else if (step == 'frame') this.getLayerList()
         else this.getFrameList()
+        if(!refresh) this.$emit('clearInput', 'render')
       },
       // 翻页
       handleCurrentChange(val) {
@@ -232,7 +234,6 @@
       },
       // 查询主任务
       async getList() {
-        this.$emit('clearInput')
         this.fullscreenLoading = true
         // {
         //   keyword: '',         // 关键字

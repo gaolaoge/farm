@@ -75,7 +75,7 @@
         <div class="searchItem" v-show="table.navListActiveIndex == 0">
           <input type="text"
                  class="farm-form-input"
-                 v-model="renderSearchInputVal"
+                 v-model="uploadSearchInputVal"
                  @keyup.enter="searchFun('upload')"
                  placeholder="文件名">
           <img src="@/icons/global-search-icon.png"
@@ -86,7 +86,7 @@
         <div class="searchItem" v-show="table.navListActiveIndex == 1">
           <input type="text"
                  class="farm-form-input"
-                 v-model="uploadSearchInputVal"
+                 v-model="renderSearchInputVal"
                  @keyup.enter="searchFun('render')"
                  placeholder="文件名">
           <img src="@/icons/global-search-icon.png"
@@ -117,6 +117,7 @@
           <my-upload ref="myUploadTable"
                      @uploadSelectionF="uploadSelectionF"
                      :uploadType="btnGroup.howToCreateIindex"
+                     @clearInput="clearInput"
                      :searchInputVal="uploadSearchInputVal"/>
         </div>
         <!--渲染输出-->
@@ -271,12 +272,13 @@
       },
       // 根据关键字进行筛选
       searchFun(type) {
-        if (type == 'render') this.$refs.outPutTable.getList()
-        else this.$refs.myUploadTable.getList()
+        if (type == 'render') this.$refs.outPutTable.refreshF(true)
+        else this.$refs.myUploadTable.refreshF(true)
       },
       // 清空关键字筛选输入框
-      clearInput() {
-        this.searchInputVal = ''
+      clearInput(type) {
+        type == 'render' ? this.renderSearchInputVal = '' : this.uploadSearchInputVal = ''
+
       },
       // 操作
       operating(type, active) {
