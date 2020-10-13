@@ -40,17 +40,21 @@
           show-overflow-tooltip
           width="110">
           <template slot-scope="scope">
-            <span v-if="scope.row.status == '等待' || scope.row.status == '渲染放弃' || scope.row.status == '渲染中'">
+            <span v-if="scope.row.status !== '渲染完成' && scope.row.status !== '待全部渲染' && scope.row.status !== '渲染暂停'">
               {{ scope.row.status }}
             </span>
-            <span v-if="scope.row.status == '渲染完成'" style="color: rgba(0, 227, 255, 1)">
+            <span v-if="scope.row.status == '渲染完成'"
+                  style="color: rgba(0, 227, 255, 1)">
               {{ scope.row.status }}
             </span>
-            <span v-if="scope.row.status == '渲染暂停' || scope.row.status == '待全部渲染'"
-                  style="color: rgba(229, 199, 138, 1)">
+            <span v-if="scope.row.status == '待全部渲染'"
+                  style="color: rgba(70, 203, 93, 1)">
               {{ scope.row.status }}
             </span>
-
+            <span v-if="scope.row.status == '渲染暂停'"
+                  style="color: rgba(255, 191, 0, 1)">
+              {{ scope.row.status }}
+            </span>
           </template>
         </el-table-column>
         <!--渲染进度-->
@@ -420,15 +424,19 @@
         if ('FatherIndex' in row) y.push('son-row')
         switch (row.status) {
           case '渲染暂停':
-          case '等待':
+          // case '等待':
             y.push('warning-row')
             y.push('style-row')
             break
             // case '分析失败':
             //   return 'error-row style-row'
             break
-          case '渲染结束':
+          case '待全部渲染':
             y.push('wait-row')
+            y.push('style-row')
+            break
+          case '渲染完成':
+            y.push('waitAll-row')
             y.push('style-row')
             break
         }
@@ -575,8 +583,7 @@
         this.showDrawer = true
         this.$refs.drawer.turnPage('result')
         this.drawerTaskData = row.secretChild ? row.secretChild[0] : row
-        let tableDomList = this.$refs.downLoadTable.getElementsByClassName('el-table__row'),
-          d = this.$refs.downLoadTable.getElementsByClassName('farmTableSelected')[0]
+        let d = this.$refs.downLoadTable.getElementsByClassName('farmTableSelected')[0]
         if (d) d.classList.remove('farmTableSelected')
         event.path.find(item => item.classList.contains('el-table__row')).classList.add('farmTableSelected')
       },
@@ -645,7 +652,7 @@
             //     status = '渲染中'
             //     break
             //   case 3:
-            //     status = '渲染结束'
+            //     status = '渲染完成'
             //     break
             //   case 4:
             //     status = '渲染暂停'
@@ -749,7 +756,7 @@
           // pageIndex: null
           // pageSize: null
           // projectName: ""              // 项目名称
-          // renderStatus: 3              // 渲染各个阶段的状态。1，等待；2，渲染中，3，渲染结束；4，渲染暂停；5，待全部渲染； 6，渲染放弃
+          // renderStatus: 3              // 渲染各个阶段的状态。1，等待；2，渲染中，3，渲染完成；4，渲染暂停；5，待全部渲染； 6，渲染放弃
           // rendering: 0                 // 渲染中任务数
           // startTime: null              // 开始时间。可能为null
           // stopped: 0                   // 停止中任务数

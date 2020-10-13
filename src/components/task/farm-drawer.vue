@@ -795,10 +795,10 @@
                   sortable
                   show-overflow-tooltip
                   width="180"/>
-                <!--渲染结束时间-->
+                <!--渲染完成时间-->
                 <el-table-column
                   prop="endDate"
-                  label="渲染结束时间"
+                  label="渲染完成时间"
                   sortable
                   show-overflow-tooltip
                   width="180"/>
@@ -888,10 +888,10 @@
                   sortable
                   show-overflow-tooltip
                   width="180"/>
-                <!--渲染结束时间-->
+                <!--渲染完成时间-->
                 <el-table-column
                   prop="endDate"
-                  label="渲染结束时间"
+                  label="渲染完成时间"
                   sortable
                   show-overflow-tooltip
                   width="180"/>
@@ -1208,7 +1208,7 @@
             //   prices: null,   // 渲染费用（金币）
             //   direction: '',  // 渲染时长
             //   startDate: '',  // 渲染开始时间
-            //   endDate: '',    // 渲染结束时间
+            //   endDate: '',    // 渲染完成时间
             //   percent: '',    // CPU利用率
             //   RAM: '',        // 内存峰值
             //   times: null,    // 已下载次数
@@ -1222,7 +1222,7 @@
             // cost: null,     // 渲染费用
             // duration: '',   // 渲染时长
             // startDate: '',  // 渲染开始时间
-            // endDate: '',    // 渲染结束时间
+            // endDate: '',    // 渲染完成时间
             // price: '',      // 单价
             // percent: '',    // CPU利用率
             // peak: ''        // 内存峰值
@@ -1477,7 +1477,7 @@
             prices: curr.cost,                                    // 渲染费用（金币）
             direction: consum(curr.useTime),                      // 渲染时长
             startDate: createDateFun(new Date(curr.startTime)),   // 渲染开始时间
-            endDate: createDateFun(new Date(curr.endTime)),       // 渲染结束时间
+            endDate: createDateFun(new Date(curr.endTime)),       // 渲染完成时间
             percent: '-',                                         // CPU利用率
             RAM: '-',                                             // 内存峰值
             times: curr.downloadCount,                            // 已下载次数
@@ -1702,7 +1702,7 @@
             prices: item.cost,                   // 渲染费用
             direction: consum(item.useTime),     // 渲染时长
             startDate: createDateFun(new Date(item.startTime)),   // 渲染开始时间
-            endDate: createDateFun(new Date(item.endTime)),       // 渲染结束时间
+            endDate: createDateFun(new Date(item.endTime)),       // 渲染完成时间
             price: item.unitPrice,               // 单价
             percent: item.cpuRate,               // CPU利用率
             peak: item.memoryPeak,               // 内存峰值

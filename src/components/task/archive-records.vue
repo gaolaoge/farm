@@ -40,6 +40,7 @@
             @select="tableSelect"
             @row-click="showDetails"
             @select-all="selectAll"
+            :row-class-name="tableRowStyle"
             row-key="rowId"
             ref="archiveTable"
             style="width: 100%">
@@ -53,7 +54,7 @@
               prop="id"
               label="任务ID"
               sortable
-              width="100"/>
+              width="172"/>
             <!--场景名-->
             <el-table-column
               prop="sceneName"
@@ -66,7 +67,19 @@
               label="状态"
               width="110">
               <template slot-scope="scope">
-                <span v-if="scope.row.status == '渲染完成'" style="color: rgba(0, 227, 255, 1)">
+            <span v-if="scope.row.status !== '渲染完成' && scope.row.status !== '待全部渲染' && scope.row.status !== '渲染暂停'">
+              {{ scope.row.status }}
+            </span>
+                <span v-if="scope.row.status == '渲染完成'"
+                      style="color: rgba(0, 227, 255, 1)">
+              {{ scope.row.status }}
+            </span>
+                <span v-if="scope.row.status == '待全部渲染'"
+                      style="color: rgba(70, 203, 93, 1)">
+              {{ scope.row.status }}
+            </span>
+                <span v-if="scope.row.status == '渲染暂停'"
+                      style="color: rgba(255, 191, 0, 1)">
               {{ scope.row.status }}
             </span>
               </template>
@@ -101,9 +114,11 @@
               label="创建时间"
               sortable
               width="180"/>
+            <!--操作-->
             <el-table-column label="操作" width="100">
               <template slot-scope="scope">
-                <span class="s" @click="seeDetails(scope.row)">查看详情</span>
+                <span class="s" v-show="!scope.row.children" @click="seeDetails(scope.row)">查看详情</span>
+                <span v-show="scope.row.children">-</span>
               </template>
             </el-table-column>
 
@@ -121,7 +136,8 @@
       </div>
     </div>
     <div class="taskDetails" v-show="showDetailsDOM">
-      <resultCardM />
+      <resultCardM @backToTable="showDetailsDOM = false"
+                   :taskData="resultData"/>
     </div>
   </div>
 </template>
@@ -177,15 +193,42 @@
         },
         attribution: 'drawer',
         showDetailsDOM: false,
+        resultData: null,           // 详情Task初始数据
+        unfoldList: [],
       }
     },
     computed: {
       ...mapState(['zoneId', 'socket_plugin', 'user'])
     },
     methods: {
+      // table 行样式
+      tableRowStyle({row, rowIndex}) {
+        let y = []
+        if ('fatherIndex' in row) y.push('son-row')
+        switch (row.status) {
+          case '渲染暂停':
+            // case '等待':
+            y.push('warning-row')
+            y.push('style-row')
+            break
+            // case '分析失败':
+            //   return 'error-row style-row'
+            break
+          case '待全部渲染':
+            y.push('wait-row')
+            y.push('style-row')
+            break
+          case '渲染完成':
+            y.push('waitAll-row')
+            y.push('style-row')
+            break
+        }
+        return y.join(' ')
+      },
       // 查看详情
-      seeDetails(row){
+      seeDetails(row) {
         console.log(row)
+        this.resultData = row.secretChild ? row.secretChild[0] : row
         this.showDetailsDOM = true
       },
       // 获取选中的主任务和单独层任务
@@ -318,9 +361,21 @@
           .catch(() => {
           })
       },
-      // 上传分析详情查看
+      // 打开组
       showDetails(row, column, event) {
-
+        // 若事件承受者为项目组
+        if (row.children) this.unfoldFun(row)   // 展开项目组
+      },
+      // 展开项目组
+      unfoldFun(row) {
+        let r = this.unfoldList.findIndex(curr => curr == row.rowId)
+        if (r >= 0) {
+          this.unfoldList.splice(r, 1)
+          this.$refs.archiveTable.toggleRowExpansion(row, false)
+        } else {
+          this.unfoldList.push(row.rowId)
+          this.$refs.archiveTable.toggleRowExpansion(row)
+        }
       },
       // 【非业务逻辑】手动勾选数据行 Checkbox 时触发
       tableSelect(selection, row) {
@@ -534,6 +589,7 @@
   }
 
   .taskDetails {
+    position: relative;
     height: 87vh;
   }
 </style>

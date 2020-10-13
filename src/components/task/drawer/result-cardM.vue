@@ -1,12 +1,12 @@
 <template>
-  <div class="result-cardM">
+  <div class="result-cardM farm-drawer t">
     <!--表头-->
     <div class="farm-drawer-title">
-      <div class="drawer-t">
-          <span class="drawer-text">
-            {{ result.t }}
-          </span>
+      <!--关闭icon-->
+      <div class="closeIcon">
+        <img src="@/icons/back_icon-black.png" title="后退" @click="backF">
       </div>
+      <!--参数-->
       <div class="dataList">
         <div class="li cost">
             <span class="label">
@@ -33,12 +33,9 @@
             </span>
         </div>
       </div>
-      <div class="closeIcon">
-        <img src="@/icons/icon_ close1.png">
-      </div>
     </div>
     <!--表体-->
-    <div class="farm-drawer-body r">
+    <div class="farm-drawer-body">
       <!--任务描述-->
       <div class="info">
         <div class="thumbnail">
@@ -301,10 +298,10 @@
                 sortable
                 show-overflow-tooltip
                 width="180"/>
-              <!--渲染结束时间-->
+              <!--渲染完成时间-->
               <el-table-column
                 prop="endDate"
-                label="渲染结束时间"
+                label="渲染完成时间"
                 sortable
                 show-overflow-tooltip
                 width="180"/>
@@ -393,10 +390,10 @@
                 sortable
                 show-overflow-tooltip
                 width="180"/>
-              <!--渲染结束时间-->
+              <!--渲染完成时间-->
               <el-table-column
                 prop="endDate"
-                label="渲染结束时间"
+                label="渲染完成时间"
                 sortable
                 show-overflow-tooltip
                 width="180"/>
@@ -456,10 +453,19 @@
 </template>
 
 <script>
-  import {} from '@/api/api'
-  import {} from '@/api/task-api'
+  import {
+    getRenderTSeeMore,
+    getFrameHistoryTable
+  } from '@/api/api'
+  import {
+    getThumbnail,
+  } from '@/api/task-api'
   import {} from '@/api/newTask-api'
-  import {} from '@/assets/common.js'
+  import {
+    consum,
+    createDateFun,
+    itemDownloadStatus
+  } from '@/assets/common.js'
   import {mapState} from 'vuex'
 
   export default {
@@ -467,7 +473,6 @@
     data() {
       return {
         result: {
-          t: '渲染结果',
           dataO: {
             costLabel: '费用(金币)',
             costVal: '-',
@@ -545,7 +550,7 @@
             //   prices: null,   // 渲染费用（金币）
             //   direction: '',  // 渲染时长
             //   startDate: '',  // 渲染开始时间
-            //   endDate: '',    // 渲染结束时间
+            //   endDate: '',    // 渲染完成时间
             //   percent: '',    // CPU利用率
             //   RAM: '',        // 内存峰值
             //   times: null,    // 已下载次数
@@ -559,7 +564,7 @@
             // cost: null,     // 渲染费用
             // duration: '',   // 渲染时长
             // startDate: '',  // 渲染开始时间
-            // endDate: '',    // 渲染结束时间
+            // endDate: '',    // 渲染完成时间
             // price: '',      // 单价
             // percent: '',    // CPU利用率
             // peak: ''        // 内存峰值
@@ -631,6 +636,10 @@
       },
     },
     methods: {
+      // 后退
+      backF() {
+        this.$emit('backToTable')
+      },
       // 主table多选事件
       handleSelectionChange(val) {
         this.result.selectionResult = val
@@ -700,8 +709,11 @@
         //   pageSize: ''
         // }
         this.result.miniImgHref = null
-        let parameter = `taskUuid=${this.taskData.FatherTaskUuId}&layerTaskUuid=${this.taskData.taskUuid}&keyword=${this.result.searchInpVal}&pageIndex=1&pageSize=999`,
-          data = await getRenderTSeeMore(parameter),
+        let t = this.taskData,
+          parameter = `taskUuid=${t.FatherTaskUuId}&layerTaskUuid=${t.layerTaskUuid}&keyword=${this.result.searchInpVal}&pageIndex=1&pageSize=999`
+          console.log(this.taskData)
+
+        let data = await getRenderTSeeMore(parameter),
           data_ = data.data.data
         this.result.tableData = data_.frameList.map(curr => {
           let s = null
@@ -731,7 +743,7 @@
             prices: curr.cost,                                    // 渲染费用（金币）
             direction: consum(curr.useTime),                      // 渲染时长
             startDate: createDateFun(new Date(curr.startTime)),   // 渲染开始时间
-            endDate: createDateFun(new Date(curr.endTime)),       // 渲染结束时间
+            endDate: createDateFun(new Date(curr.endTime)),       // 渲染完成时间
             percent: '-',                                         // CPU利用率
             RAM: '-',                                             // 内存峰值
             times: curr.downloadCount,                            // 已下载次数
@@ -772,6 +784,7 @@
           creationTimeVal: createDateFun(new Date(data_.taskInfo.createTime))          // 创建时间
         })
         this.showMiniImg(this.result.tableData[0])
+        this.loading.close()
       },
       //关闭详情 复位
 
@@ -894,6 +907,30 @@
       async moreOperateDownload() {
         let data = await downloadLog(`layerTaskUuid=${this.result.detailsTableData[0]['layerTaskUuid']}&frameTaskUuid=${this.result.detailsTableData[0]['frameTaskUuid']}`)
         // exportDownloadFun(data, data.headers.file, 'text')  事件交接给C
+      },
+      // 查看详情
+      async showMore(row) {
+        this.result.showDetails = true
+        let data = await getFrameHistoryTable(`layerTaskUuid=${row.layerTaskUuid}&frameTaskUuid=${row.frameTaskUuid}`)
+        this.result.detailsTableData = data.data.data.frameTaskList.map(item => {
+          return {
+            num: item.frameNo,                   // 帧数
+            status: itemDownloadStatus(item.frameTaskStatus),                  // 帧状态
+            prices: item.cost,                   // 渲染费用
+            direction: consum(item.useTime),     // 渲染时长
+            startDate: createDateFun(new Date(item.startTime)),   // 渲染开始时间
+            endDate: createDateFun(new Date(item.endTime)),       // 渲染完成时间
+            price: item.unitPrice,               // 单价
+            percent: item.cpuRate,               // CPU利用率
+            peak: item.memoryPeak,               // 内存峰值
+            times: item.downloadCount,           // 下载次数
+            layerTaskUuid: item.layerTaskUuid,
+            frameTaskUuid: item.frameTaskUuid
+          }
+        })
+        this.demo = data.data.data.log.length != 0 ? data.data.data.log.reduce((total, curr) => {
+          return total + `<p class="p">${curr}</p>`
+        }, '') : `<p class="p">没有日志，获取日志失败</p>`
       },
     },
     computed: {
@@ -1109,311 +1146,6 @@
     }
   }
 
-  .r {
-    display: flex;
-
-    .info {
-      display: flex;
-      flex-direction: column;
-      width: 260px;
-      margin-right: 20px;
-
-      .thumbnail {
-        height: 220px;
-        padding: 10px;
-        box-sizing: border-box;
-        border-radius: 4px;
-        margin-bottom: 23px;
-        box-shadow: 0px 0px 1px 1px rgba(22, 29, 37, 0.15);
-
-        .img {
-          width: 240px;
-          box-shadow: 0px 0px 1px 1px rgba(22, 29, 37, 0.1);
-        }
-
-        .status {
-          position: relative;
-          left: 21px;
-          display: inline-block;
-          margin-top: 15px;
-          font-size: 14px;
-
-          &::before {
-            content: '';
-            position: absolute;
-            left: -13px;
-            top: 8px;
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-          }
-
-          &.wait {
-            color: rgba(229, 199, 138, 1);
-
-            &::before {
-              background-color: rgba(229, 199, 138, 1);
-            }
-          }
-
-          &.ing {
-            color: rgba(9, 245, 150, 1);
-
-            &::before {
-              background-color: rgba(9, 245, 150, 1);
-            }
-          }
-
-          &.done {
-            color: rgba(0, 227, 255, 1);
-
-            &::before {
-              background-color: rgba(0, 227, 255, 1);
-            }
-          }
-
-          &.pause {
-            color: rgba(229, 199, 138, 1);
-
-            &::before {
-              background-color: rgba(229, 199, 138, 1);
-            }
-          }
-
-          &.giveUp {
-            color: rgba(249, 0, 35, 1);
-
-            &::before {
-              background-color: rgba(249, 0, 35, 1);
-            }
-          }
-        }
-      }
-
-      .dataList {
-        flex-grow: 1;
-        padding: 20px;
-        box-sizing: border-box;
-        border-radius: 4px;
-        box-shadow: 0px 0px 1px 1px rgba(22, 29, 37, 0.15);
-
-        .item {
-          margin-bottom: 15px;
-
-          .label {
-            display: inline-block;
-            width: 70px;
-            height: 20px;
-            font-size: 14px;
-            color: rgba(22, 29, 37, 0.8);
-            margin-right: 19px;
-          }
-
-          .val {
-            vertical-align: top;
-            display: inline-block;
-            width: 130px;
-            font-size: 14px;
-            font-weight: 400;
-            color: rgba(22, 29, 37, 0.6);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-          }
-        }
-      }
-    }
-
-    .list {
-      /*width: 841px;*/
-      height: calc(100%);
-
-      .table {
-        padding: 10px;
-        box-sizing: border-box;
-        border-radius: 4px;
-        height: calc(100vh - 234px);
-        background-color: rgba(255, 255, 255, 0.05);
-        border-radius: 4px;
-        box-shadow: 0px 0px 1px 1px rgba(22, 29, 37, 0.15);
-
-        .operateBtnBase {
-          .operateBtn {
-            display: inline-flex;
-            align-items: center;
-            background-color: rgba(248, 248, 248, 1);
-            border: 1px solid rgba(22, 29, 37, 0.1);
-            border-radius: 5px;
-            cursor: pointer;
-            margin-right: 10px;
-            padding: 1px 10px;
-
-            .text {
-              font-size: 13px;
-              color: rgba(22, 29, 37, 0.79);
-            }
-
-            img {
-              width: 8px;
-              margin-right: 4px;
-
-              &.h {
-                display: none;
-              }
-            }
-
-            &.cannotTrigger {
-              cursor: no-drop;
-
-              span {
-                color: rgba(22, 29, 37, 0.39);
-              }
-
-              img {
-                opacity: 0.39;
-              }
-            }
-
-            &:not(.cannotTrigger):hover {
-              background-color: rgba(27, 83, 244, 1);
-              border: 1px solid rgba(27, 83, 244, 1);
-
-              .text {
-                color: rgba(255, 255, 255, 1);
-              }
-
-              img {
-                &.h {
-                  display: inline-block;
-                }
-
-                &.r {
-                  display: none;
-                }
-              }
-            }
-          }
-
-          .searchBase {
-            position: relative;
-            float: right;
-
-            .search {
-              width: 150px;
-              height: 28px;
-              border-radius: 4px;
-              border: 1px solid rgba(0, 97, 255, 0.5);
-              background-color: transparent;
-              color: rgba(22, 29, 37, 0.6);
-              outline: none;
-              padding-left: 24px;
-              box-sizing: border-box;
-            }
-
-            .i {
-              position: absolute;
-              width: 12px;
-              top: 8px;
-              left: 8px;
-              cursor: pointer;
-            }
-          }
-
-          &.more {
-            .operateBtn {
-              img {
-                width: 12px;
-              }
-
-            }
-          }
-        }
-
-        .tableBase {
-          width: 100%;
-          height: calc(100vh - 290px);
-          display: flex;
-          flex-direction: column;
-          /*日志详情*/
-
-          .log {
-            display: flex;
-            justify-content: center;
-            margin-top: -316px;
-
-            .tableDataNull {
-              .tableDataNullText {
-                font-size: 14px;
-                font-weight: 400;
-                color: rgba(255, 255, 255, 0.29);
-                text-align: center;
-              }
-            }
-          }
-
-          /*日志*/
-
-          .c {
-            flex-shrink: 1;
-            flex-grow: 1;
-            border-radius: 4px;
-            border: 1px solid rgba(22, 29, 37, 0.1);
-            margin-top: 30px;
-            padding: 20px 15px;
-            box-sizing: border-box;
-            overflow-y: auto;
-
-            /deep/ .p {
-              font-size: 13px;
-              font-weight: 400;
-              color: rgba(22, 29, 37, 0.59);
-              line-height: 18px;
-            }
-
-            /*&::-webkit-scrollbar {*/
-            /*!*滚动条整体样式*!*/
-            /*width: 8px; !*高宽分别对应横竖滚动条的尺寸*!*/
-            /*height: 8px;*/
-            /*}*/
-            /*&::-webkit-scrollbar-thumb {*/
-            /*!*滚动条里面小方块*!*/
-            /*border-radius: 10px;*/
-            /*-webkit-box-shadow: inset 0 0 5px rgba(102, 89, 89, 0.2);*/
-            /*background: #9e9797;*/
-            /*}*/
-            /*&::-webkit-scrollbar-track {*/
-            /*!*滚动条里面轨道*!*/
-            /*-webkit-box-shadow: inset 0 0 5px rgba(138, 129, 129, 0.2);*/
-            /*border-radius: 10px;*/
-            /*background: rgb(226, 221, 221);*/
-            /*}*/
-          }
-        }
-      }
-
-      .happen {
-        margin-top: 20px;
-        padding: 10px;
-        box-sizing: border-box;
-        border-radius: 4px;
-        background-color: rgba(255, 255, 255, 0.05);
-        display: flex;
-        justify-content: space-around;
-        border-radius: 4px;
-        box-shadow: 0px 0px 1px 1px rgba(22, 29, 37, 0.15);
-
-        .happen-item {
-          .label,
-          .val {
-            font-size: 14px;
-            color: rgba(27, 83, 244, 1);
-          }
-        }
-      }
-
-    }
-  }
-
   .seeMore {
     font-size: 14px;
     font-weight: 400;
@@ -1500,6 +1232,341 @@
       .el-input__icon {
         height: 23px;
         line-height: 23px;
+      }
+    }
+  }
+
+  .farm-drawer.t {
+    position: relative;
+    display: flex;
+    right: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+
+    .farm-drawer-title {
+      box-sizing: border-box;
+      padding: 12px 20px;
+
+      .closeIcon {
+        margin-top: 0px;
+      }
+
+      .dataList {
+        margin-left: 0px;
+        margin-right: 60px;
+      }
+    }
+
+    .farm-drawer-body {
+      position: relative;
+      display: flex;
+      width: 100%;
+      box-sizing: border-box;
+
+      .info {
+        display: flex;
+        flex-direction: column;
+        width: 260px;
+        height: calc(100% - 12px);
+        margin-right: 20px;
+        padding-bottom: 16px;
+        box-sizing: border-box;
+
+        .thumbnail {
+          flex-grow: 0;
+          height: 220px;
+          padding: 10px;
+          box-sizing: border-box;
+          border-radius: 4px;
+          margin-bottom: 23px;
+          box-shadow: 0px 0px 1px 1px rgba(22, 29, 37, 0.15);
+
+          .img {
+            width: 240px;
+            box-shadow: 0px 0px 1px 1px rgba(22, 29, 37, 0.1);
+          }
+
+          .status {
+            position: relative;
+            left: 21px;
+            display: inline-block;
+            margin-top: 15px;
+            font-size: 14px;
+
+            &::before {
+              content: '';
+              position: absolute;
+              left: -13px;
+              top: 8px;
+              width: 6px;
+              height: 6px;
+              border-radius: 50%;
+            }
+
+            &.wait {
+              color: rgba(229, 199, 138, 1);
+
+              &::before {
+                background-color: rgba(229, 199, 138, 1);
+              }
+            }
+
+            &.ing {
+              color: rgba(9, 245, 150, 1);
+
+              &::before {
+                background-color: rgba(9, 245, 150, 1);
+              }
+            }
+
+            &.done {
+              color: rgba(0, 227, 255, 1);
+
+              &::before {
+                background-color: rgba(0, 227, 255, 1);
+              }
+            }
+
+            &.pause {
+              color: rgba(229, 199, 138, 1);
+
+              &::before {
+                background-color: rgba(229, 199, 138, 1);
+              }
+            }
+
+            &.giveUp {
+              color: rgba(249, 0, 35, 1);
+
+              &::before {
+                background-color: rgba(249, 0, 35, 1);
+              }
+            }
+          }
+        }
+
+        .dataList {
+          flex-grow: 1;
+          padding: 20px;
+          box-sizing: border-box;
+          border-radius: 4px;
+          box-shadow: 0px 0px 1px 1px rgba(22, 29, 37, 0.15);
+          overflow: hidden;
+
+          .item {
+            margin-bottom: 15px;
+
+            .label {
+              display: inline-block;
+              width: 70px;
+              height: 20px;
+              font-size: 14px;
+              color: rgba(22, 29, 37, 0.8);
+              margin-right: 19px;
+            }
+
+            .val {
+              vertical-align: top;
+              display: inline-block;
+              width: 130px;
+              font-size: 14px;
+              font-weight: 400;
+              color: rgba(22, 29, 37, 0.6);
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+          }
+        }
+      }
+
+      .list {
+        width: calc(100% - 260px - 20px);
+
+        .table {
+          padding: 10px;
+          box-sizing: border-box;
+          border-radius: 4px;
+          height: calc(100vh - 234px);
+          background-color: rgba(255, 255, 255, 0.05);
+          border-radius: 4px;
+          box-shadow: 0px 0px 1px 1px rgba(22, 29, 37, 0.15);
+
+          .operateBtnBase {
+            .operateBtn {
+              display: inline-flex;
+              align-items: center;
+              background-color: rgba(248, 248, 248, 1);
+              border: 1px solid rgba(22, 29, 37, 0.1);
+              border-radius: 5px;
+              cursor: pointer;
+              margin-right: 10px;
+              padding: 1px 10px;
+
+              .text {
+                font-size: 13px;
+                color: rgba(22, 29, 37, 0.79);
+              }
+
+              img {
+                width: 8px;
+                margin-right: 4px;
+
+                &.h {
+                  display: none;
+                }
+              }
+
+              &.cannotTrigger {
+                cursor: no-drop;
+
+                span {
+                  color: rgba(22, 29, 37, 0.39);
+                }
+
+                img {
+                  opacity: 0.39;
+                }
+              }
+
+              &:not(.cannotTrigger):hover {
+                background-color: rgba(27, 83, 244, 1);
+                border: 1px solid rgba(27, 83, 244, 1);
+
+                .text {
+                  color: rgba(255, 255, 255, 1);
+                }
+
+                img {
+                  &.h {
+                    display: inline-block;
+                  }
+
+                  &.r {
+                    display: none;
+                  }
+                }
+              }
+            }
+
+            .searchBase {
+              position: relative;
+              float: right;
+
+              .search {
+                width: 150px;
+                height: 28px;
+                border-radius: 4px;
+                border: 1px solid rgba(0, 97, 255, 0.5);
+                background-color: transparent;
+                color: rgba(22, 29, 37, 0.6);
+                outline: none;
+                padding-left: 24px;
+                box-sizing: border-box;
+              }
+
+              .i {
+                position: absolute;
+                width: 12px;
+                top: 8px;
+                left: 8px;
+                cursor: pointer;
+              }
+            }
+
+            &.more {
+              .operateBtn {
+                img {
+                  width: 12px;
+                }
+
+              }
+            }
+          }
+
+          .tableBase {
+            width: 100%;
+            height: calc(100vh - 290px);
+            display: flex;
+            flex-direction: column;
+            /*日志详情*/
+
+            .log {
+              display: flex;
+              justify-content: center;
+              margin-top: -316px;
+
+              .tableDataNull {
+                .tableDataNullText {
+                  font-size: 14px;
+                  font-weight: 400;
+                  color: rgba(255, 255, 255, 0.29);
+                  text-align: center;
+                }
+              }
+            }
+
+            /*日志*/
+
+            .c {
+              flex-shrink: 1;
+              flex-grow: 1;
+              border-radius: 4px;
+              border: 1px solid rgba(22, 29, 37, 0.1);
+              margin-top: 30px;
+              padding: 20px 15px;
+              box-sizing: border-box;
+              overflow-y: auto;
+
+              /deep/ .p {
+                font-size: 13px;
+                font-weight: 400;
+                color: rgba(22, 29, 37, 0.59);
+                line-height: 18px;
+              }
+
+              /*&::-webkit-scrollbar {*/
+              /*!*滚动条整体样式*!*/
+              /*width: 8px; !*高宽分别对应横竖滚动条的尺寸*!*/
+              /*height: 8px;*/
+              /*}*/
+              /*&::-webkit-scrollbar-thumb {*/
+              /*!*滚动条里面小方块*!*/
+              /*border-radius: 10px;*/
+              /*-webkit-box-shadow: inset 0 0 5px rgba(102, 89, 89, 0.2);*/
+              /*background: #9e9797;*/
+              /*}*/
+              /*&::-webkit-scrollbar-track {*/
+              /*!*滚动条里面轨道*!*/
+              /*-webkit-box-shadow: inset 0 0 5px rgba(138, 129, 129, 0.2);*/
+              /*border-radius: 10px;*/
+              /*background: rgb(226, 221, 221);*/
+              /*}*/
+            }
+          }
+        }
+
+        .happen {
+          margin-top: 20px;
+          padding: 10px;
+          box-sizing: border-box;
+          border-radius: 4px;
+          background-color: rgba(255, 255, 255, 0.05);
+          display: flex;
+          justify-content: space-around;
+          border-radius: 4px;
+          box-shadow: 0px 0px 1px 1px rgba(22, 29, 37, 0.15);
+
+          .happen-item {
+            .label,
+            .val {
+              font-size: 14px;
+              color: rgba(27, 83, 244, 1);
+            }
+          }
+        }
+
       }
     }
   }

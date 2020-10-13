@@ -92,10 +92,10 @@
               sortable
               show-overflow-tooltip
               width="192"/>
-            <!--渲染结束时间 -->
+            <!--渲染完成时间 -->
             <el-table-column
               prop="endDate"
-              label="渲染结束时间"
+              label="渲染完成时间"
               show-overflow-tooltip
               width="192"/>
             <!--单价（金币/核时）-->
@@ -159,7 +159,7 @@
           //   gold: null,      // 渲染费用（金币）
           //   duration: null,  // 渲染时长
           //   startDate: '',   // 渲染开始时间
-          //   endDate: '',     // 渲染结束时间
+          //   endDate: '',     // 渲染完成时间
           //   price: null,     // 单价（金币/核对）
           //   percent: '',     // CPU利用率
           //   peak: ''         // 内存峰值
@@ -214,7 +214,7 @@
               // duration: `${hour - 8}时${min}分${sec}秒`,         // 渲染时长
               duration: curr.useTime,
               startDate: curr.startTime,      // 渲染开始时间
-              endDate: curr.endTime,          // 渲染结束时间
+              endDate: curr.endTime,          // 渲染完成时间
               price: curr.unitPrice,          // 单价（金币/核对）
               percent: curr.cpuRate,          // CPU利用率
               peak: curr.memoryPeak           // 内存峰值

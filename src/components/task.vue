@@ -64,7 +64,7 @@
       <div class="rightOPerate"
            v-show="table.navListActiveIndex == 1">
         <!--归档记录-->
-        <div class="farm-primary-form-btn" v-if="false" @click="dialogTable.status = true">
+        <div class="farm-primary-form-btn" @click="dialogTable.status = true">
           {{ btnGroup.archiveRecords }}（{{ btnGroup.archiveRecordsNum }}）
         </div>
         <div class="searchItem">
@@ -148,7 +148,7 @@
       </div>
     </div>
     <!--弹窗 归档记录-->
-    <el-dialog :visible.sync="dialogTable.status"
+    <el-dialog :close-on-click-modal="false" :visible.sync="dialogTable.status"
                v-if="dialogTable.status"
                :show-close="false"
                :before-close="shutDialogTable"
@@ -252,10 +252,10 @@
               text: this.$t('task.renderBtnGroup')[6],
               class: 'renderAgainBtn',
             },
-            // {
-            //   text: this.$t('task.renderBtnGroup')[7],
-            //   class: 'archiveBtn',
-            // },
+            {
+              text: this.$t('task.renderBtnGroup')[7],
+              class: 'archiveBtn',
+            },
             {
               text: this.$t('task.renderBtnGroup')[8],
               class: 'copyBtn'

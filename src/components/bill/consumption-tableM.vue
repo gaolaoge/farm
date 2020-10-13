@@ -323,7 +323,7 @@
               tableStatus = '渲染中'
               break
             case 3:
-              tableStatus = '渲染结束'
+              tableStatus = '渲染完成'
               break
             case 4:
               tableStatus = '渲染暂停'
