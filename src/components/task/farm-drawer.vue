@@ -922,7 +922,6 @@
               <div class="log" v-show="!result.detailsTableData.length">
                 <div class="tableDataNull">
                   <img src="@/icons/tableDataNull.png"
-                       alt=""
                        class="tableDataNullImg">
                   <div class="tableDataNullText">
                     {{ result.x }}

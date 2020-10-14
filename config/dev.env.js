@@ -11,5 +11,6 @@ module.exports = merge(prodEnv, {
   PLUGIN_WS_API: '"ws://localhost:15000"',
   // PLUGIN_WS_API: '"ws://192.168.1.111:15000"',  // 李杨
   // PLUGIN_WS_API: '"ws://192.168.1.9:15000"',   // 陆鑫
-  // MOCKJS: true
+  MOCKJS: true,
+  VERSION: "'-'",
 })

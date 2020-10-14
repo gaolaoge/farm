@@ -2,6 +2,7 @@
   <div class="home-wrapper" ref="homeWrapper">
     <div class="hi">
       <span>{{hi}} {{user.name}}</span>
+      <span style="font-size: 14px">当前版本：{{ version }}</span>
     </div>
     <div class="firRow">
       <!--任务状态-->
@@ -208,7 +209,11 @@
       }
     },
     computed: {
-      ...mapState(['zoneId', 'user'])
+      ...mapState(['zoneId', 'user']),
+      version(){
+        console.log(process.env)
+        return process.env.VERSION
+      }
     },
     watch: {
       zoneId: {

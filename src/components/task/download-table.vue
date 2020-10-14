@@ -861,6 +861,7 @@
             async () => {
               let dataList = []
               this.table.renderSelectionList.forEach(curr => {
+                console.log(curr)
                 if (('selfIndex' in curr) && !curr['secretChild']) return false
                 let dataListIndex = dataList.findIndex(item => item.taskUuid == curr.FatherTaskUuId)
                 if (dataListIndex == -1) {

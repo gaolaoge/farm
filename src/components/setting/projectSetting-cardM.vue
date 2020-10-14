@@ -245,7 +245,7 @@
             },
             {
               value: 0,
-              label: '禁用'
+              label: '停用'
             }
           ],
         },
@@ -331,7 +331,7 @@
             'projectName': curr.projectName,
             'customerName': curr.customerName,
             'isDefault': curr.isDefault == 0 ? '否' : '是',
-            'projectStatus': curr.projectStatus == 0 ? '禁用' : '启用',
+            'projectStatus': curr.projectStatus == 0 ? '停用' : '启用',
             'thumbnail': curr.thumbnail,     // 缩略图
           }
         })

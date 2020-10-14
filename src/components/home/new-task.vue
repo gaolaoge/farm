@@ -1569,7 +1569,7 @@
             id: curr.taskProjectUuid
           }
         })
-        if (!name) this.stepThreeBase.other.view = this.stepThreeBase.other.viewList[0]['value']
+        if (!name) this.stepThreeBase.other.view = this.stepThreeBase.other.viewList.find(item => item.isDefault == 1)['value']
         else {
           let obj = this.stepThreeBase.other.viewList.find(curr => curr.label == name)
           this.setting.other.view = obj['value']

@@ -20,8 +20,8 @@
         @selection-change="handleSelectionChange"
         @filter-change="filterHandler"
         @row-click="enterFolder"
-        class="o"
         :border=true
+        class="o"
         style="width: 100%">
 
         <el-table-column
@@ -71,6 +71,11 @@
           width="280"/>
 
       </el-table>
+      <!--暂无数据-->
+      <div class="unData" v-show="table.tableData.length == 0">
+        <img src="@/icons/tableDataNull.png">
+        <span>暂无数据</span>
+      </div>
     </div>
     <!--分页-->
     <div class="page">
@@ -297,7 +302,7 @@
       ...mapActions(['WEBSOCKET_PLUGIN_INIT']),
       // 刷新
       refreshF(refresh) {
-        if(!refresh) {
+        if (!refresh) {
           this.$emit('clearInput', 'upload')
           this.getAssetsCatalog(this.path, '')
         } else this.getAssetsCatalog(this.path, this.searchInputVal)
@@ -350,6 +355,7 @@
       // 进入文件夹
       enterFolder(row, column, event) {
         if (row.fileType != '文件夹') return false
+        this.table.tableData = []
         this.path += (row.fileName + '/')
         this.searchInputVal = ''
         this.getAssetsCatalog(this.path, this.searchInputVal)
@@ -387,7 +393,7 @@
       },
       // 新建文件夹 - 保存
       async createSaveBtnFun() {
-        if(!this.verif) this.$store.commit('WEBSOCKET_BACKS_SEND', {
+        if (!this.verif) this.$store.commit('WEBSOCKET_BACKS_SEND', {
           'code': 603,
           'customerUuid': this.user.id,
           filePath: this.path,
@@ -395,7 +401,7 @@
         })
       },
       // 新建文件夹 - 取消
-      createCancelBtnFun(){
+      createCancelBtnFun() {
         this.createProject.name = ''
         this.createBaseShow = false
       },
@@ -467,7 +473,7 @@
                 'newFileName': value                                                     // 新文件名
               })
             })
-            .catch(() => messageFun('info', '操作取消'))
+            .catch(() => null)
       },
       // 解压
       unzip(password) {
@@ -526,6 +532,21 @@
 </script>
 
 <style lang="less" scoped>
+  .unData {
+    position: absolute;
+    top: calc(47px + 42px);
+    width: 100%;
+    height: calc(100% - 47px - 42px - 52px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    span {
+      font-size: 14px;
+    }
+  }
+
   .bread {
     display: flex;
     align-items: center;
@@ -644,6 +665,7 @@
       }
     }
   }
+
   .createProject {
     position: fixed;
     display: flex;

@@ -45,9 +45,9 @@
     },
     methods: {
       nameVerif(type) {
-        if (!this.name) this.status = null
-        else if (this.reg.test(this.name)) this.status = true
-        else this.status = type ? null : false
+        if (!this.name.trim()) this.status = null
+        else if (this.reg.test(this.name.trim())) this.status = true
+        else type ? this.status = null : this.status = false
       },
       // 确定
       async enterFun() {
@@ -61,10 +61,8 @@
         if (data.data.code == 200) {
           this.$store.commit('changeName', this.name)
           messageFun('success', this.$t('message.editSuc'))
-        } else if (data.data.code == 999) {
-          messageFun('warning', this.$t('message.noTimes'))
-        }
-        this.$emit('cancel')
+        } else if (data.data.code == 999) messageFun('warning', this.$t('message.noTimes'))
+        this.cancelFun()
       },
       // 取消 && 关闭
       cancelFun() {

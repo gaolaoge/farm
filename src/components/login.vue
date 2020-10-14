@@ -47,7 +47,7 @@
                        :placeholder="$t('login_page.SMS_verif.code_placeholder')"
                        ref="phoneForm_code"
                        type="text"
-                       @blur="phoneCodeVerif"
+                       @blur="phoneCodeVerif(false)"
                        @input="phoneCodeVerif(true)"
                        @focus="login.phoneForm.codeVerif === false ? login.phoneForm.codeVerif = null : null"
                        class="farm-input farm-cord-input"

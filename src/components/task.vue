@@ -223,42 +223,42 @@
           ],
           renderBtnGroup: [
             {
-              text: this.$t('task.renderBtnGroup')[1],
-              class: 'startBtn',
-              initialIcon: require('@/icons/playIcon-black.png'),
-              selectedIcon: require('@/icons/playIcon-white.png')
-            },
-            {
-              text: this.$t('task.renderBtnGroup')[2],
-              class: 'pauseBtn',
-              initialIcon: require('@/icons/pauseIcon-black.png'),
-              selectedIcon: require('@/icons/pauseIcon-white.png')
-            },
-            {
-              text: this.$t('task.renderBtnGroup')[3],
+              text: this.$t('task.renderBtnGroup')[1],                // 删除
               class: 'deleteBtn',
               initialIcon: require('@/icons/deleteIcon-black.png'),
               selectedIcon: require('@/icons/deleteIcon-white.png')
             },
             {
-              text: this.$t('task.renderBtnGroup')[4],
-              class: 'downloadBtn',
-            },
-            {
-              text: this.$t('task.renderBtnGroup')[5],
-              class: 'renderAllBtn',
-            },
-            {
-              text: this.$t('task.renderBtnGroup')[6],
+              text: this.$t('task.renderBtnGroup')[2],                // 重新渲染
               class: 'renderAgainBtn',
             },
             {
-              text: this.$t('task.renderBtnGroup')[7],
-              class: 'archiveBtn',
+              text: this.$t('task.renderBtnGroup')[3],                // 下载完成帧
+              class: 'downloadBtn',
             },
             {
-              text: this.$t('task.renderBtnGroup')[8],
+              text: this.$t('task.renderBtnGroup')[4],                // 全部渲染
+              class: 'renderAllBtn',
+            },
+            {
+              text: this.$t('task.renderBtnGroup')[5],                // 开始
+              class: 'startBtn',
+              initialIcon: require('@/icons/playIcon-black.png'),
+              selectedIcon: require('@/icons/playIcon-white.png')
+            },
+            {
+              text: this.$t('task.renderBtnGroup')[6],               // 暂停
+              class: 'pauseBtn',
+              initialIcon: require('@/icons/pauseIcon-black.png'),
+              selectedIcon: require('@/icons/pauseIcon-white.png')
+            },
+            {
+              text: this.$t('task.renderBtnGroup')[7],               // 拷贝
               class: 'copyBtn'
+            },
+            {
+              text: this.$t('task.renderBtnGroup')[8],               // 归档
+              class: 'archiveBtn',
             }
           ],
           archiveRecords: this.$t('task.archiveRecords'),
@@ -411,35 +411,35 @@
       // 渲染下载 - 操作台
       renderOperating(ing) {
         switch (ing) {
-          case this.$t('task.renderBtnGroup')[1]: // 开始
+          case this.$t('task.renderBtnGroup')[5]: // 开始
             if (!this.btnGroup.downloadTableBtnStart) return false
             this.$refs.renderMode.startFun()
             break
-          case this.$t('task.renderBtnGroup')[2]: // 暂停
+          case this.$t('task.renderBtnGroup')[6]: // 暂停
             if (!this.btnGroup.downloadTableBtnPause) return false
             this.$refs.renderMode.pauseFun()
             break
-          case this.$t('task.renderBtnGroup')[3]: // 删除
+          case this.$t('task.renderBtnGroup')[1]: // 删除
             if (!this.btnGroup.downloadTableBtnDelete) return false
             this.$refs.renderMode.deleteFun()
             break
-          case this.$t('task.renderBtnGroup')[4]: // 下载完成帧
+          case this.$t('task.renderBtnGroup')[3]: // 下载完成帧
             if (!this.btnGroup.downloadTableBtnDownload) return false
             this.$refs.renderMode.downloadFils()
             break
-          case this.$t('task.renderBtnGroup')[5]: // 全部渲染
+          case this.$t('task.renderBtnGroup')[4]: // 全部渲染
             if (!this.btnGroup.downloadTableBtnRenderAll) return false
             this.$refs.renderMode.renderAllFun()
             break
-          case this.$t('task.renderBtnGroup')[6]: // 重新渲染
+          case this.$t('task.renderBtnGroup')[2]: // 重新渲染
             if (!this.btnGroup.downloadTableBtnRenderAgain) return false
             this.$refs.renderMode.renderAgainFun()
             break
-          case this.$t('task.renderBtnGroup')[7]: // 归档
+          case this.$t('task.renderBtnGroup')[8]: // 归档
             if (!this.btnGroup.downloadTableBtnArchive) return false
             this.$refs.renderMode.archiveFun()
             break
-          case this.$t('task.renderBtnGroup')[8]: // 拷贝
+          case this.$t('task.renderBtnGroup')[7]: // 拷贝
             if (!this.btnGroup.downloadTableBtnCopy) return false
             this.$refs.renderMode.copyFun()
             break
