@@ -241,7 +241,7 @@
   } from '@/api/newTask-api'
   import {
     getMessageList,
-    getBulletin
+    getBulletin,
   } from '@/api/header-api'
   import {
     setInfo,

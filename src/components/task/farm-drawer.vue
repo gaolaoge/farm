@@ -229,10 +229,19 @@
             </el-table-column>
             <!--图像比例-->
             <el-table-column
-              prop="ratio"
               label="图像比例"
               v-if="zone == 2"
-              width="100"/>
+              width="100">
+              <template slot-scope="scope">
+                <div class="ratio">
+                  <span class="farm-table-td-span show">{{ scope.row.ratio }}</span>
+                  <!--锁住状态-->
+                  <img src="@/icons/lock.png" v-show="scope.row.lock" @click="changeLock(scope.$index)">
+                  <!--解锁状态-->
+                  <img src="@/icons/unLock.png" v-show="!scope.row.lock" @click="changeLock(scope.$index)">
+                </div>
+              </template>
+            </el-table-column>
             <!--图像宽度-->
             <el-table-column
               label="图像宽度"
@@ -1556,7 +1565,7 @@
         else if (rowIndex % 2 == 0) return 'success-row'
         else return ''
       },
-      // 帧范围修改
+      // 设置参数 - 帧范围修改
       rangeChange(e, index, val, row) {
         row['rangeEdit'] = false
         row['range'] = val
@@ -1590,7 +1599,7 @@
         // 检查当前行【间隔帧】
         // this.numChange(null, index, row)
       },
-      // 帧范围修改报错
+      // 设置参数 - 帧范围修改报错
       rangeChangeErr(type, index) {
         switch (type) {
           case 'empty':
@@ -1605,7 +1614,7 @@
         this.setting.num.tableData[index]['rangeErr'] = true
         this.setting.num.randerError = true
       },
-      // 间隔帧数修改
+      // 设置参数 - 间隔帧数修改
       numChange(e, index, row) {
         // debugger
         row['numEdit'] = false
@@ -1627,7 +1636,7 @@
         row.numErr = false
         if (this.setting.num.tableData.every(curr => !curr.numErr)) this.setting.num.numError = false
       },
-      // 帧间隔修改报错
+      // 设置参数 - 帧间隔修改报错
       numChangeErr(row, type) {
         switch (type) {
           case 'format':
@@ -1639,22 +1648,28 @@
         row.numErr = true
         this.setting.num.numError = true
       },
-      // 图像宽度修改
+      // 设置参数 - 图像宽度修改
       wChange(e, index) {
         this.setting.num.tableData[index]['wEdit'] = false
         this.setting.num.tableData[index]['w'] = e.target.value
-        if (this.zone == 2) this.rChange(index)
+        if (this.zone == 2) this.rChange(index, 'w')
       },
-      // 图像高度修改
+      // 设置参数 - 图像高度修改
       hChange(e, index) {
         this.setting.num.tableData[index]['hEdit'] = false
         this.setting.num.tableData[index]['h'] = e.target.value
-        if (this.zone == 2) this.rChange(index)
+        if (this.zone == 2) this.rChange(index, 'h')
       },
-      // 图像宽高比变动
-      rChange(index) {
-        let t = this.setting.num.tableData[index]
-        t['ratio'] = (t['w'] / t['h']).toFixed(3)
+      // 设置参数 - 图像宽高比变动
+      rChange(index, position) {
+        let t = this.setting.num.tableData[index],
+          lock = t['lock']
+        if (lock) position == 'w' ? t['h'] = (t['w'] / t['ratio']).toFixed(3) : t['w'] = (t['h'] * t['ratio']).toFixed(3)
+        else t['ratio'] = (t['w'] / t['h']).toFixed(3)
+      },
+      // 设置参数 - 改变比例锁状态
+      changeLock(index) {
+        this.setting.num.tableData[index]['lock'] = !this.setting.num.tableData[index]['lock']
       },
       // 主table多选事件
       handleSelectionChange(val) {
@@ -1920,7 +1935,7 @@
       // 渲染结果 - 主 - 操作 - 下载完成帧 - 前期预判
       async operateDownloadFrame() {
         if (!this.result.selectionResult.length || this.result.operateBtnList[2]['classState']) return false
-        else if (!this.socket_plugin)this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.operateDownloadFrameing())
+        else if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.operateDownloadFrameing())
         else this.operateDownloadFrameing()
         // let data = await seeBalance()
         // if (data.data.code == 1001) {
@@ -1929,7 +1944,7 @@
         // }
       },
       // 渲染结果 - 主 - 操作 - 下载完成帧 - ing
-      operateDownloadFrameing(){
+      operateDownloadFrameing() {
         this.$confirm('将下载选中选, 是否继续?', '提示信息', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -1978,20 +1993,17 @@
             messageFun('error', '报错，操作失败')
             console.log(error)
           })
-      }
-      ,
+      },
       // 渲染结果 - 详情 - 操作 - 返回
       moreOperateBack() {
         this.result.showDetails = false
         this.demo = null
-      }
-      ,
+      },
       // 渲染结果 - 详情 - 操作 - 下载日志
       async moreOperateDownload() {
         let data = await downloadLog(`layerTaskUuid=${this.result.detailsTableData[0]['layerTaskUuid']}&frameTaskUuid=${this.result.detailsTableData[0]['frameTaskUuid']}`)
         // exportDownloadFun(data, data.headers.file, 'text')  事件交接给C
-      }
-      ,
+      },
       // 分析结果 - 进入设置参数 - 获取预设信息
       async setParameter() {
         const loading = this.$loading({
@@ -2008,13 +2020,11 @@
           return false
         }
         this.setParameterNext(data)
-      }
-      ,
+      },
       // 翻到指定页 【分析结果-details】【设置参数-setting】【渲染结果-result】
       turnPage(path) {
         this.$emit('changeTypeInfo', path)
-      }
-      ,
+      },
       // 分析结果 - 进入设置参数 - 配置预设信息
       setParameterNext(data) {
         // 翻到【设置参数】
@@ -2059,19 +2069,18 @@
             formatList: formatList,
             cameraList: cameraList,
             ratio: this.zone == 1 ? null : curr.ratio,
+            lock: true,                                  // 图像比例锁
           }
         })
         // 【设置参数】-【渲染层数】- 未启动分层渲染时的table
         this.setting.num.tableData = [this.setting.num.tableDataAll[0]]
         // 渲染层数默认选中索引1
         setTimeout(() => this.$refs.renderTable.toggleRowSelection(this.setting.num.tableData[0], true), 0)
-      }
-      ,
+      },
       // 设置参数 - 返回分析结果
       settingBack() {
         this.$emit('changeTypeInfo', 'upload-table')
-      }
-      ,
+      },
       // 设置参数 项目列表
       getItemList(name) {
         getConsumptionSelectList()
@@ -2086,16 +2095,14 @@
             if (!name) other.view = other.viewList.find(item => item.isDefault == 1)['value']
             else other.view = other.viewList.find(curr => curr.label == name)['value']
           })
-      }
-      ,
+      },
       // 设置参数 启动分层渲染按钮 改变
       h() {
         let s = this.setting.num
         this.$refs.renderTable.clearSelection()
         s.selected = []
         s.singleChoiceVal == 1 ? s.tableData = s.tableDataAll : s.tableData = [s.tableDataAll[0]]
-      }
-      ,
+      },
       // 设置参数 - 优先渲染 - 验证自定义帧格式
       verifFormat() {
         let val = this.setting.priority.customize
@@ -2142,8 +2149,7 @@
 
         if (valList.some(item => !result.has(Number(item)))) this.errFun('优先帧超出帧范围，请重新输入')
         else this.setting.priority.customizeInputError = false
-      }
-      ,
+      },
       // 验证报错
       errFun(text) {
         messageFun('error', text)
@@ -2360,6 +2366,21 @@
 
     &.show {
       opacity: 1;
+    }
+  }
+
+  .ratio {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    span {
+      font-size: 14px;
+    }
+
+    img {
+      cursor: pointer;
+      width: 8px;
     }
   }
 

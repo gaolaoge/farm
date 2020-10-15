@@ -110,7 +110,8 @@
 <script>
   import {
     getMessageList,
-    readMessages
+    readMessages,
+    getTaskPosition
   } from "../../api/header-api"
   import {
     createDateFun,
@@ -120,6 +121,7 @@
     mapState
   } from 'vuex'
   import {messageFun} from "../../assets/common";
+  import task from "../task";
 
   export default {
     name: 'messageTable',
@@ -151,9 +153,9 @@
     },
     methods: {
       // 打开消息详情
-      tableClick(row, column, event) {
+      async tableClick(row, column, event) {
         let taskUuid = JSON.parse(row.noticeParam)['taskUuid'],
-          taskZoneID = row.noticeData.split('&').find(item => item.split('=')[0] == 'zoneUuid').split('=')[1],
+          zoneUuid = row.noticeData.split('&').find(item => item.split('=')[0] == 'zoneUuid').split('=')[1],
           pageIndex = row.noticeData.split('&').find(item => item.split('=')[0] == 'pageIndex').split('=')[1],
           type = row.noticeUrl
         // analyse  =>  分析页面
@@ -163,15 +165,18 @@
         if (type == 'info') this.$router.push('/Pinfo')
         else if (type == 'recharge') this.$router.push('/upTop')
         else {
-          sessionStorage.setItem('taskListActive', type == 'analyse' ? 0 : 1)
-          if(this.$route.path != '/task') this.$router.push('/task')
-          if(this.zoneId != taskZoneID) this.$store.commit('changeZoneId', taskZoneID)
+          let data = await getTaskPosition(`taskUuid=${taskUuid}&zoneUuid=${zoneUuid}`)
 
-          this.$store.commit('newRedirectToTask', {
-            type,
-            taskUuid,
-            pageIndex
-          })
+
+          // sessionStorage.setItem('taskListActive', type == 'analyse' ? 0 : 1)
+          // if(this.$route.path != '/task') this.$router.push('/task')
+          // if(this.zoneId != zoneUuid) this.$store.commit('changeZoneId', zoneUuid)
+          //
+          // this.$store.commit('newRedirectToTask', {
+          //   type,
+          //   taskUuid,
+          //   pageIndex
+          // })
         }
         readMessages({
           'isRead': 1,

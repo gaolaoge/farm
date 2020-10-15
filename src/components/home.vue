@@ -211,7 +211,6 @@
     computed: {
       ...mapState(['zoneId', 'user']),
       version(){
-        console.log(process.env)
         return process.env.VERSION
       }
     },

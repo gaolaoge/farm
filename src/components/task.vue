@@ -474,25 +474,26 @@
           else return false
         },
       },
-      'redirectToTask': {
-        handler: function (obj) {
-          if (!obj) return false
-          // taskID: "SWT-511"
-          // type: "analyse"
-          if (obj.type == 'analyse') {
-            this.$refs.uploadMode.getList({
-              pageIndex: obj.pageIndex,
-              taskUuid: obj.taskUuid
-            })
-          } else if (obj.type == 'render') {
-            this.$refs.renderMode.getList({
-              pageIndex: obj.pageIndex,
-              taskUuid: obj.taskUuid
-            })
-          }
-        },
-        immediate: true
-      },
+      // 站内信跳转
+      // 'redirectToTask': {
+      //   handler: function (obj) {
+      //     if (!obj) return false
+      //     // taskID: "SWT-511"
+      //     // type: "analyse"
+      //     if (obj.type == 'analyse') {
+      //       this.$refs.uploadMode.getList({
+      //         pageIndex: obj.pageIndex,
+      //         taskUuid: obj.taskUuid
+      //       })
+      //     } else if (obj.type == 'render') {
+      //       this.$refs.renderMode.getList({
+      //         pageIndex: obj.pageIndex,
+      //         taskUuid: obj.taskUuid
+      //       })
+      //     }
+      //   },
+      //   immediate: true
+      // },
       '$route.params': {
         handler: function (val) {
           if (!val) return false
@@ -558,7 +559,7 @@
       createTableIconList()  // 图标
     },
     computed: {
-      ...mapState(['socket_backS_msg', 'redirectToTask', 'zone'])
+      ...mapState(['socket_backS_msg', 'zone'])
     }
   }
 </script>

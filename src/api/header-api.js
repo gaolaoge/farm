@@ -26,3 +26,11 @@ export function getBulletin() {
     method: 'GET',
   })
 }
+
+// 获取项目当前所在位置
+export function getTaskPosition(data) {
+  return businessServer({
+    url: `/professional/notice/log/getTaskIndex?${data}`,
+    method: 'GET',
+  })
+}

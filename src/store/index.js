@@ -57,7 +57,6 @@ export default new Vuex.Store({
       LargeImgHref: null
     },
     pluginDialog: false,    // 打开插件窗口
-    redirectToTask: null,   // 站内信跳转到task
     remoteLoginDate: null,  // 异地登录事件触发时间
   },
   getter: {},
@@ -167,10 +166,6 @@ export default new Vuex.Store({
     // 已用容量
     changeUsedCapacity(s, num){
       s.user.usedCapacity = num
-    },
-    // 站内信跳转到task
-    newRedirectToTask(state, data){
-      state.redirectToTask = data
     },
     // 打开插件窗口
     openPluginDialog(s, bool){
