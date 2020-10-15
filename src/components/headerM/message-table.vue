@@ -115,7 +115,6 @@
   } from "../../api/header-api"
   import {
     createDateFun,
-    simplify
   } from '@/assets/common'
   import {
     mapState
@@ -228,19 +227,19 @@
           v = `isRead=${m.isRead}&noticeType=${m.noticeType}&keyword=&pageIndex=${m.pageIndex}&pageSize=10`
         let data = await getMessageList(v)
         if (data.data.code == 200) {
-          let halfDay = 1000 * 60 * 60 * 12,              // 半天的毫秒时
-            todayNum = new Date(new Date().toDateString()).getTime(),      // 当日零时时间戳
-            theDayBeforeYesterday = todayNum - halfDay * 4
-          if (m.noticeType == 1) this.systemTableData = data.data.data.map(item => {
-            return Object.assign(item, {
-              createTime: theDayBeforeYesterday > item.createTime ? createDateFun(new Date(item.createTime), 'mini') : simplify(item.createTime)
+          let halfDay = 1000 * 60 * 60 * 12,                               // 半天的毫秒时
+            todayZore = new Date(new Date().toDateString()).getTime(),     // 当日零时时间戳
+            yesterdayZore = todayZore - halfDay * 2,                       // 昨天零时时间戳
+            theDayBeforeYesterday = todayZore - halfDay * 4,               // 前天零时时间戳
+            list = data.data.data.map(item => {
+              let createTime
+              if (item.createTime > todayZore) createTime = createDateFun(new Date(item.createTime), false, false, true)                    // 当日
+              else if (item.createTime > yesterdayZore) createTime = '昨天 ' + createDateFun(new Date(item.createTime), false, false, true)
+              else if (item.createTime > theDayBeforeYesterday) createTime = '前天 ' + createDateFun(new Date(item.createTime), false, false, true)
+              else createDateFun(new Date(item.createTime), true)
+              return Object.assign(item, {createTime})
             })
-          })
-          else if (m.noticeType == 2) this.activityTableData = data.data.data.map(item => {
-            return Object.assign(item, {
-              createTime: theDayBeforeYesterday > item.createTime ? createDateFun(new Date(item.createTime), 'mini') : simplify(item.createTime)
-            })
-          })
+          m.noticeType == 1 ? this.systemTableData = list : this.activityTableData = list
           // {
           //  createBy: "system"
           //  createTime: 1591061954296

@@ -244,8 +244,7 @@
     getBulletin,
   } from '@/api/header-api'
   import {
-    setInfo,
-    setSpecific
+    setInfo
   } from '@/assets/common'
   import {
     mapState

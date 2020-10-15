@@ -722,7 +722,8 @@
                    @click="moreOperateFun(item.text)"
                    v-for="(item,index) in result.operateMoreBtnList"
                    :key="index">
-                <img :src="item.imgUrl" v-if="item.imgUrl">
+                <img :src="item.imgUrl" v-if="item.imgUrl" class="b">
+                <img :src="item.imgUrlW" v-if="item.imgUrlW" class="w">
                 <span class="text">
                 {{ item.text }}
               </span>
@@ -901,6 +902,13 @@
                 <el-table-column
                   prop="endDate"
                   label="渲染完成时间"
+                  sortable
+                  show-overflow-tooltip
+                  width="180"/>
+                <!--单价（金币/核时）-->
+                <el-table-column
+                  prop="unitPrice"
+                  label="单价（金币/核时）"
                   sortable
                   show-overflow-tooltip
                   width="180"/>
@@ -1200,7 +1208,8 @@
           // 详情 table 操作
           operateMoreBtnList: [
             {
-              imgUrl: require('@/icons/back_icon.png'),
+              imgUrl: require('@/icons/back_icon-black.png'),
+              imgUrlW: require('@/icons/back_icon-white.png'),
               text: '返回'
             },
             // {
@@ -1710,7 +1719,7 @@
         this.result.showDetails = true
         let data = await getFrameHistoryTable(`layerTaskUuid=${row.layerTaskUuid}&frameTaskUuid=${row.frameTaskUuid}`)
         this.result.detailsTableData = data.data.data.frameTaskList.map(item => {
-          return {
+          return Object.assign(item, {
             num: item.frameNo,                   // 帧数
             status: itemDownloadStatus(item.frameTaskStatus),                  // 帧状态
             prices: item.cost,                   // 渲染费用
@@ -1722,8 +1731,9 @@
             peak: item.memoryPeak,               // 内存峰值
             times: item.downloadCount,           // 下载次数
             layerTaskUuid: item.layerTaskUuid,
-            frameTaskUuid: item.frameTaskUuid
-          }
+            frameTaskUuid: item.frameTaskUuid,
+            unitPrice: item.unitPrice ? item.unitPrice : '-'
+          })
         })
         this.demo = data.data.data.log.reduce((total, curr) => {
           return total + `<p class="p">${curr}</p>`
@@ -2530,8 +2540,15 @@
             }
 
             img {
-              width: 8px;
               margin-right: 4px;
+
+              &.w {
+                display: none;
+              }
+
+              &.b {
+                display: inline-flex;
+              }
 
               &.h {
                 display: none;
@@ -2561,6 +2578,14 @@
               img {
                 &.h {
                   display: inline-block;
+                }
+
+                &.b {
+                  display: none;
+                }
+
+                &.w {
+                  display: inline-flex;
                 }
 
                 &.r {

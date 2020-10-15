@@ -15,25 +15,13 @@ const createCalendar = function (date) {
 }
 
 // 获得日期时间
-const createDateFun = function (date, mini, inADay) {
+const createDateFun = function (date, mini, inADay, miniInDay) {
   if ((date.getFullYear() == '1970' && !inADay)) return '-'
   let {year, month, day, hour, minutes, seconds} = createCalendar(date)
   if (mini) return `${year}-${month}-${day}`
   else if (inADay) return `${hour}:${minutes}:${seconds}`
+  else if (miniInDay) return `${hour}:${minutes}`
   else return `${year}-${month}-${day} ${hour}:${minutes}:${seconds}`
-}
-
-// 最近两天内化简倒计时
-const simplify = function (date) {
-  let halfDay = 1000 * 60 * 60 * 12,                             // 半天的毫秒时
-    todayNum = new Date(new Date().toDateString()).getTime()     // 当日零时时间戳
-  if (date - todayNum <= halfDay * 2) {
-    return createDateFun(new Date(date - todayNum), false, true)
-  } else if (todayNum - date < halfDay * 2) {
-    return '昨天' + createDateFun(new Date(todayNum - date), false, true)
-  } else if (todayNum - date < halfDay * 4) {
-    return '前天' + createDateFun(new Date(todayNum - date), false, true)
-  }
 }
 
 // 耗时
@@ -344,9 +332,7 @@ export {
   clearUserCookie,
   getFileSize,
   sortF,
-  simplify,
   sortDateF,
-  setSpecific,
 }
 
 

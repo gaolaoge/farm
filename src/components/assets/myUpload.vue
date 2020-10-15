@@ -541,6 +541,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    user-select: none;
 
     span {
       font-size: 14px;
