@@ -729,13 +729,13 @@
             failure: curr.frameCount.fail,                         // 失败
             renderingTime: consum(curr.useTime),                   // 渲染时长
             renderingCost: curr.cost,                              // 渲染费用（金币）
-            frameRange: '-',                                       // 帧范围
-            intervalFrame: '-',                                    // 间隔帧
-            camera: '-',                                           // 相机
-            layerName: '-',                                        // 层名
-            downloadStatus,                                        // 下载情况
+            frameRange: children.length == 1 ? children[0]['frameRange'] : '-',             // 帧范围
+            intervalFrame: children.length == 1 ? children[0]['intervalFrame'] : '-',       // 间隔帧
+            camera: children.length == 1 ? children[0]['camera'] : '-',                     // 相机
+            layerName: children.length == 1 ? children[0]['layerName'] : '-',               // 层名
+            downloadStatus,                                                                 // 下载情况
             renderingStartTime: createDateFun(new Date(curr.startTime)),                    // 渲染开始时间
-            renderingEndTime: createDateFun(new Date(curr.endTime)),                        // 渲染结束时间
+            renderingEndTime: children.length == 1 ? children[0]['renderingEndTime'] : createDateFun(new Date(curr.endTime)),                        // 渲染结束时间
             founder: curr.account,                                 // 创建人
             creationTime: createDateFun(new Date(curr.createTime)),// 创建时间
             children: children.length == 1 ? null : children,

@@ -401,7 +401,7 @@
           }
         }
         if ('FatherId' in row && !result) {
-          selectionList.splice(selection.findIndex(curr => curr.rowId == row.rowId), 1)
+          selectionList.splice(selectionList.findIndex(curr => curr.rowId == row.rowId), 1)
           // 父项是否被选中 取消选中
           fatherSelected = selection.findIndex(item => tableData[row.FatherIndex].rowId == item.rowId)
           // 取消父级选中状态

@@ -16,7 +16,7 @@ const createCalendar = function (date) {
 
 // 获得日期时间
 const createDateFun = function (date, mini, inADay) {
-  if (date.getFullYear() == '1970' && !inADay) return '-'
+  if ((date.getFullYear() == '1970' && !inADay)) return '-'
   let {year, month, day, hour, minutes, seconds} = createCalendar(date)
   if (mini) return `${year}-${month}-${day}`
   else if (inADay) return `${hour}:${minutes}:${seconds}`
