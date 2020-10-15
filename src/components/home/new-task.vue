@@ -186,7 +186,7 @@
         <!--设置渲染模板-->
         <div class="stepBody-item"
              v-show="stepBtnActive == 2">
-          <div class="set-renderTemplate">
+          <div class="set-renderTemplate setScollBarStyle">
             <!--添加模板-->
             <div class="set-renderTemplate-item addMore"
                  @click="addTemplate('addMore','')">
@@ -446,12 +446,11 @@
       <!--选择渲染文件-->
       <div v-show="stepBtnActive == 1">
         <!--下一步-->
-        <div class="btnGroup-btn confirm"
-             :class="[
+        <div :class="[
                {'cannotTrigger': stepOneBase.index == 1 ?
                   (stepOneBase.local.filelist.length == 0 ) :
                   (stepOneBase.netdisc.sceneFileSelection.length == 0 || !stepOneBase.netdisc.pathV || stepOneBase.netdisc.pathV == '选择工程路径')
-               }
+               }, 'btnGroup-btn', 'confirm'
               ]"
              @click="goToMode('next')">
           <span class="nextStep">{{ btn.next }}</span>
@@ -464,7 +463,9 @@
           <span>{{ btn.previous }}</span>
         </div>
         <!--下一步-->
-        <div class="btnGroup-btn confirm" @click="stepBtnActive = 3" v-show="taskType != 'profession'">
+        <div :class="[{'cannotTrigger': stepTwoBase.renderListActive == -1}, 'btnGroup-btn', 'confirm']"
+             @click="stepTwoBase.renderListActive == -1 ? null : stepBtnActive = 3"
+             v-show="taskType != 'profession'">
           <span>{{ btn.next }}</span>
         </div>
         <!--确定-->
@@ -675,7 +676,7 @@
           netdisc: {     // 我的资产
             myAssets: '资产',
             pathLabel: '工程路径',
-            pathV: '选择工程路径',    // 工程路径最终值
+            pathV: '/',             // 工程路径最终值
             pathVTemporary: null,   // 工程路径临时选中值
             fileLabel: '场景文件',
             folderText: '文件夹',
@@ -1052,7 +1053,7 @@
       },
       // 1.选择渲染文件 - 我的电脑 插件 修改场景文件对应的【工程路径】
       pluginEditProjectPath(data) {
-        if(!data.path) return false
+        if (!data.path) return false
         // 确定 判断跟路径是否为 c 或 z
         else if (data.path.length >= 2 && (data.path.slice(0, 2).toLowerCase() == 'c:' || data.path.slice(0, 2).toLowerCase() == 'z:')) messageFun('error', '请不要选择C、Z盘，这会影响渲染结果')
         else this.stepOneBase.local.filelist[data.sceneFile].address = data.path
@@ -1061,7 +1062,7 @@
       pluginFilterFile(file) {
         let index = file.lastIndexOf('/') + 1,
           address = file.substr(0, index)
-        if(address.slice(0, 2).toLowerCase() == 'c:' || address.slice(0, 2).toLowerCase() == 'z:') messageFun('error', '请不要选择C、Z盘，这会影响渲染结果')
+        if (address.slice(0, 2).toLowerCase() == 'c:' || address.slice(0, 2).toLowerCase() == 'z:') messageFun('error', '请不要选择C、Z盘，这会影响渲染结果')
         else this.stepOneBase.local.filelist.push({
           address,                                  // 工程路径
           sceneFile: file.substr(index),            // 场景名
@@ -1394,10 +1395,11 @@
         else this.operateBtnAddMoreing()
       },
       // 1.选择渲染文件 - 我的电脑 -【添加】新场景文件 - ing
-      operateBtnAddMoreing(){
+      operateBtnAddMoreing() {
         this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
           transferType: 3,                  // 传输类型
-          suffix: this.renderFileTypeList   // 文件后缀
+          suffix: this.renderFileTypeList,  // 文件后缀
+          openFilePath: '/'                 //
         })
       },
       // 1.选择渲染文件 - 我的电脑 -【删除】新场景文件
@@ -1499,6 +1501,7 @@
             }
             return children
           }
+
           this.stepOneBase.netdisc.catalogData = this.stepOneBase.netdisc.catalogData.concat(g(JSON.parse(item)))
         })
       },

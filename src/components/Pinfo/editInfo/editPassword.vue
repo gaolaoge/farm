@@ -22,7 +22,7 @@
                  :placeholder="codePlaceholder"
                  @blur="verifCode"
                  @focus="status.code = null">
-          <div class="getCode" :class="[{'cannotBe': !canBeTrigger}]">
+          <div :class="[{'cannotBe': !canBeTrigger}, 'getCode']">
             <span class="getSpan" @click="getCode" v-show="canBeTrigger">{{ codeLabel }}</span>
             <span class="countdown" v-show="!canBeTrigger">{{ countdown }}{{ unit }}</span>
           </div>
@@ -64,7 +64,8 @@
           <div class="farm-btn cancel" @click="cancelFun">
             <span>{{ btnCancel }}</span>
           </div>
-          <div class="farm-btn save" @click="saveFun">
+          <div :class="[{'cannotBePush': !this.status.code || !this.status.ps || !this.status.psa}, 'farm-btn', 'save']"
+               @click="saveFun">
             <span>{{ btnSave }}</span>
           </div>
         </div>
@@ -326,6 +327,7 @@
     }
 
     .farm-item {
+      position: relative;
       padding: 0px 30px;
       width: 100%;
       height: 36px;
@@ -356,6 +358,7 @@
 
         &.cannotBe {
           border: 1px solid rgba(22, 29, 37, 0.3);
+          cursor: no-drop;
         }
 
         span {
@@ -368,7 +371,7 @@
           }
 
           &.countdown {
-            color: rgba(22, 29, 37, 0.3);
+            color: rgba(39, 95, 239, 1);
           }
         }
       }
@@ -402,8 +405,8 @@
       .errorInfo {
         position: absolute;
         width: 300px;
-        left: 0px;
-        top: 36px;
+        left: 50px;
+        top: 37px;
         color: rgba(255, 62, 77, 0.79);
         font-size: 12px;
       }
@@ -417,6 +420,15 @@
           cursor: pointer;
         }
       }
+    }
+  }
+
+  .cannotBePush {
+    background-color: rgba(255, 255, 255, 1);
+    border: 1px solid rgba(22, 29, 37, 0.19);
+    cursor: no-drop;
+    span {
+      color: rgba(22, 29, 37, 0.19);
     }
   }
 </style>

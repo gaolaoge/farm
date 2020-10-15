@@ -341,7 +341,7 @@
         }
       },
       // 渲染下载 多选结果
-      j(val) {
+      j({val, canBeCopy}) {
         let t = this.btnGroup
         if (!val.length) {
           t.downloadTableBtnStart = false        // 渲染下载 - 开始
@@ -377,8 +377,7 @@
         if (val.every(item => item == this.$t('task.status.render_ing'))) t.downloadTableBtnPause = true      // 全部为【渲染中】可点击暂停
         if (val.every(item => item == this.$t('task.status.render_all'))) t.downloadTableBtnRenderAll = true  // 全部为【待全部渲染】可点击全部渲染
         if (val.every(item => item == this.$t('task.status.render_done'))) t.downloadTableBtnArchive = true   // 全部为【渲染完成】可点击归档
-        if (val.length == 1) t.downloadTableBtnCopy = true                // 渲染下载 - 拷贝
-        else t.downloadTableBtnCopy = false
+        canBeCopy ? t.downloadTableBtnCopy = true : t.downloadTableBtnCopy = false          // 渲染下载 - 拷贝
       },
       // 【归档记录】触发重新获取数据
       x() {

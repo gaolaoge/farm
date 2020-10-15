@@ -427,14 +427,14 @@
           // 取消勾选全部子项
           tableData[row.selfIndex]['children'] ? tableData[row.selfIndex]['children'].forEach(son => {
             // 将此子项取消勾选
-            let sonDefault = selection.some(item => item.rowId == son.rowId)
+            let sonDefault = selection.findIndex(item => item.rowId == son.rowId)
             if (sonDefault != -1) {
               table.toggleRowSelection(son, false)
               selectionList.splice(sonDefault, 1)
             }
           }) : null
           // 取消自身勾选
-          selectionList.splice(selection.findIndex(curr => curr.rowId == row.rowId), 1)
+          selectionList.splice(selectionList.findIndex(curr => curr.rowId == row.rowId), 1)
           table.toggleRowSelection(row, false)
         }
       },

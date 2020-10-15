@@ -35,7 +35,7 @@
         <!--状态-->
         <el-table-column
           label="状态"
-          :filters="table.statusList"
+          :filters="zone == 1 ? table.statusList : table.statusList2"
           column-key="status"
           show-overflow-tooltip
           width="110">
@@ -384,6 +384,13 @@
             {text: '渲染暂停', value: '渲染暂停'},
             {text: '渲染完成', value: '渲染完成'}
           ],
+          statusList2: [                 // 筛选 - 状态label
+            // {text: '全部', value: '全部'},
+            // {text: '待全部渲染', value: '待全部渲染'},
+            {text: '渲染中', value: '渲染中'},
+            {text: '渲染暂停', value: '渲染暂停'},
+            {text: '渲染完成', value: '渲染完成'}
+          ],
         },
         showDrawer: false,
         itemName: 'result',
@@ -424,7 +431,7 @@
         if ('FatherIndex' in row) y.push('son-row')
         switch (row.status) {
           case '渲染暂停':
-          // case '等待':
+            // case '等待':
             y.push('warning-row')
             y.push('style-row')
             break
@@ -454,6 +461,7 @@
       },
       // 【非业务逻辑】手动勾选数据行 Checkbox 时触发
       tableSelect(selection, row) {
+        // selection 为现选中结果 row 为此次事件的触发行
         let result = selection.some(curr => curr.rowId == row.rowId),     // 【选中事件】or【取消事件】
           tableData = this.table.RenderDownloadData,
           allSonSelected = false,
@@ -476,7 +484,7 @@
           }
         }
         if ('FatherId' in row && !result) {
-          selectionList.splice(selection.findIndex(curr => curr.rowId == row.rowId), 1)
+          selectionList.splice(selectionList.findIndex(curr => curr.rowId == row.rowId), 1)
           // 父项是否被选中 取消选中
           fatherSelected = selection.findIndex(item => tableData[row.FatherIndex].rowId == item.rowId)
           // 取消父级选中状态
@@ -502,14 +510,14 @@
           // 取消勾选全部子项
           tableData[row.selfIndex]['children'] ? tableData[row.selfIndex]['children'].forEach(son => {
             // 将此子项取消勾选
-            let sonDefault = selection.some(item => item.rowId == son.rowId)
+            let sonDefault = selection.findIndex(item => item.rowId == son.rowId)
             if (sonDefault != -1) {
               table.toggleRowSelection(son, false)
               selectionList.splice(sonDefault, 1)
             }
           }) : null
           // 取消自身勾选
-          selectionList.splice(selection.findIndex(curr => curr.rowId == row.rowId), 1)
+          selectionList.splice(selectionList.findIndex(curr => curr.rowId == row.rowId), 1)
           table.toggleRowSelection(row, false)
         }
       },
@@ -1171,12 +1179,16 @@
     watch: {
       'table.renderSelectionList': {
         handler: function (val) {
-          let r = new Set()
+          let r = new Set(),       // 任务状态集合
+            task = new Set(),      // 选中项所属任务的长度
+            mainTask = new Set()   // 选中的主任务的长度
           val.forEach(curr => {
+            task.add(curr.FatherId ? curr.FatherId : curr.id)
+            if (curr['children'] || curr['secretChild']) mainTask.add(curr.id)
             if (curr['children']) curr['children'].forEach(item => r.add(item.status))
             r.add(curr.status)
           })
-          this.$emit('j', [...r])
+          this.$emit('j', {val: [...r], canBeCopy: task.size == 1 && mainTask.size == 1})
         },
         deep: true
       },
