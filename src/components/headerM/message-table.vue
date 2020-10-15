@@ -236,7 +236,7 @@
               if (item.createTime > todayZore) createTime = createDateFun(new Date(item.createTime), false, false, true)                    // 当日
               else if (item.createTime > yesterdayZore) createTime = '昨天 ' + createDateFun(new Date(item.createTime), false, false, true)
               else if (item.createTime > theDayBeforeYesterday) createTime = '前天 ' + createDateFun(new Date(item.createTime), false, false, true)
-              else createDateFun(new Date(item.createTime), true)
+              else createTime = createDateFun(new Date(item.createTime), true)
               return Object.assign(item, {createTime})
             })
           m.noticeType == 1 ? this.systemTableData = list : this.activityTableData = list
