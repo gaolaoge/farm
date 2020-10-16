@@ -11,5 +11,5 @@ module.exports = {
   // BACK_WS_API: '"ws://223.80.107.190:5003/websocket/web/"',         // 生产
   PLUGIN_WS_API: '"ws://localhost:15000"',
   MOCKJS: false,
-  VERSION: 202010161308,
+  VERSION: 202010161506,
 }

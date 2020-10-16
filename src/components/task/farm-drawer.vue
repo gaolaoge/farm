@@ -1,7 +1,7 @@
 <template>
   <div class="farm-drawer-wrapper">
     <!--分析结果-->
-    <div class="farm-drawer" :class="[{'active': showDrawer}]" v-show="typeInfo == 'upload-table'">
+    <div :class="[{'active': showDrawer}, 'farm-drawer']" v-show="typeInfo == 'upload-table'">
       <div class="farm-drawer-title">
         <div class="drawer-t">
           <span class="drawer-text">
@@ -122,7 +122,7 @@
       </div>
     </div>
     <!--设置参数-->
-    <div class="farm-drawer s" :class="[{'active': showDrawer}]" v-show="typeInfo == 'setting'">
+    <div :class="[{'active': showDrawer}, 'farm-drawer', 's']" v-show="typeInfo == 'setting'">
       <div class="farm-drawer-title">
         <div class="drawer-t">
           <span class="drawer-text">
@@ -154,8 +154,7 @@
                 active-value=1
                 inactive-value=0>
               </el-switch>
-              <span class="switchLayeredText"
-                    :class="[{'active': zone == 1 ? setting.num.singleChoice1 : setting.num.singleChoice2}]">
+              <span :class="[{'active': zone == 1 ? setting.num.singleChoice1 : setting.num.singleChoice2}, 'switchLayeredText']">
                 {{ zone == 1 ? setting.num.singleChoice1 : setting.num.singleChoice2 }}
               </span>
               <el-tooltip class="item"
@@ -2084,8 +2083,8 @@
         })
         // 【设置参数】-【渲染层数】- 未启动分层渲染时的table
         this.setting.num.tableData = [this.setting.num.tableDataAll[0]]
-        // 渲染层数默认选中索引1
-        setTimeout(() => this.$refs.renderTable.toggleRowSelection(this.setting.num.tableData[0], true), 0)
+        // 默认选中全部row
+        this.selectRow()
       },
       // 设置参数 - 返回分析结果
       settingBack() {
@@ -2112,6 +2111,14 @@
         this.$refs.renderTable.clearSelection()
         s.selected = []
         s.singleChoiceVal == 1 ? s.tableData = s.tableDataAll : s.tableData = [s.tableDataAll[0]]
+        this.selectRow()
+      },
+      // 设置参数 - table - 选中row 默认事件
+      selectRow(){
+        this.$nextTick(() => {
+          this.setting.num.tableData.forEach(layer => this.$refs.renderTable.toggleRowSelection(layer, true))
+          // this.$refs.renderTable.toggleRowSelection(this.setting.num.tableData[0], true)
+        })
       },
       // 设置参数 - 优先渲染 - 验证自定义帧格式
       verifFormat() {

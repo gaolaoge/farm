@@ -421,8 +421,11 @@
       },
       // 操作 - 删除
       deleteItem() {
-        if (!this.table.selectionList.length) return false
-        this.$confirm('此操作将永久删除该文件, 是否继续?', '提示信息', {
+        let len = this.table.selectionList.length
+        if (!len) return false
+        let tit
+        len == 1 ? tit = `任务删除后将无法找回，确认删除“${this.table.selectionList[0]['scenesName']}”吗？` : tit = `任务删除后将无法找回，确认删除这${len}个任务吗？`
+        this.$confirm(tit, '提示信息', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -433,23 +436,15 @@
               this.table.loading = true
             },
             () => {
-              this.$message({
-                type: 'info',
-                message: '已取消删除'
-              })
+              messageFun('info', '已取消删除')
               return Promise.reject()
             }
           )
           .then(data => {
-            this.$message({
-              type: 'success',
-              message: '删除成功!'
-            })
+            messageFun('success', '删除成功！')
             this.getList()
           })
-          .catch(() => {
-
-          })
+          .catch(() => null)
           .finally(() => this.table.loading = false)
       },
       // 操作 - 重新分析
