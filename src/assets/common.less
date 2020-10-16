@@ -2,6 +2,26 @@ div {
   font-size: 0px;
 }
 
+// placeholder
+.farm-input,
+.farm-form-input,
+.farm-form-item-input {
+  &::-webkit-input-placeholder { /* WebKit browsers */
+    color: rgba(22, 29, 37, 0.3);
+    font-size: 14px;
+  }
+
+  &::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color: rgba(22, 29, 37, 0.3);
+    font-size: 14px;
+  }
+
+  &::-ms-input-placeholder { /* Internet Explorer 10+ */
+    color: rgba(22, 29, 37, 0.3);
+    font-size: 14px;
+  }
+}
+
 //充值按钮
 .rechargeBtn {
   display: inline-block;
@@ -73,21 +93,6 @@ div {
   margin-bottom: 20px;
   color: #fff;
   outline: none;
-
-  &::-webkit-input-placeholder { /* WebKit browsers */
-    color: rgba(22, 29, 37, 0.6);
-    font-size: 14px;
-  }
-
-  &::-moz-placeholder { /* Mozilla Firefox 19+ */
-    color: rgba(22, 29, 37, 0.6);
-    font-size: 14px;
-  }
-
-  &::-ms-input-placeholder { /* Internet Explorer 10+ */
-    color: rgba(22, 29, 37, 0.6);
-    font-size: 14px;
-  }
 }
 
 //table
@@ -636,10 +641,6 @@ thead {
     outline: none;
     padding-left: 40px;
     color: rgba(22, 29, 37, 1);
-
-    &::-webkit-input-placeholder {
-      color: rgba(22, 29, 37, 0.4);
-    }
 
     &:hover {
       box-shadow: 0px 0px 3px 1px rgba(0, 97, 255, 0.1);

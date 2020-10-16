@@ -469,7 +469,9 @@
           <span>{{ btn.next }}</span>
         </div>
         <!--确定-->
-        <div class="btnGroup-btn confirm" @click="confirmFun" v-show="taskType == 'profession'">
+        <div :class="[{'cannotTrigger': stepTwoBase.renderListActive == -1}, 'btnGroup-btn', 'confirm']"
+             @click="confirmFun"
+             v-show="taskType == 'profession'">
           <span>{{ btn.confirm }}</span>
         </div>
       </div>
@@ -495,11 +497,8 @@
       append-to-body>
       <div class="wrapper">
         <header class="header">
-          <span class="title">
-            {{ dialogAdd.title }}
-          </span>
+          <span class="title">{{ dialogAdd.title }}</span>
           <img src="@/icons/shutDialogIcon.png"
-               alt=""
                @click="innerVisible = false"
                class="closeBtn">
         </header>
@@ -511,8 +510,8 @@
             </label>
             <input type="text"
                    id="templateName"
-                   class="farm-form-item-input"
-                   :class="[{'inputError': dialogAdd.form.formatName == false}]"
+                   ref="templateName"
+                   :class="[{'inputError': dialogAdd.form.formatName == false}, 'farm-form-item-input']"
                    :placeholder="dialogAdd.namePlaceholder"
                    @blur="nameVerif"
                    @focus="dialogAdd.form.formatName = null"
@@ -520,9 +519,7 @@
           </div>
           <!--渲染软件-->
           <div class="farm-form-item">
-            <label class="farm-form-item-label">
-              {{ dialogAdd.form.labelSoftware }}：
-            </label>
+            <label class="farm-form-item-label">{{ dialogAdd.form.labelSoftware }}：</label>
             <el-cascader
               v-model="dialogAdd.form.valSoftware"
               :options="dialogAdd.softwareList"
@@ -843,7 +840,8 @@
           softwareList: [
             // {
             //   softName: 'Maya 2020',
-            //   softList: []
+            //   softList: [],
+            //   children
             // }
           ],
           // 渲染插件下拉框
@@ -1241,22 +1239,25 @@
         })
         // 打开弹窗
         this.innerVisible = true
+        this.$nextTick(() => this.$refs.templateName.focus())
         this.dialogAdd.editOrAdd = s
-        if (s == 'addOne') null // 新建模板
-        else if (s == 'editOne') {
+        let v = this.dialogAdd
+        if (s == 'addMore') {
+          // 新建模板
+          v.form.valSoftware = [v['softwareList'][0]['label'], v['softwareList'][0]['children'][0]['value']]
+          this.changeSoftware([null, v['softwareList'][0]['children'][0]['value']], true)
+        } else if (s == 'editOne') {
           // 编辑模板
           this.dialogAdd.index = index
           let t = this.stepTwoBase.renderList[index],   // 选中渲染模板data
-            v = this.dialogAdd,
             f = v.softwareList.find(curr => curr.label == t.renderTemplate.softName)  // 软件选中记录
           let b = f['children'].find(curr => curr.label == t.renderTemplate.softName + '-' + t.renderTemplate.softVer)   // 插件
-
-          v.nList = t.xxlPlugins                             // 导入已选中插件记录
+          v.nList = t.xxlPlugins                                                // 导入已选中插件记录
           this.$data.dialogAdd.nList = t.xxlPlugins
-          v.form.valName = t['renderTemplate']['templateName']              //编辑窗口内模板名
+          v.form.valName = t['renderTemplate']['templateName']                  // 编辑窗口内模板名
           if (!b) return false
-          v.form.valSoftware = [t['renderTemplate']['softName'], b.value]   //编辑窗口内渲染软件
-          this.changeSoftware([t['renderTemplate']['softName'], b.value])   //获取对应插件下拉框List
+          v.form.valSoftware = [t['renderTemplate']['softName'], b.value]       // 编辑窗口内渲染软件
+          this.changeSoftware([t['renderTemplate']['softName'], b.value])   // 获取对应插件下拉框List
         }
       },
       // 2.设置渲染模板 - 删除模板
@@ -1276,7 +1277,7 @@
           .catch(() => messageFun('info', '已取消删除'))
       },
       // 2.设置渲染模板 - 软件下拉框选中
-      async changeSoftware(val) {
+      async changeSoftware(val, defaultEvent) {
         let data = await createTaskSetPlugin(val[1])
         this.dialogAdd.pluginList = data.data.data.map(curr => {
           return {
@@ -1286,6 +1287,10 @@
           }
         })
         this.dialogAdd.oList = []
+        if(defaultEvent) {
+          this.dialogAdd.form.valPlugin = this.dialogAdd.pluginList[0]['label']
+          this.changePlugin(this.dialogAdd.pluginList[0]['label'])
+        }
       },
       // 2.设置渲染模板 - 插件下拉框选中
       changePlugin(val) {
@@ -1413,7 +1418,7 @@
       },
       // 4.提交
       async confirmFun() {
-        if (!this.confirmLock) return
+        if (!this.confirmLock || this.stepTwoBase.renderListActive == -1) return
         this.confirmLock = false
         let fir = this.stepOneBase,
           sec = this.stepTwoBase,
@@ -2482,6 +2487,7 @@
   .farm-form-item-input {
     border-radius: 4px !important;
     border: 1px solid rgba(22, 29, 37, 0.2) !important;
+    padding-left: 16px !important;
   }
 
   /deep/ .el-dialog__body {
