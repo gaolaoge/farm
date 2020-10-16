@@ -149,7 +149,7 @@
       :close-on-press-escape="false"
       :show-close="false"
       width="426px">
-      <img src="@/icons/shutDialogIcon.png" alt="" class="shutDialogIcon mini" @click="closeDialog">
+      <img src="@/icons/shutDialogIcon.png" class="shutDialogIcon mini" @click="closeDialog">
       <div class="farm-form">
         <div class="farm-form-item" v-for="(item,index) in dialogData.list">
           <label :for="item.id" class="farm-form-label">
@@ -177,8 +177,11 @@
       </div>
       <div class="btnList">
         <div class="farm-form-btn cancel" @click="closeDialog"><span>取消</span></div>
-        <div class="farm-form-btn" type="primary" @click="addHeader" v-show="!editHeader"><span>确定</span></div>
-        <div class="farm-form-btn" type="primary" @click="editHeaderF" v-show="editHeader"><span>确定</span></div>
+        <div :class="[{'cannotBe': !dialogData.list[0]['errInfo'] || !dialogData.list[1]['errInfo'] || !dialogData.list[2]['errInfo'] || !dialogData.list[4]['errInfo']},
+                      'farm-form-btn']"
+             @click="addHeader" v-show="!editHeader"><span>确定</span></div>
+        <div :class="[{'cannotBe': !dialogData.list[0]['errInfo'] || !dialogData.list[1]['errInfo'] || !dialogData.list[2]['errInfo'] || !dialogData.list[4]['errInfo']}, 'farm-form-btn']"
+             @click="editHeaderF" v-show="editHeader"><span>确定</span></div>
       </div>
     </el-dialog>
   </div>
@@ -270,7 +273,7 @@
               Placeholder: '请输入发票抬头',
               id: 'header',
               required: true,
-              errInfo: false
+              errInfo: null
             },
             {
               Label: '纳税人识别号',
@@ -278,7 +281,7 @@
               Placeholder: '请输入纳税人识别号',
               id: 'number',
               required: true,
-              errInfo: false
+              errInfo: null
             },
             {
               Label: '邮箱',
@@ -286,7 +289,7 @@
               Placeholder: '请输入邮箱',
               id: 'email',
               required: true,
-              errInfo: false
+              errInfo: null
             },
             {
               Label: '注册地址',
@@ -299,7 +302,7 @@
               Val: '',
               Placeholder: '请输入公司电话',
               id: 'phone',
-              errInfo: false
+              errInfo: null
             },
             {
               Label: '开户银行',
@@ -326,22 +329,26 @@
       // 验证格式
       VerifType(type) {
         let list = this.dialogData.list
-        if (type == 'email' && list[2]['Val']) {  // 邮箱
+        if (type == 'email' && list[2]['Val']) {
+          // 邮箱
           if (!this.regExp.email.test(list[2]['Val'])) {
             messageFun('error', '请输入正确的邮箱')
             list[2]['errInfo'] = true
           } else list[2]['errInfo'] = false
-        } else if (type == 'header' && list[0]['Val']) {  // 发票抬头
+        } else if (type == 'header' && list[0]['Val']) {
+          // 发票抬头
           if (!this.regExp.header.test(list[0]['Val'])) {
             messageFun('error', '输入内容不能包含空格或特殊字符')
             list[0]['errInfo'] = true
           } else list[0]['errInfo'] = false
-        } else if (type == 'number' && list[1]['Val']) {  // 纳税人识别号
+        } else if (type == 'number' && list[1]['Val']) {
+          // 纳税人识别号
           if (!this.regExp.identificationNumber.test(list[1]['Val'])) {
             messageFun('error', '请输入15-20位数字或字母')
             list[1]['errInfo'] = true
           } else list[1]['errInfo'] = false
-        } else if (type == 'phone' && list[4]['Val']) {  // 纳税人识别号
+        } else if (type == 'phone' && list[4]['Val']) {
+          // 纳税人识别号
           if (!this.regExp.phone.test(list[4]['Val'])) {
             messageFun('error', '请输入正确的手机号')
             list[4]['errInfo'] = true
@@ -351,7 +358,7 @@
       // 即时验证
       instantVerif(type) {
         let list = this.dialogData.list
-        if (type == 'email' && list[2]['Val']) {  // 邮箱
+        if (type == 'email' && list[2]['Val'].trim()) {  // 邮箱
           if (this.regExp.email.test(list[2]['Val'])) list[2]['errInfo'] = false
         } else if (type == 'header' && list[0]['Val']) {  // 发票抬头
           if (this.regExp.header.test(list[0]['Val'])) list[0]['errInfo'] = false
@@ -719,6 +726,16 @@
           color: rgba(22, 29, 37, 0.79);
         }
       }
+
+      &.cannotBe {
+        border: 1px solid rgba(22, 29, 37, 0.2);
+        background-color: rgba(255, 255, 255, 1);
+        cursor: no-drop;
+
+        span {
+          color: rgba(22, 29, 37, 0.2);
+        }
+      }
     }
   }
 
@@ -759,6 +776,7 @@
 
       .shutDialogIcon {
         top: -24px;
+        z-index: 9;
       }
     }
 

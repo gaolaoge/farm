@@ -1466,7 +1466,8 @@
                 return {
                   'sceneFile': curr.absolutePath,            // 场景文件
                   'path': curr.address,                      // 工程路径
-                  'taskID': data.data.data[index]
+                  'taskID': data.data.data[index]['taskID'],
+                  'taskNo': data.data.data[index]['taskNo']
                 }
               })
             })

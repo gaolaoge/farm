@@ -17,6 +17,7 @@ export default new Vuex.Store({
       totalCapacity: 0,     // 总容量
       usedCapacity: 0,      // 已用容量
       haveCapacity: '0.000',// 剩余容量
+      trueHaveCapacity: 0,
       payAmount: '0.000',   // 累计支付金币
       goldCoins: '0.000',   // 累计到账金币
       consumption: '0.00',  // 累计消费金币
@@ -141,6 +142,7 @@ export default new Vuex.Store({
         totalCapacity: 0,     // 总容量
         usedCapacity: 0,      // 已用容量
         haveCapacity: '0.000',// 剩余容量
+        trueHaveCapacity: 0,
         payAmount: '0.000',   // 累计支付金币
         goldCoins: '0.000',   // 累计到账金币
         consumption: '0.00',  // 累计消费金币
@@ -260,7 +262,10 @@ export default new Vuex.Store({
     },
     changeHaveCapacity(s, val) {
       s.user.haveCapacity = val
-    }
+    },
+    changeTureHaveCapacity(s, val) {
+      s.user.trueHaveCapacity = val
+    },
   },
   actions: {
     WEBSOCKET_PLUGIN_INIT(context, triggerPlugin){

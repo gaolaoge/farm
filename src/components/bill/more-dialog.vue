@@ -1,16 +1,13 @@
 <template>
   <div class="more-dialog">
-    <header class="header">
-      <img src="@/icons/shutDialogIcon.png"
-           alt=""
-           @click="closeDialogFun"
-           class="closeBtn">
-    </header>
     <section>
       <div class="label-table">
         <span class="label">
           {{ dialogTit }}
         </span>
+        <img src="@/icons/shutDialogIcon.png"
+             @click="closeDialogFun"
+             class="closeBtn">
       </div>
       <div class="tableList">
         <!--下载消费详情-->
@@ -243,15 +240,17 @@
     overflow: hidden;
     height: 87vh;
     position: relative;
+    padding: 20px !important;
+    box-sizing: border-box;
 
     .header {
       position: absolute;
-      width: 100%;
+      width: calc(100% - 40px);
 
       .closeBtn {
         position: relative;
         top: 12px;
-        right: 20px;
+        right: 0px;
         z-index: 9;
         float: right;
         width: 18px;
@@ -262,6 +261,9 @@
     }
 
     section {
+      height: calc(100%);
+      overflow: hidden;
+
       .label-table {
         position: relative;
 
@@ -274,6 +276,18 @@
           color: rgba(22, 29, 37, 0.6);
           border-radius: 8px 8px 0px 0px;
           font-weight: 600;
+        }
+
+        .closeBtn {
+          position: relative;
+          /*top: 12px;*/
+          right: 0px;
+          z-index: 9;
+          float: right;
+          width: 14px;
+          height: 14px;
+          cursor: pointer;
+          /*opacity: 0.6;*/
         }
       }
 

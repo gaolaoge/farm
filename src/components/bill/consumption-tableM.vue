@@ -420,6 +420,9 @@
     margin-top: 5vh !important;
   }
 
+  /deep/.el-dialog__body {
+    padding: 0px;
+  }
   /*@media screen and (orientation: portrait) {*/
   /*  /deep/ .el-dialog__wrapper {*/
   /*    width: 100vh;*/

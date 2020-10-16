@@ -98,42 +98,46 @@ const sortF = function (a, b) {
 const createTableIconList = function () {
   setTimeout(() => {
     // 筛选图标
-    if (!document.getElementsByClassName('iconshaixuan2').length) {
-      let t = [...document.getElementsByClassName('el-icon-arrow-down')]
-      t.forEach(curr => {
-        let i = document.createElement('I'),
-          ii = document.createElement('I')
-        i.classList.add('farmIconFont')
-        i.classList.add('iconshaixuan2')
-        ii.classList.add('farmIconFont')
-        ii.classList.add('iconshaixuan1')
-        curr.appendChild(i)
-        curr.appendChild(ii)
-      })
-    }
+    // if (!document.getElementsByClassName('iconshaixuan2').length) {
+    let t = [...document.getElementsByClassName('el-icon-arrow-down')]
+    t.forEach(curr => {
+      if (curr.querySelector('.farmIconFont')) return false
+      let i = document.createElement('I'),
+        ii = document.createElement('I')
+      i.classList.add('farmIconFont')
+      i.classList.add('iconshaixuan2')
+      ii.classList.add('farmIconFont')
+      ii.classList.add('iconshaixuan1')
+      curr.appendChild(i)
+      curr.appendChild(ii)
+    })
+    // }
     // 排序图标
-    if (!document.getElementsByClassName('kkkk').length) {
-      let q = [...document.getElementsByClassName('ascending')]
-      q.forEach(curr => {
-        let i = document.createElement('I')
-        i.classList.add('el-icon-arrow-up')
-        i.classList.add('kkkk')
-        curr.appendChild(i)
-      })
-      let w = [...document.getElementsByClassName('descending')]
-      w.forEach(curr => {
-        let i = document.createElement('I')
-        i.classList.add('el-icon-arrow-up')
-        i.classList.add('kkkk')
-        curr.appendChild(i)
-      })
-    }
+    // if (!document.getElementsByClassName('kkkk').length) {
+    let q = [...document.getElementsByClassName('ascending')]
+    q.forEach(curr => {
+      if (curr.querySelector('.kkkk')) return false
+      let i = document.createElement('I')
+      i.classList.add('el-icon-arrow-up')
+      i.classList.add('kkkk')
+      curr.appendChild(i)
+    })
+    let w = [...document.getElementsByClassName('descending')]
+    w.forEach(curr => {
+      if (curr.querySelector('.kkkk')) return false
+      let i = document.createElement('I')
+      i.classList.add('el-icon-arrow-up')
+      i.classList.add('kkkk')
+      curr.appendChild(i)
+    })
+    // }
     // 展开图标
-    if (!document.getElementsByClassName('iconsanjiaoright').length) {
+    if (document.querySelector('.download-table')) {
       let table = document.querySelector('.download-table'),
         el_table = table.querySelector('.el-table__body-wrapper'),
         list = el_table.querySelectorAll('table tbody .el-table__row .el-table__expand-icon')
       list.forEach(curr => {
+        if (curr.querySelector('.farmIconFont')) return false
         let original = curr.querySelector('i'),
           i = document.createElement('I')
         i.classList.add('farmIconFont')
@@ -227,6 +231,7 @@ const setInfo = function (data) {
   store.commit('changeTotalCapacity', (data.capacity / 1073741824).toFixed(3))        // 总容量
   store.commit('changeUsedCapacity', (data.haveCapacity / 1073741824).toFixed(3))     // 已用容量
   store.commit('changeHaveCapacity', ((data.capacity - data.haveCapacity) / 1073741824).toFixed(3))     // 剩余容量
+  store.commit('changeTureHaveCapacity', data.capacity - data.haveCapacity)                   // 精确剩余容量
   store.commit('changePayAmount', data.cumulativeRecharge.toFixed(3))                 // 累计支付金额
   store.commit('changeGoldCoins', data.totalArrival.toFixed(3))                       // 累计到账金币
   store.commit('changeConsumption', data.cumulativeConsume.toFixed(3))                // 累计消费金币
@@ -311,8 +316,8 @@ const sortDateF = function (arr) {
 }
 
 // 显示插件
-const openPlugin = function(){
-  if(store.state.socket_plugin) store.commit('WEBSOCKET_PLUGIN_SEND', 'open')
+const openPlugin = function () {
+  if (store.state.socket_plugin) store.commit('WEBSOCKET_PLUGIN_SEND', 'open')
   else store.commit('openPluginDialog', true)
 }
 
