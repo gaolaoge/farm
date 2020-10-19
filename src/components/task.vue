@@ -64,7 +64,7 @@
       <div class="rightOPerate"
            v-show="table.navListActiveIndex == 1">
         <!--归档记录-->
-        <div class="farm-primary-form-btn" @click="dialogTable.status = true">
+        <div class="farm-primary-form-btn" v-if='false' @click="dialogTable.status = true">
           {{ btnGroup.archiveRecords }}（{{ btnGroup.archiveRecordsNum }}）
         </div>
         <div class="searchItem">
@@ -256,10 +256,10 @@
               text: this.$t('task.renderBtnGroup')[7],               // 拷贝
               class: 'copyBtn'
             },
-            {
-              text: this.$t('task.renderBtnGroup')[8],               // 归档
-              class: 'archiveBtn',
-            }
+            // {
+            //   text: this.$t('task.renderBtnGroup')[8],               // 归档
+            //   class: 'archiveBtn',
+            // }
           ],
           archiveRecords: this.$t('task.archiveRecords'),
           archiveRecordsNum: 0,
