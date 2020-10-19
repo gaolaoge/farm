@@ -153,9 +153,10 @@
     methods: {
       // 打开消息详情
       async tableClick(row, column, event) {
+
         let taskUuid = JSON.parse(row.noticeParam)['taskUuid'],
           zoneUuid = row.noticeData.split('&').find(item => item.split('=')[0] == 'zoneUuid').split('=')[1],
-          pageIndex = row.noticeData.split('&').find(item => item.split('=')[0] == 'pageIndex').split('=')[1],
+          // pageIndex = row.noticeData.split('&').find(item => item.split('=')[0] == 'pageIndex').split('=')[1],
           type = row.noticeUrl
         // analyse  =>  分析页面
         // render   =>  渲染页面
@@ -164,23 +165,39 @@
         if (type == 'info') this.$router.push('/Pinfo')
         else if (type == 'recharge') this.$router.push('/upTop')
         else {
-          let data = await getTaskPosition(`taskUuid=${taskUuid}&zoneUuid=${zoneUuid}`)
+          let data = await getTaskPosition(`taskUuid=${taskUuid}&zoneUuid=${zoneUuid}`),
+            {taskIndex, type} = data.data.data
+          // taskIndex: 1
+          // type: 0          0没查到，2分析列表，3渲染列表，4归档列表
 
-
-          // sessionStorage.setItem('taskListActive', type == 'analyse' ? 0 : 1)
-          // if(this.$route.path != '/task') this.$router.push('/task')
-          // if(this.zoneId != zoneUuid) this.$store.commit('changeZoneId', zoneUuid)
-          //
-          // this.$store.commit('newRedirectToTask', {
-          //   type,
-          //   taskUuid,
-          //   pageIndex
-          // })
+          if (type == 0) messageFun('info', '项目已删除')
+          else {
+            if (this.zoneId != zoneUuid) this.$store.commit('changeZoneId', zoneUuid)
+            sessionStorage.setItem('taskListActive', type == 2 ? 0 : 1)
+            if (this.$route.name != 'task') this.$router.push({
+              name: 'task',
+              params: {
+                from: 'stationLetter',
+                index: taskIndex,
+                taskUuid,
+                type
+              }
+            })
+            else {
+              this.$store.commit('setTaskState', {
+                index: taskIndex,
+                taskUuid,
+                type
+              })
+            }
+          }
         }
-        readMessages({
+        this.$emit('shutMe')
+        let data = await readMessages({
           'isRead': 1,
           'noticeUuidList': [row.noticeUuid]
         })
+        if (data.data.code == 201) this.getMessageListF()
       },
       // 标记为已读
       async readedAll(type) {

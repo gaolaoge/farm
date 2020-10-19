@@ -159,8 +159,7 @@
           <input type="text"
                  :id="item.id"
                  :placeholder="item.Placeholder"
-                 :class="[{'errorVal': item.errInfo ? item.errInfo : null}]"
-                 class="farm-form-input"
+                 :class="[{'errorVal': item.errInfo ? item.errInfo : null}, 'farm-form-input']"
                  v-model="item.Val"
                  @input="instantVerif(item.id)"
                  @blur="VerifType(item.id)">
@@ -686,6 +685,7 @@
         border: 1px solid rgba(22, 29, 37, 0.2);
         padding-left: 20px;
         box-sizing: border-box;
+        outline: none;
 
         &.errorVal {
           color: rgba(255, 62, 77, 1);

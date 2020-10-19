@@ -36,7 +36,7 @@
                  @click.self="showMessageList = false">
             <!--下拉框-->
             <div class="messageBase" :class="[{'inHome': !inHome}]">
-              <message-table v-show="showMessageList" ref="messageTable" />
+              <message-table v-show="showMessageList" ref="messageTable" @shutMe="showMessageList = !showMessageList" />
             </div>
           </div>
           <!--问号-->

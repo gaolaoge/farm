@@ -206,6 +206,7 @@
       display: flex;
       align-items: center;
       overflow: hidden;
+      flex-shrink: 0;
 
       .info {
         width: 240px;

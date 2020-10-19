@@ -250,6 +250,9 @@
     editPhonePP,
     editPhonePS
   } from '@/api/editInfo-api'
+  import {
+    registerPhone
+  } from '@/api/api'
   import {messageFun} from "../../../assets/common"
   import {
     mapState
@@ -575,8 +578,8 @@
           }
         } else v.phoneCodeError = true
       },
-      // 根据手机号修改 - 验证新手机号格式
-      verifNewPhoneForPhone(ing) {
+      // 根据手机号修改 - 验证新手机号
+      async verifNewPhoneForPhone(ing) {
         let v = this.newPhoneVeri
         if (!this.phoneFrom.newPhone) v.phoneError = null
         else if (!/^1(3|4|5|6|7|8|9)\d{9}$/.test(this.phoneFrom.newPhone)) {
@@ -585,7 +588,16 @@
             v.phoneErrorInfo = '手机号码格式错误'
             v.phoneError = false
           }
-        } else v.phoneError = true
+        } else {
+          let data = await registerPhone(this.phoneFrom.newPhone)
+          //code:200   手机号已存在
+          //code:4031  手机号未注册
+          if (data.data.code == 4031) v.phoneError = true
+          else {
+            v.phoneErrorInfo = '手机号码已被注册'
+            v.phoneError = false
+          }
+        }
       },
       // 根据邮箱修改 - 验证邮箱验证码格式
       verifEmailCodeForEmail(ing) {
@@ -611,8 +623,8 @@
           }
         } else v.phoneCodeError = true
       },
-      // 根据邮箱修改 - 验证新手机号格式
-      verifNewPhoneForEmail(ing) {
+      // 根据邮箱修改 - 验证新手机号
+      async verifNewPhoneForEmail(ing) {
         let v = this.emailVeri
         if (!this.emailFrom.newPhone) v.newPhoneError = null
         else if (!/^1(3|4|5|6|7|8|9)\d{9}$/.test(this.emailFrom.newPhone)) {
@@ -621,7 +633,16 @@
             v.newPhoneErrorInfo = '手机号码格式错误'
             v.newPhoneError = false
           }
-        } else v.newPhoneError = true
+        } else {
+          let data = await registerPhone(this.emailFrom.newPhone)
+          //code:200   手机号已存在
+          //code:4031  手机号未注册
+          if (data.data.code == 4031) v.newPhoneError = true
+          else {
+            v.newPhoneErrorInfo = '手机号码已被注册'
+            v.newPhoneError = false
+          }
+        }
       },
       // 根据邮箱修改 - 邮箱获取验证码
       async emailGetCode() {
@@ -679,8 +700,8 @@
           }
         } else v.passWordError = true
       },
-      // 根据密码修改 - 验证手机号格式
-      verifPhoneForPS(ing) {
+      // 根据密码修改 - 验证手机号
+      async verifPhoneForPS(ing) {
         let v = this.passwordVeri
         if (!this.psFrom.newPhone) v.newPhoneError = null
         else if (!/^1(3|4|5|6|7|8|9)\d{9}$/.test(this.psFrom.newPhone)) {
@@ -689,7 +710,17 @@
             v.newPhoneErrorInfo = '手机号式错误'
             v.newPhoneError = false
           }
-        } else v.newPhoneError = true
+        } else {
+          let data = await registerPhone(this.psFrom.newPhone)
+          //code:200   手机号已存在
+          //code:4031  手机号未注册
+          if (data.data.code == 4031) v.newPhoneError = true
+          else {
+            v.newPhoneErrorInfo = '手机号码已被注册'
+            v.newPhoneError = false
+          }
+          // v.newPhoneError = true
+        }
       },
       // 根据密码修改 - 验证新手机号证码格式
       verifPhoneCodeForPS(ing) {

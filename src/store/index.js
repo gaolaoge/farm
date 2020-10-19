@@ -59,6 +59,7 @@ export default new Vuex.Store({
     },
     pluginDialog: false,    // 打开插件窗口
     remoteLoginDate: null,  // 异地登录事件触发时间
+    taskState: null,        // 站内信选中项目
   },
   getter: {},
   mutations: {
@@ -154,6 +155,10 @@ export default new Vuex.Store({
         sex: null,
         id: null
       })
+    },
+    // 站内信选中项目
+    setTaskState(state, obj){
+      state.taskState = obj
     },
     // 触发异地登录弹窗
     remoteLoginFun(s, date){

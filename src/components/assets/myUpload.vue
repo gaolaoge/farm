@@ -385,7 +385,7 @@
           transferType: type == 'file' ? 0 : 1,
           userID: this.user.id,
           networkPath: this.uploadType == 1 ? '' : this.path,
-          freeSpace: this.user.trueHaveCapacity
+          freeSpace: this.user.trueHaveCapacity + ''
         })
       },
       // 新建文件夹 - 显示窗口

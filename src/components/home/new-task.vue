@@ -211,12 +211,10 @@
                   <span v-show="stepTwoBase.renderListActive == index">
                     <!--编辑-->
                     <img src="@/icons/set-renderTemplate-item-edit.png"
-                         alt=""
                          @click.stop="addTemplate('editOne',index)"
                          class="item-icon">
                     <!--删除-->
                     <img src="@/icons/set-renderTemplate-item-delete.png"
-                         alt=""
                          @click="deleteTemplate(index)"
                          class="item-icon">
                   </span>
@@ -236,12 +234,13 @@
               </div>
               <div class="bodyB">
                 <span class="software">
-                  {{ item.renderTemplate.softName }}
+                  {{ item.renderTemplate.softName }} - {{ item.renderTemplate.softVer }}
                 </span>
-                <span class="plugin">
-                  {{ item.renderTemplate.softVer }}
+                <span class="plugin" v-for="(plugin,index) in item.xxlPlugins" :key="index" v-show="index < 2">
+                  {{ plugin.pluginName }} - {{ plugin.version }},
                 </span>
-                <img src="@/icons/item-selected.png" alt="" class="item-selected">
+                <span class="plugin" v-show="item.xxlPlugins.length > 2">...</span>
+                <img src="@/icons/item-selected.png" class="item-selected">
               </div>
             </div>
           </div>
@@ -1287,7 +1286,7 @@
           }
         })
         this.dialogAdd.oList = []
-        if(defaultEvent) {
+        if (defaultEvent) {
           this.dialogAdd.form.valPlugin = this.dialogAdd.pluginList[0]['label']
           this.changePlugin(this.dialogAdd.pluginList[0]['label'])
         }
@@ -1471,7 +1470,7 @@
                 return {
                   'sceneFile': curr.absolutePath,            // 场景文件
                   'path': curr.address,                      // 工程路径
-                  'taskID': data.data.data[index]['taskID'],
+                  'taskID': data.data.data[index]['taskUuid'],
                   'taskNo': data.data.data[index]['taskNo']
                 }
               })
@@ -1622,7 +1621,7 @@
           this.$store.commit('WEBSOCKET_BACKS_SEND', {
             'code': 602,
             'customerUuid': this.user.id,
-            'path': data.data.data.scenePath
+            'path': data.data.data.scenePath === '/' ? '' : data.data.data.scenePath
           })
         }
       }
@@ -2067,7 +2066,7 @@
           .set-renderTemplate {
             height: 100%;
             width: 100%;
-            padding: 0px 20px;
+            /*padding: 0px 20px;*/
             box-sizing: border-box;
             display: flex;
             align-content: flex-start;
@@ -2076,15 +2075,15 @@
             overflow-y: scroll;
 
             .set-renderTemplate-item {
-              width: 230px;
+              width: 180px;
               height: 150px;
               border-radius: 8px;
               overflow: hidden;
-              margin: 0px 18px 30px 0px;
+              margin: 0px 9px 30px 9px;
               cursor: pointer;
 
               &.addMore {
-                width: 226px;
+                width: 174px;
                 height: 146px;
                 border: 2px dashed rgba(22, 29, 37, 0.29);
                 display: flex;
@@ -2099,7 +2098,6 @@
 
                 .addMoreText {
                   font-size: 12px;
-                  font-weight: 400;
                   color: rgba(22, 29, 37, 0.3);
                 }
               }
@@ -2129,7 +2127,7 @@
 
                   .opacityBtnGroup {
                     .item-icon {
-                      margin-left: 13px;
+                      margin-left: 8px;
                       width: 13px;
                       cursor: pointer;
                     }
@@ -2154,10 +2152,6 @@
                   }
 
                   .software,
-                  .plugin {
-                    font-weight: 400;
-                  }
-
                   .hardware {
                     font-weight: 600;
                   }
@@ -2189,14 +2183,18 @@
                     background-color: rgba(10, 98, 241, 0.59);
 
                     .hardware,
-                    .plugin,
                     .software {
                       color: rgba(255, 255, 255, 1);
+                    }
+
+                    .plugin {
+                      color: rgba(255, 255, 255, 0.8);
                     }
 
                     .item-selected {
                       display: inline-block;
                     }
+
                   }
                 }
               }

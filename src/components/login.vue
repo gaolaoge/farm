@@ -461,10 +461,10 @@
             btnText: this.$t('login_page.getCode')
           },
           accountForm: {
-            // account: 'gaoge1834',
-            // password: 'gaoge1834',
-            account: '',
-            password: '',
+            account: 'gaoge1834',
+            password: '22334455.',
+            // account: '',
+            // password: '',
             isAutoLogin: false,
             passwordEye: false
           },
@@ -785,9 +785,8 @@
         let data = await registerPhone(r.form.phone)
         //code:200   手机号已存在
         //code:4031  手机号未注册
-        if (data.data.code == 4031) {
-          r.status.phone = true
-        } else {
+        if (data.data.code == 4031) r.status.phone = true
+        else {
           this.registered.warnInfo.phone = this.$t('login_page.message.phoneTypeErr_two');
           r.status.phone = false
         }

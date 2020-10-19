@@ -154,7 +154,8 @@
                 active-value=1
                 inactive-value=0>
               </el-switch>
-              <span :class="[{'active': zone == 1 ? setting.num.singleChoice1 : setting.num.singleChoice2}, 'switchLayeredText']">
+              <span
+                :class="[{'active': zone == 1 ? setting.num.singleChoice1 : setting.num.singleChoice2}, 'switchLayeredText']">
                 {{ zone == 1 ? setting.num.singleChoice1 : setting.num.singleChoice2 }}
               </span>
               <el-tooltip class="item"
@@ -544,6 +545,11 @@
         <!--任务描述-->
         <div class="info">
           <div class="thumbnail">
+            <img v-show="result.miniImgHref"
+                 :src="result.miniImgHref"
+                 class="img"
+                 @click="$store.commit('setShowThumb', true)">
+            <img src="@/assets/no_thumb.png" v-show="!result.miniImgHref">
             <span class="status"
                   :class="[
                   {'wait': result.statusData == '等待' || result.statusData == '暂停'},
@@ -554,11 +560,6 @@
                   ]">
               {{ result.statusData }}
             </span>
-            <img v-show="result.miniImgHref"
-                 :src="result.miniImgHref"
-                 class="img"
-                 @click="$store.commit('setShowThumb', true)">
-            <img src="@/assets/no_thumb.png" v-show="!result.miniImgHref">
           </div>
           <div class="dataList">
 
@@ -2114,7 +2115,7 @@
         this.selectRow()
       },
       // 设置参数 - table - 选中row 默认事件
-      selectRow(){
+      selectRow() {
         this.$nextTick(() => {
           this.setting.num.tableData.forEach(layer => this.$refs.renderTable.toggleRowSelection(layer, true))
           // this.$refs.renderTable.toggleRowSelection(this.setting.num.tableData[0], true)
@@ -2531,6 +2532,8 @@
         box-shadow: 0px 0px 1px 1px rgba(22, 29, 37, 0.15);
 
         .operateBtnBase {
+          padding-left: 28px;
+
           .operateBtn {
             display: inline-flex;
             align-items: center;
@@ -2538,7 +2541,7 @@
             border: 1px solid rgba(22, 29, 37, 0.1);
             border-radius: 5px;
             cursor: pointer;
-            margin-right: 10px;
+            margin: 2px 10px 2px 0px;
             padding: 1px 10px;
 
             .text {
@@ -2549,7 +2552,8 @@
             img {
               margin-right: 4px;
 
-              &.w {
+              &.w,
+              &.h {
                 display: none;
               }
 
@@ -2557,9 +2561,6 @@
                 display: inline-flex;
               }
 
-              &.h {
-                display: none;
-              }
             }
 
             &.cannotTrigger {
@@ -2583,18 +2584,12 @@
               }
 
               img {
-                &.h {
+                &.h,
+                &.w {
                   display: inline-block;
                 }
 
-                &.b {
-                  display: none;
-                }
-
-                &.w {
-                  display: inline-flex;
-                }
-
+                &.b,
                 &.r {
                   display: none;
                 }
@@ -2610,8 +2605,8 @@
               width: 150px;
               height: 28px;
               border-radius: 4px;
-              border: 1px solid rgba(0, 97, 255, 0.5);
-              background-color: transparent;
+              border: 1px solid rgba(22, 29, 37, 0.1);
+              background-color: rgba(248, 248, 248, 1);
               color: rgba(22, 29, 37, 0.6);
               outline: none;
               padding-left: 24px;

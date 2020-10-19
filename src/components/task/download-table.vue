@@ -414,6 +414,8 @@
             text: curr.projectName
           }
         })
+        console.log(this.$route.params)
+        if (!this.$route.params.name && this.$route.params.from != 'stationLetter') this.getList()
       },
       // 清除筛选条件
       clearFilterF(type) {
@@ -853,9 +855,10 @@
             secretChild: children.length == 1 ? children : null,   // 伪child列表
           }
         })
-        this.table.usersList = [...usersList].map(curr => {
-          return {'text': curr, 'value': curr}
-        })  // 创建人列表
+        this.table.usersList = [...usersList].map(curr => { return {'text': curr, 'value': curr}})  // 创建人列表
+        if (obj && obj.taskUuid) this.$nextTick(() => {
+          this.$refs.renderTableImportant.toggleRowSelection(this.table.RenderDownloadData.find(item => item['taskUuid'] == obj['taskUuid']), true)
+        })
       },
       // 操作 - 开始
       startFun() {
@@ -1170,8 +1173,7 @@
       farmDrawer
     },
     mounted() {
-      if (!this.$route.params.name) setTimeout(() => this.getList(), 100)
-      this.getTaskItemListFun()
+      this.$nextTick(() => this.getTaskItemListFun())
     },
     computed: {
       ...mapState(['zoneId', 'zone', 'user', 'socket_plugin']),

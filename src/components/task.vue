@@ -453,10 +453,11 @@
         this.$refs.renderMode.searchFun(this.btnGroup.searchInputDownload)
       },
       //
-      shutDialogTable(){
+      shutDialogTable() {
         this.dialogTable.status = false
         this.$refs.archiveTable.showDetailsDOM = false
       },
+      //
     },
     watch: {
       'table.navListActiveIndex': {
@@ -474,29 +475,22 @@
         },
       },
       // 站内信跳转
-      // 'redirectToTask': {
-      //   handler: function (obj) {
-      //     if (!obj) return false
-      //     // taskID: "SWT-511"
-      //     // type: "analyse"
-      //     if (obj.type == 'analyse') {
-      //       this.$refs.uploadMode.getList({
-      //         pageIndex: obj.pageIndex,
-      //         taskUuid: obj.taskUuid
-      //       })
-      //     } else if (obj.type == 'render') {
-      //       this.$refs.renderMode.getList({
-      //         pageIndex: obj.pageIndex,
-      //         taskUuid: obj.taskUuid
-      //       })
-      //     }
-      //   },
-      //   immediate: true
-      // },
+      'taskState': {
+        handler: function (obj) {
+          if (!obj.taskUuid) return false
+          // idnex  页码
+          // taskUuid
+          // type: 0没查到，2分析列表，3渲染列表，4归档列表
+          if(obj.type == 2 || obj.type == 4) this.table.navListActiveIndex = 0
+          else if (obj.type == 3) this.table.navListActiveIndex = 1
+        },
+        immediate: true
+      },
       '$route.params': {
         handler: function (val) {
           if (!val) return false
-          this.$nextTick(() => {   //此处使用这个可以等节点渲染后再获取节点
+          this.$nextTick(() => {
+            // home - 任务统计
             if (val.name) switch (val.name) {
               case this.$t('task.status.toBeSet'):          // 待设置参数
                 sessionStorage.setItem('taskListActive', '0')
@@ -534,8 +528,8 @@
                 })
                 break
             }
+            // home - 任务列表
             if (val.toHomeTaskList) {
-              console.log(val.toHomeTaskList)
               this.table.navListActiveIndex = val.toHomeTaskList.tableIndex
               val.toHomeTaskList.tableIndex == 0 ? this.$refs.uploadMode.getList({
                 uploadStatus: null,
@@ -545,6 +539,19 @@
                 renderStatusFormHome: val.toHomeTaskList.type,
                 projectUuid: val.toHomeTaskList.projectUuid
               })
+            }
+            // message - 站内信跳转
+            if (val.from == 'stationLetter') {
+              // from: 'stationLetter',
+              // index,                 // 页码
+              // taskUuid,              // 任务ID
+              // type                   // 2分析列表，3渲染列表，4归档列表
+              if (val.type == 2) this.$refs.uploadMode.getList({pageIndex: val.index - 1, taskUuid: val.taskUuid})
+              else if (val.type == 3) this.$refs.renderMode.getList({pageIndex: val.index - 1, taskUuid: val.taskUuid})
+              else if (val.type == 4) {
+                this.dialogTable.status = true
+
+              }
             }
           })
 
@@ -558,7 +565,7 @@
       createTableIconList()  // 图标
     },
     computed: {
-      ...mapState(['socket_backS_msg', 'zone'])
+      ...mapState(['socket_backS_msg', 'zone', 'taskState'])
     }
   }
 </script>
@@ -756,7 +763,7 @@
     }
   }
 
-  /deep/.el-dialog__body {
+  /deep/ .el-dialog__body {
     padding: 0px;
   }
 

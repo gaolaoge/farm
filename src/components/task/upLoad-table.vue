@@ -50,7 +50,8 @@
           <span v-if="scope.row.status == '已放弃'" style="color: #555">
             {{ scope.row.status }}
           </span>
-          <span v-if="scope.row.status !== '上传失败' && scope.row.status !== '分析失败' && scope.row.status !== '待设置参数' && scope.row.status !== '分析警告' && scope.row.status !== '上传暂停' && scope.row.status !== '已放弃'">
+          <span
+            v-if="scope.row.status !== '上传失败' && scope.row.status !== '分析失败' && scope.row.status !== '待设置参数' && scope.row.status !== '分析警告' && scope.row.status !== '上传暂停' && scope.row.status !== '已放弃'">
             {{ scope.row.status }}
           </span>
         </template>
@@ -296,7 +297,7 @@
             text: curr.projectName
           }
         })
-        if (!this.$route.params.name) this.getList()
+        if (!this.$route.params.name && this.$route.params.from != 'stationLetter') this.getList()
       },
       // 获取 table 列表
       async getList(obj, reset) {
@@ -345,11 +346,17 @@
           }),
           usersList = new Set(),
           statusList = new Set()
-        this.table.UploadAnalysisData = data.data.data.map(curr => {
+
+        // ----------------------------------------------------------
+
+        this.table.UploadAnalysisData = []
+        let list = data.data.data,
+          len = list.length
+        for (let i = 0; i < len; i++) {
           let statusData = ''
           // 状态转换
-          if (curr['taskStage'] == 2) {
-            switch (curr['analyseStatus']) {
+          if (list[i]['taskStage'] == 2) {
+            switch (list[i]['analyseStatus']) {
               case 1:
               case 2:
               case 9:
@@ -368,8 +375,8 @@
                 statusData = '已放弃'
                 break
             }
-          } else if (curr['taskStage'] == 1) {
-            switch (curr['uploadStatus']) {
+          } else if (list[i]['taskStage'] == 1) {
+            switch (list[i]['uploadStatus']) {
               case 1:
               case 2:
                 statusData = '上传中...'
@@ -388,30 +395,35 @@
                 break
             }
           }
-          usersList.add(curr['account'])
+          usersList.add(list[i]['account'])
           statusList.add(statusData)
-          return {
-            taskUuid: curr['taskUuid'],
-            id: curr['taskNo'],                                                // 任务ID
-            scenesName: curr['fileName'],                                      // 场景名
+          this.table.UploadAnalysisData.push({
+            taskUuid: list[i]['taskUuid'],
+            id: list[i]['taskNo'],                                                // 任务ID
+            scenesName: list[i]['fileName'],                                      // 场景名
             status: statusData,                                                // 状态
-            project: curr['projectName'],                                      // 所属项目
-            startingTime: createDateFun(new Date(curr['analyseStartTime'])),   // 分析开始时间
-            endTime: createDateFun(new Date(curr['analyseEndTime'])),          // 分析结果时间
-            founder: curr['account'],                                          // 创建人
-            creationTime: createDateFun(new Date(curr['createTime'])),         // 创建时间
+            project: list[i]['projectName'],                                      // 所属项目
+            startingTime: createDateFun(new Date(list[i]['analyseStartTime'])),   // 分析开始时间
+            endTime: createDateFun(new Date(list[i]['analyseEndTime'])),          // 分析结果时间
+            founder: list[i]['account'],                                          // 创建人
+            creationTime: createDateFun(new Date(list[i]['createTime'])),         // 创建时间
             //   source: '',           //来源
             //   taskMode: '',         //任务模式
             //   wayOfAdding: ''       //添加方式
-          }
-        })
+          })
+        }
+
+        // ----------------------------------------------------------
+
         this.table.usersList = [...usersList].map(curr => {
           return {'text': curr, 'value': curr}
         })
         // this.table.statusList = [...statusList].map(curr => { return {'text': curr, 'value':curr }})
         this.table.uploadTableTotal = data.data.total
         this.$emit('uploadTableTotalItem', data.data.total)
-        // if (obj && obj.taskUuid) this.$refs.uploadTableImportant.toggleRowSelection(this.table.UploadAnalysisData.find(item => item['taskUuid'] == obj['taskUuid']), true)
+        if (obj && obj.taskUuid) this.$nextTick(() => {
+          this.$refs.uploadTableImportant.toggleRowSelection(this.table.UploadAnalysisData.find(item => item['taskUuid'] == obj['taskUuid']), true)
+        })
         loading.close()
       },
       // 关键字检索

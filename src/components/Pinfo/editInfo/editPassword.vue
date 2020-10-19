@@ -20,7 +20,8 @@
                  :class="[{'error': status.code === false}]"
                  v-model="codeVal"
                  :placeholder="codePlaceholder"
-                 @blur="verifCode"
+                 @blur="verifCode(false)"
+                 @input="verifCode(true)"
                  @focus="status.code = null">
           <div :class="[{'cannotBe': !canBeTrigger}, 'getCode']">
             <span class="getSpan" @click="getCode" v-show="canBeTrigger">{{ codeLabel }}</span>
@@ -35,13 +36,14 @@
                  class="farm-input"
                  v-model="passWordVal"
                  :placeholder="passWordPlaceholder"
-                 @blur="verifPS"
+                 @blur="verifPS(false)"
+                 @input="verifPS(true)"
                  @focus="status.ps = null">
           <span class="errorInfo" v-show="status.ps === false">{{ psTypeErr }}</span>
           <img src="@/icons/login-success.png" class="i"
-               v-show="status.ps == true">
+               v-show="status.ps === true">
           <img src="@/icons/login-error .png" class="i canClick"
-               v-show="status.ps == false"
+               v-show="status.ps === false"
                @click="deleteInput('passWordVal')">
         </div>
         <!--再次输入-->
@@ -51,7 +53,8 @@
                  class="farm-input"
                  v-model="passWordAgainVal"
                  :placeholder="passWordAgainPlaceholder"
-                 @blur="verifPSA"
+                 @blur="verifPSA(false)"
+                 @input="verifPSA(true)"
                  @focus="status.psa = null">
           <span class="errorInfo" v-show="status.psa === false">{{ psaTypeErr }}</span>
           <img src="@/icons/login-success.png" class="i"
@@ -154,11 +157,9 @@
           password: this.passWordVal,
           code: this.codeVal
         })
-        if (data.data.code == 999) {
-          messageFun('error', '未知错误')
-        } else if (data.data.code == 4043) {
-          messageFun('error', '验证码已过期')
-        } else if (data.data.code == 200) {
+        if (data.data.code == 999) messageFun('error', '未知错误')
+        else if (data.data.code == 4043) messageFun('error', '验证码已过期')
+        else if (data.data.code == 200) {
           this.reset()
           messageFun('success', '修改成功')
           this.editing = false
@@ -169,9 +170,8 @@
       sucLoading() {
         this.setTimeoutF = setTimeout(() => {
           this.time--
-          if (!this.time) {
-            this.cancelFun()
-          } else this.sucLoading()
+          if (!this.time) this.cancelFun()
+          else this.sucLoading()
         }, 1000)
       },
       // 复位
@@ -206,50 +206,46 @@
         }, 1000)
       },
       // 验证验证码格式
-      verifCode() {
+      verifCode(ing) {
         // 为空
-        if (!this.codeVal) {
-          this.status.code = null
-          return false
-        }
-        if (/^\d{6}$/.test(this.codeVal)) {
-          this.status.code = true
-        } else {
-          this.codeTypeErr = '验证码格式错误'
-          this.status.code = false
+        if (!this.codeVal) this.status.code = null
+        else if (/^\d{6}$/.test(this.codeVal)) this.status.code = true
+        else {
+          if (ing) this.status.code = null
+          else {
+            this.codeTypeErr = '验证码格式错误'
+            this.status.code = false
+          }
         }
       },
       // 验证第一个密码
-      verifPS() {
+      verifPS(ing) {
         // 为空
-        if (!this.passWordVal) {
-          this.status.ps = null
-          return false
-        }
-        if (!/^\w{8,18}$/.test(this.passWordVal)) {
-          this.psTypeErr = '请输入8-18个字符'
-          this.status.ps = false
-          return false
-        }
-        if (!/^(?![\d]+$)(?![a-z]+$)(?![A-Z]+$)(?!^.*[\u4E00-\u9FA5].*$)/.test(this.passWordVal)) {
-          this.psTypeErr = '请至少包含大小写字母、数字、特殊字符中任意2种字符'
-          this.status.ps = false
-          return false
-        }
-        this.status.ps = true
+        if (!this.passWordVal) this.status.ps = null
+        else if (!/^[\W\w]{8,18}$/.test(this.passWordVal)) {
+          if (ing) this.status.ps = null
+          else {
+            this.psTypeErr = '请输入8-18个字符'
+            this.status.ps = false
+          }
+        } else if (!/^(?![\d]+$)(?![a-z]+$)(?![A-Z]+$)(?!^.*[\u4E00-\u9FA5].*$)/.test(this.passWordVal)) {
+          if (ing) this.status.ps = null
+          else {
+            this.psTypeErr = '请至少包含大小写字母、数字、特殊字符中任意2种字符'
+            this.status.ps = false
+          }
+        } else this.status.ps = true
       },
       // 验证第二个密码
-      verifPSA() {
-        if (!this.passWordAgainVal || !this.status.ps) {
-          this.status.psa = null
-          return false
-        }
-        if (this.passWordAgainVal != this.passWordVal) {
-          this.status.psa = false
-          this.psaTypeErr = '两次密码输入不一致，请重新输入'
-          return false
-        }
-        this.status.psa = true
+      verifPSA(ing) {
+        if (!this.passWordAgainVal || !this.status.ps) this.status.psa = null
+        else if (this.passWordAgainVal != this.passWordVal) {
+          if (ing) this.status.psa = null
+          else {
+            this.status.psa = false
+            this.psaTypeErr = '两次密码输入不一致，请重新输入'
+          }
+        } else this.status.psa = true
       },
       // 检验报错删除input
       deleteInput(ee) {
@@ -413,8 +409,9 @@
 
       .i {
         position: absolute;
-        right: -24px;
-        top: 8px;
+        right: 10px;
+        top: 12px;
+        width: 14px;
 
         &.canClick {
           cursor: pointer;
@@ -427,6 +424,7 @@
     background-color: rgba(255, 255, 255, 1);
     border: 1px solid rgba(22, 29, 37, 0.19);
     cursor: no-drop;
+
     span {
       color: rgba(22, 29, 37, 0.19);
     }
