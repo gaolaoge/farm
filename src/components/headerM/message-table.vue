@@ -111,7 +111,7 @@
   import {
     getMessageList,
     readMessages,
-    getTaskPosition
+    getTaskPosition,
   } from "../../api/header-api"
   import {
     createDateFun,
@@ -153,10 +153,8 @@
     methods: {
       // 打开消息详情
       async tableClick(row, column, event) {
-
         let taskUuid = JSON.parse(row.noticeParam)['taskUuid'],
           zoneUuid = row.noticeData.split('&').find(item => item.split('=')[0] == 'zoneUuid').split('=')[1],
-          // pageIndex = row.noticeData.split('&').find(item => item.split('=')[0] == 'pageIndex').split('=')[1],
           type = row.noticeUrl
         // analyse  =>  分析页面
         // render   =>  渲染页面
@@ -198,6 +196,10 @@
           'noticeUuidList': [row.noticeUuid]
         })
         if (data.data.code == 201) this.getMessageListF()
+        let systemTotal = await getMessageList(`isRead=&noticeType=1&keyword=&pageIndex=1&pageSize=10`),
+          activityTotal = await getMessageList(`isRead=&noticeType=2&keyword=&pageIndex=1&pageSize=10`)
+
+        if(systemTotal.data.total == 0 && activityTotal.data.total == 0) this.$emit('noMessage')
       },
       // 标记为已读
       async readedAll(type) {

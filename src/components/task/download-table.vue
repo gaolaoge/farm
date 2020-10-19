@@ -401,7 +401,8 @@
         renderAgainBoxSupplement: '（完成帧重新渲染会重复扣除费用）',
         renderAgainBoxTit: '确认重新渲染以下帧么？',
         renderAgainBoxBtnList: ['取消', '确定'],
-        refresh: '刷新'
+        refresh: '刷新',
+        specialJump: false,       // 特定跳转 请求带有指定参数 不再触发默认【获取列表】
       }
     },
     methods: {
@@ -414,8 +415,8 @@
             text: curr.projectName
           }
         })
-        console.log(this.$route.params)
-        if (!this.$route.params.name && this.$route.params.from != 'stationLetter') this.getList()
+        if (!this.specialJump) this.getList()
+        else this.specialJump = false
       },
       // 清除筛选条件
       clearFilterF(type) {

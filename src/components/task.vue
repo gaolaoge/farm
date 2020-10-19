@@ -457,13 +457,32 @@
         this.dialogTable.status = false
         this.$refs.archiveTable.showDetailsDOM = false
       },
-      //
+      // 站内信选中项目消息
+      stationLetter(val) {
+        // from: 'stationLetter',
+        // index,                 // 页码
+        // taskUuid,              // 任务ID
+        // type                   // 2分析列表，3渲染列表，4归档列表
+        if (val.type == 2) {
+          // 上传分析
+          this.$refs.uploadMode.specialJump = true
+          this.$refs.uploadMode.getList({pageIndex: val.index - 1, taskUuid: val.taskUuid})
+        } else if (val.type == 3) {
+          // 渲染下载
+          this.$refs.renderMode.specialJump = true
+          this.$refs.renderMode.getList({pageIndex: val.index - 1, taskUuid: val.taskUuid})
+        } else if (val.type == 4) {
+          // 归档记录
+          this.dialogTable.status = true
+
+        }
+      }
     },
     watch: {
       'table.navListActiveIndex': {
         handler: function (val) {
           sessionStorage.setItem('taskListActive', val)
-          val == 0 ? this.$refs.uploadMode.searchFun() : this.$refs.renderMode.searchFun()
+          // val == 0 ? this.$refs.uploadMode.searchFun() : this.$refs.renderMode.searchFun()
         },
       },
       'socket_backS_msg': {
@@ -481,8 +500,10 @@
           // idnex  页码
           // taskUuid
           // type: 0没查到，2分析列表，3渲染列表，4归档列表
-          if(obj.type == 2 || obj.type == 4) this.table.navListActiveIndex = 0
+          if (obj.type == 2 || obj.type == 4) this.table.navListActiveIndex = 0
           else if (obj.type == 3) this.table.navListActiveIndex = 1
+          // setTimeout(() => this.stationLetter(val), 800)
+          this.stationLetter(obj)
         },
         immediate: true
       },
@@ -495,37 +516,32 @@
               case this.$t('task.status.toBeSet'):          // 待设置参数
                 sessionStorage.setItem('taskListActive', '0')
                 this.table.navListActiveIndex = 0
-                this.$refs.uploadMode.getList({
-                  parametersToBeSet: 1
-                })
+                this.$refs.uploadMode.specialJump = true
+                this.$refs.uploadMode.getList({parametersToBeSet: 1})
                 break
               case this.$t('task.status.render_ing'):       // 渲染中
                 sessionStorage.setItem('taskListActive', '1')
                 this.table.navListActiveIndex = 1
-                this.$refs.renderMode.getList({
-                  renderStatus: 2
-                })
+                this.$refs.renderMode.specialJump = true
+                this.$refs.renderMode.getList({renderStatus: 2})
                 break
               case this.$t('task.status.render_all'):       // 待全部渲染
                 sessionStorage.setItem('taskListActive', '1')
                 this.table.navListActiveIndex = 1
-                this.$refs.renderMode.getList({
-                  renderStatus: 5
-                })
+                this.$refs.renderMode.specialJump = true
+                this.$refs.renderMode.getList({renderStatus: 5})
                 break
               case this.$t('task.status.render_timeOut'):   // 渲染暂停
                 sessionStorage.setItem('taskListActive', '1')
                 this.table.navListActiveIndex = 1
-                this.$refs.renderMode.getList({
-                  renderStatus: 4
-                })
+                this.$refs.renderMode.specialJump = true
+                this.$refs.renderMode.getList({renderStatus: 4})
                 break
               case this.$t('task.status.render_done'):      // 渲染完成
                 sessionStorage.setItem('taskListActive', '1')
                 this.table.navListActiveIndex = 1
-                this.$refs.renderMode.getList({
-                  renderStatus: 3
-                })
+                this.$refs.renderMode.specialJump = true
+                this.$refs.renderMode.getList({renderStatus: 3})
                 break
             }
             // home - 任务列表
@@ -541,18 +557,7 @@
               })
             }
             // message - 站内信跳转
-            if (val.from == 'stationLetter') {
-              // from: 'stationLetter',
-              // index,                 // 页码
-              // taskUuid,              // 任务ID
-              // type                   // 2分析列表，3渲染列表，4归档列表
-              if (val.type == 2) this.$refs.uploadMode.getList({pageIndex: val.index - 1, taskUuid: val.taskUuid})
-              else if (val.type == 3) this.$refs.renderMode.getList({pageIndex: val.index - 1, taskUuid: val.taskUuid})
-              else if (val.type == 4) {
-                this.dialogTable.status = true
-
-              }
-            }
+            if (val.from == 'stationLetter') this.stationLetter(val)
           })
 
         },

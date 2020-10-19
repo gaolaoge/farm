@@ -8,9 +8,9 @@ module.exports = merge(prodEnv, {
   // BASE_URI: '"http://223.80.107.190:18146"',
   // BACK_WS_API: '"ws://192.168.1.86:5002/websocket/web/"',   // 范博文
   BACK_WS_API: '"ws://192.168.1.176:5002/websocket/web/"',
-  PLUGIN_WS_API: '"ws://localhost:15000"',
+  // PLUGIN_WS_API: '"ws://localhost:15000"',
   // PLUGIN_WS_API: '"ws://192.168.1.111:15000"',  // 李杨
-  // PLUGIN_WS_API: '"ws://192.168.1.12:15000"',   // 张帆
+  PLUGIN_WS_API: '"ws://192.168.1.12:15000"',   // 陆鑫
   MOCKJS: true,
   VERSION: "'-'",
 })

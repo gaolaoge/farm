@@ -190,7 +190,8 @@
         itemName: 'upload-table',
         drawerTaskData: null,
         searchInput: '',
-        refresh: '刷新'
+        refresh: '刷新',
+        specialJump: false,       // 特定跳转 请求带有指定参数 不再触发默认【获取列表】
       }
     },
     methods: {
@@ -297,7 +298,8 @@
             text: curr.projectName
           }
         })
-        if (!this.$route.params.name && this.$route.params.from != 'stationLetter') this.getList()
+        if (!this.specialJump) this.getList()
+        else this.specialJump = false
       },
       // 获取 table 列表
       async getList(obj, reset) {
