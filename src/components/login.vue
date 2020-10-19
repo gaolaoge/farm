@@ -461,10 +461,10 @@
             btnText: this.$t('login_page.getCode')
           },
           accountForm: {
-            account: 'gaoge1834',
-            password: '22334455.',
-            // account: '',
-            // password: '',
+            // account: 'gaoge1834',
+            // password: '22334455.',
+            account: '',
+            password: '',
             isAutoLogin: false,
             passwordEye: false
           },
