@@ -712,7 +712,7 @@
         let reg = /^(?![\d]+$)(?![a-z]+$)(?![A-Z]+$)(?![_]+$)(?![\u4E00-\u9FA5]+$)/,
           reg2 = /^[\u4E00-\u9FA5\w]+$/
         if ((!reg.test(rfa) || !reg2.test(rfa)) && !this.reg.phoneReg.test(rfa)) {
-          w.account = '请输入正确账号/手机号'
+          w.account = '请输入正确账号'
           type ? rs.account = null : rs.account = false
           return false
         }
@@ -943,7 +943,7 @@
       },
       // 短信登录 登录btn
       async phoneLoginFun() {
-        let {v, phone, code, isAutoLogin, phoneVerif, codeVerif} = this.login.phoneForm
+        let {v, phone, code, autoLogin, phoneVerif, codeVerif} = this.login.phoneForm
         // 若手机号或验证码未通过格式验证，直接忽略
         if (!phoneVerif || !codeVerif) return false
         // 检验是否已发送验证短信
@@ -954,11 +954,11 @@
         }
         try {
           // 判断验证码是否正确
-          let data = await phoneLogin({phone, code, isAutoLogin})
+          let data = await phoneLogin({phone, code, autoLogin})
           if (data.data.code == 4032) {
             messageFun('error', this.$t('login_page.message.code_err'));
             return false
-          } else if (data.data.code == 200) this.loginSuc(isAutoLogin, phone, data.data.data.account, data.data.data.token)
+          } else if (data.data.code == 200) this.loginSuc(autoLogin, phone, data.data.data.account, data.data.data.token)
         } catch (err) {
           console.log('登录连接失败, ' + err)
         }

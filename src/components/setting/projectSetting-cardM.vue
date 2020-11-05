@@ -440,12 +440,10 @@
       jump(val) {
         this.getList(this.searchInputVal, val, this.page.size)
       },
-    }
-    ,
+    },
     mounted() {
       this.getList('', 1, this.page.size)
-    }
-    ,
+    },
     components: {
       AvatarCutter,
     },
