@@ -1469,7 +1469,7 @@
               'taskList': fir.local.filelist.map((curr, index) => {
                 return {
                   'sceneFile': curr.absolutePath,            // 场景文件
-                  'path': [curr.address],                    // 工程路径
+                  'path': curr.address,                      // 工程路径
                   'taskID': data.data.data[index]['taskUuid'],
                   'taskNo': data.data.data[index]['taskNo']
                 }
