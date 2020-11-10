@@ -154,7 +154,8 @@
       triggerPlugin() {
         let son = document.createElement('IFRAME')
         document.body.appendChild(son)
-        son.src = 'jhzy://'
+        // son.src = 'jhzy://'
+        son.src= 'cloudtransfer://'
         son.contentDocument.open()
       },
       // 打开【传输列表】
