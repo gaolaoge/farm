@@ -1433,7 +1433,7 @@
             let task = this.stepOneBase.netdisc.treeData.find(curr => curr.id == item)
             return {
               filePath: {
-                pathResource: fir.netdisc.pathV,                          // 工程路径
+                pathResource: [fir.netdisc.pathV],                        // 工程路径
                 pathScene: fir.netdisc.sceneFilePath.join('/') + '/',     // 场景文件路径
                 fileName: task.label,                                     // 场景文件名
               }
