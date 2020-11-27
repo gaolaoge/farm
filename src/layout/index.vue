@@ -102,8 +102,8 @@
           header2: '，您好！',
           contant1: '您的账号于',
           date: null,
-          contant2: '在另一地点登录了CloudRender，为了您得账号安全，您当前登录已被迫下线。',
-          contant3: '如果这不是您本人得操作，那么您的密码很可能已经泄露，建议您点击',
+          contant2: '在另一地点登录了CloudRender，为了您的账号安全，您当前登录已被迫下线。',
+          contant3: '如果这不是您本人的操作，那么您的密码很可能已经泄露，建议您点击',
           contant4: '修改密码',
           contant5: '。',
           btn: '重新登录'

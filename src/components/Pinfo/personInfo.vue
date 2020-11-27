@@ -76,7 +76,6 @@
 </template>
 
 <script>
-  import modelCalendar from '@/components/farm-model/farm-calendar-single'
   import AvatarCutter from '@/components/farm-model/farm-avatarCutter'
   import editEmail from '@/components/Pinfo/editInfo/editEmail'
   import editPassword from '@/components/Pinfo/editInfo/editPassword'
@@ -188,7 +187,6 @@
     },
     components: {
       AvatarCutter,
-      modelCalendar,
       editEmail,
       editPassword,
       editPhone,
