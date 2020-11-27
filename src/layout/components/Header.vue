@@ -424,7 +424,7 @@
       },
       // 跳转到帮助网站
       w() {
-        window.open('http://help.chinamoviecloud.cn/', '_blank')
+        window.open('http://help.chinamoviecloud.cn:8080/', '_blank')
       },
       showGuide() {
         this.guideShow = false
