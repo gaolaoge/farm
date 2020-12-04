@@ -18,97 +18,74 @@
              v-show="navListActiveIndex == 0">
           <!--金币余额-->
           <div class="farm-form-item">
-            <div class="farm-form-item-label">
-              {{ form.balanceLabel }}:
-            </div>
+            <div class="farm-form-item-label">{{ form.balanceLabel }}:</div>
             <div class="farm-form-item-val">
-              <span class="text">
-                {{ user.balance }}
-              </span>
+              <span class="text">{{ user.balance }}</span>
             </div>
           </div>
           <!--充值金额-->
           <div class="farm-form-item">
-            <div class="farm-form-item-label">
-              {{ form.upTopLabel }}:
-            </div>
+            <div class="farm-form-item-label">{{ form.upTopLabel }}:</div>
             <div class="farm-form-item-val">
               <div class="g">
-                <div class="up-top-item"
-                     :class="[{'active': form.ChineseYuan == item.ChineseYuan}]"
+                <div :class="[{'active': form.ChineseYuan == item.ChineseYuan}, 'up-top-item']"
                      v-for="(item,index) in form.list"
                      :key="index"
                      @click="form.ChineseYuan = item.ChineseYuan">
                   <div class="gold">
-                    <span class="unit">
-                      ￥
-                    </span>
-                    <span class="num">
-                      {{ item.ChineseYuan }}
-                    </span>
+                    <span class="unit">￥</span>
+                    <span class="num">{{ item.ChineseYuan }}</span>
                   </div>
                   <div class="t">
-                    <p class="remark">
-                      {{ item.remark1 }}
-                    </p>
-                    <p class="remark">
-                      {{ item.remark2 }}
-                    </p>
+                    <p class="remark">{{ item.remark1 }}</p>
+                    <p class="remark">{{ item.remark2 }}</p>
                   </div>
                   <div class="selected" :style="{backgroundImage: 'url(' + require('../icons/x.png') + ')'}">
                     <span>{{ item.ChineseYuan }}</span>
-                    <img src="@/icons/check-circle.png" alt="">
+                    <img src="@/icons/check-circle.png">
                   </div>
                 </div>
               </div>
               <input type="text"
-                     class="farm-form-item-input in"
-                     :class="[{'error': form.ChineseYuanVerif === false}]"
+                     :class="[{'error': form.ChineseYuanVerif === false}, 'farm-form-item-input', 'in']"
                      :placeholder="form.placeholder"
                      v-model="form.ChineseYuan">
             </div>
           </div>
           <!--充值到账金币-->
           <div class="farm-form-item">
-            <div class="farm-form-item-label">
-              {{ form.realLabel }}:
-            </div>
+            <div class="farm-form-item-label">{{ form.realLabel }}:</div>
             <div class="farm-form-item-val">
-              <span class="text">
-                {{ form.realVal }}
-              </span>
+              <span class="text">{{ form.realVal }}</span>
             </div>
           </div>
           <!--充值方式-->
           <div class="farm-form-item">
-            <div class="farm-form-item-label">
-              {{ form.modeLabel }}:
-            </div>
+            <div class="farm-form-item-label">{{ form.modeLabel }}:</div>
             <div class="farm-form-item-val">
-              <div class="pay-base"
-                   @click="payMethods = 'zfb'"
-                   :class="[{'active': payMethods == 'zfb'}]">
-                <img src="@/icons/no-select.png" alt="" v-show="payMethods != 'zfb'" class="s">
-                <img src="@/icons/yes-select.png" alt="" v-show="payMethods == 'zfb'" class="s">
-                <img src="@/icons/zhifubao-icon.png" alt="" v-show="payMethods != 'zfb'">
-                <img src="@/icons/zhifubao-icon-a.png" alt="" v-show="payMethods == 'zfb'">
+              <!--支付宝-->
+              <div @click="payMethods = 'zfb'"
+                   :class="[{'active': payMethods == 'zfb'}, 'pay-base']">
+                <img src="@/icons/no-select.png" v-show="payMethods != 'zfb'" class="s">
+                <img src="@/icons/yes-select.png" v-show="payMethods == 'zfb'" class="s">
+                <img src="@/icons/zhifubao-icon.png" v-show="payMethods != 'zfb'">
+                <img src="@/icons/zhifubao-icon-a.png" v-show="payMethods == 'zfb'">
               </div>
-              <div class="pay-base"
-                   @click="payMethods = 'wx'"
-                   :class="[{'active': payMethods == 'wx'}]">
-                <img src="@/icons/no-select.png" alt="" v-show="payMethods != 'wx'" class="s">
-                <img src="@/icons/yes-select.png" alt="" v-show="payMethods == 'wx'" class="s">
-                <img src="@/icons/weixin-icon.png" alt="" v-show="payMethods != 'wx'">
-                <img src="@/icons/weixin-icon-a.png" alt="" v-show="payMethods == 'wx'">
-              </div>
+              <!--微信【暂不可用】-->
+<!--              <div @click="payMethods = 'wx'"-->
+<!--                   :class="[{'active': payMethods == 'wx'}, 'pay-base']">-->
+<!--                <img src="@/icons/no-select.png" v-show="payMethods != 'wx'" class="s">-->
+<!--                <img src="@/icons/yes-select.png" v-show="payMethods == 'wx'" class="s">-->
+<!--                <img src="@/icons/weixin-icon.png" v-show="payMethods != 'wx'">-->
+<!--                <img src="@/icons/weixin-icon-a.png" v-show="payMethods == 'wx'">-->
+<!--              </div>-->
             </div>
           </div>
           <!--btn-->
           <div class="farm-form-item">
-            <div class="farm-form-item-label">
-            </div>
+            <div class="farm-form-item-label"/>
             <div class="farm-form-item-val">
-              <div class="btn" :class="[{'cannotBeGo': !form.ChineseYuanVerif}]" @click="payFun">
+              <div :class="[{'cannotBeGo': !form.ChineseYuanVerif}, 'btn']" @click="payFun">
                 {{ btn.upTopNow }}
               </div>
             </div>
@@ -227,7 +204,7 @@
     </div>
     <!--充值-->
     <el-dialog :visible.sync="rechargeIframe">
-      <div ref="dom"></div>
+      <div ref="dom"/>
     </el-dialog>
     <!--充值窗口-->
     <el-dialog title="" width="600px" :visible.sync="dialogNode">
@@ -430,7 +407,8 @@
         dialogNode: false,
         dialogNodeText: {
           title: '充值提示',
-        }
+        },
+        canBePay: true
       }
     },
     watch: {
@@ -458,10 +436,9 @@
       // 立即充值
       payFun() {
         if (!this.form.ChineseYuanVerif) return false
-        this.dialogNode = true
-        return false
-        if (this.payMethods == 'zfb') this.aLiPayFun()
-        if (this.payMethods == 'wx') this.wxPayFun()
+        else if (!this.canBePay) this.dialogNode = true       // 是否打开充值
+        else if (this.payMethods == 'zfb') this.aLiPayFun()
+        else if (this.payMethods == 'wx') this.wxPayFun()
       },
       // 支付宝充值
       async aLiPayFun() {
