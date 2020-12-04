@@ -71,7 +71,7 @@
           <span>{{ item['text'] }}</span>
         </div>
         <!--临时-->
-        <div class="farm-primary-form-btn" @click="jumpToDCPCloud"><span>临时占位，模拟跳转事件</span></div>
+<!--        <div class="farm-primary-form-btn" @click="jumpToDCPCloud"><span>临时占位，模拟跳转事件</span></div>-->
       </div>
       <div class="rightOPerate">
         <div class="searchItem" v-show="table.navListActiveIndex == 0">
