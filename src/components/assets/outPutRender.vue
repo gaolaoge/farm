@@ -438,6 +438,15 @@
     },
     mounted() {
       this.getList()
+    },
+    watch: {
+      'table.nextTbaleType': {
+        handler: function(val) {
+          if(val == 'frame') this.$emit('showJump', true)
+          else this.$emit('showJump', false)
+        },
+        immediate: true
+      }
     }
   }
 </script>

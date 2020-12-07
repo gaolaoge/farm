@@ -59,8 +59,7 @@
       </div>
       <!--渲染输出操作-->
       <div class="outPutBtnGroup" v-show="table.navListActiveIndex == 1">
-        <div class="farm-primary-form-btn"
-             :class="[{'cannotToBe': !item.action}]"
+        <div :class="[{'cannotToBe': !item.action}, 'farm-primary-form-btn']"
              v-for="(item,index) in btnGroup.outPutBtnGroup"
              :key="index"
              @click="operating('render', item['text'])">
@@ -70,8 +69,10 @@
                :style="{'transform': item.css }">
           <span>{{ item['text'] }}</span>
         </div>
-        <!--临时-->
-<!--        <div class="farm-primary-form-btn" @click="jumpToDCPCloud"><span>临时占位，模拟跳转事件</span></div>-->
+        <!--跳转-->
+        <div :class="[{'cannotToBe': !canBeJump}, 'farm-primary-form-btn']"
+             v-show="isShowJumpBtn"
+             @click="jumpToDCPCloud"><span>临时占位，模拟跳转事件</span></div>
       </div>
       <div class="rightOPerate">
         <div class="searchItem" v-show="table.navListActiveIndex == 0">
@@ -127,6 +128,7 @@
           <out-put-render ref="outPutTable"
                           @renderSelectionF="renderSelectionF"
                           @clearInput="clearInput"
+                          @showJump="showJump"
                           :searchInputVal="renderSearchInputVal"/>
         </div>
       </div>
@@ -138,7 +140,10 @@
   import outPutRender from '@/components/assets/outPutRender'
   import myUpload from '@/components/assets/myUpload'
   import {createTableIconList} from '@/assets/common.js'
-  import {mapState} from "vuex";
+  import {mapState} from "vuex"
+  import {
+    jumpToDCP
+  } from '@/api/assets-api'
 
   export default {
     name: 'assets',
@@ -200,6 +205,9 @@
         },
         renderSearchInputVal: '',
         uploadSearchInputVal: '',
+        isShowJumpBtn: false,
+        canBeJump: false,
+        renderSelectionList: []
       }
     },
     directives: {
@@ -256,11 +264,18 @@
     },
     methods: {
       //
-      jumpToDCPCloud(){
+      showJump(boolean) {
+        this.isShowJumpBtn = boolean
+      },
+      //
+      async jumpToDCPCloud(){
+        if(!this.canBeJump) return false
+       let {data} = await jumpToDCP({'layerTaskUuid': this.renderSelectionList[0]['itemUuid']})
+        if(data.code != 200) return false
         let token = null
         if (document.cookie) token = document.cookie.split(';').find(curr => /token/.test(curr)).split('=')[1]
         if (sessionStorage.getItem('token')) token = sessionStorage.getItem('token')
-        window.open(`http://192.168.1.179:8089/dcp?token=${token}`, '_blank')
+        window.open(`http://192.168.1.115:8080/dcp?token=${token}&path=${data.data}`, '_blank')
       },
       // 根据【我的上传】多选改变修改操作按钮状态
       uploadSelectionF(list) {
@@ -276,6 +291,9 @@
       },
       // 根据【渲染输出】多选改变修改操作按钮状态
       renderSelectionF(list) {
+        this.renderSelectionList = list
+        if(list.length == 1) this.canBeJump = true
+        else this.canBeJump = false
         if (!list.length) this.btnGroup.outPutBtnGroup.forEach(item => item.action = false)
         else this.btnGroup.outPutBtnGroup.forEach(item => item.action = true)
       },
