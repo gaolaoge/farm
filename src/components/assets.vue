@@ -72,7 +72,7 @@
         <!--跳转-->
         <div :class="[{'cannotToBe': !canBeJump}, 'farm-primary-form-btn']"
              v-show="isShowJumpBtn"
-             @click="jumpToDCPCloud"><span>临时占位，模拟跳转事件</span></div>
+             @click="jumpToDCPCloud"><span>创建DCP</span></div>
       </div>
       <div class="rightOPerate">
         <div class="searchItem" v-show="table.navListActiveIndex == 0">
@@ -275,7 +275,7 @@
         let token = null
         if (document.cookie) token = document.cookie.split(';').find(curr => /token/.test(curr)).split('=')[1]
         if (sessionStorage.getItem('token')) token = sessionStorage.getItem('token')
-        window.open(`http://192.168.1.115:8080/dcp?token=${token}&path=${data.data}`, '_blank')
+        window.open(`http://192.168.1.115:8080/dcp?token=${token}&imagePath=${data.data}`, '_blank')
       },
       // 根据【我的上传】多选改变修改操作按钮状态
       uploadSelectionF(list) {
