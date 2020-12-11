@@ -131,6 +131,10 @@ export default new Vuex.Store({
       state.socket_backS.close()
       state.socket_backS = null
     },
+    // 下载插件
+    downloadPlugin() {
+      window.open(process.env.DOWNLOAD_PLUGIN_PATH, '_blank')
+    },
     // vuex 数据复位
     reset(s){
       Object.assign(s.user, {

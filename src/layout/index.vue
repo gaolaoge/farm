@@ -148,7 +148,7 @@
       },
       // 跳转到下载
       w() {
-        window.open('http://www.chinamoviecloud.cn:8085/CloudTransfer.exe', '_blank')
+        this.$store.commit('downloadPlugin')
       },
       // 触发插件
       triggerPlugin() {
