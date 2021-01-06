@@ -72,6 +72,7 @@
         <!--跳转-->
         <div :class="[{'cannotToBe': !canBeJump}, 'farm-primary-form-btn']"
              v-show="isShowJumpBtn"
+             v-if="false"
              @click="jumpToDCPCloud"><span>创建DCP</span></div>
       </div>
       <div class="rightOPerate">
