@@ -285,7 +285,7 @@
         list.length == 0 ? this.btnGroup.showMoreBtnList = false : true     // 更多list
         // 下载 and 更多list
         if (list.some(item => item['ing'])) {
-          group[2]['action'] = false
+          myUploadBtnGroup[2]['action'] = false
           this.btnGroup.showMoreBtnList = false
         }
       },
