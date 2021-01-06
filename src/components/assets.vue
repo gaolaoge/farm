@@ -279,10 +279,10 @@
       },
       // 根据【我的上传】多选改变修改操作按钮状态
       uploadSelectionF(list) {
-        let group = this.btnGroup.myUploadBtnGroup
-        group[1]['action'] = list.length ? true : false     // 删除
-        group[2]['action'] = list.length ? true : false     // 下载
-        list.length == 0 ? this.btnGroup.showMoreBtnList = false : null     // 更多list
+        let { myUploadBtnGroup } = this.btnGroup
+        myUploadBtnGroup[1]['action'] = list.length ? true : false          // 删除
+        myUploadBtnGroup[2]['action'] = list.length ? true : false          // 下载
+        list.length == 0 ? this.btnGroup.showMoreBtnList = false : true     // 更多list
         // 下载 and 更多list
         if (list.some(item => item['ing'])) {
           group[2]['action'] = false
@@ -507,7 +507,8 @@
 
     .moreBtnList {
       left: 378px;
-      height: 90px;
+      /*height: 90px;*/
+      height: 118px;
     }
 
     .uploadBtnList {

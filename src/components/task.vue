@@ -241,19 +241,19 @@
               class: 'renderAllBtn',
             },
             {
-              text: this.$t('task.renderBtnGroup')[5],                // 开始
+              text: this.$t('task.renderBtnGroup')[5],                 // 开始
               class: 'startBtn',
               initialIcon: require('@/icons/playIcon-black.png'),
               selectedIcon: require('@/icons/playIcon-white.png')
             },
             {
-              text: this.$t('task.renderBtnGroup')[6],               // 暂停
+              text: this.$t('task.renderBtnGroup')[6],                 // 暂停
               class: 'pauseBtn',
               initialIcon: require('@/icons/pauseIcon-black.png'),
               selectedIcon: require('@/icons/pauseIcon-white.png')
             },
             {
-              text: this.$t('task.renderBtnGroup')[7],               // 拷贝
+              text: this.$t('task.renderBtnGroup')[7],                 // 拷贝
               class: 'copyBtn'
             },
             // {
