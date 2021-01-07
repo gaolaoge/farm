@@ -478,7 +478,7 @@
       },
       // 解压
       unzip(password) {
-        let type = ['zip', 'rar', 'tar', 'tar.gz', 'gz', 'tar.bz2', 'bz2', 'tar.Z', 'Z', '7Z']
+        let type = ['zip', 'rar', 'tar', 'tar.gz', 'gz', 'tar.bz2', 'bz2', 'tar.Z', 'Z', '7z']
         if (this.table.selectionList.length != 1) messageFun('info', '压缩动作只能针对单一文件，操作失败')
         else if (this.table.selectionList[0]['ing']) messageFun('info', '目标正在上传中，无法操作')
         else if (!type.some(curr => curr == this.table.selectionList[0]['fileType'])) messageFun('info', '非压缩文件，无法操作')
