@@ -417,7 +417,7 @@
 
     .tableList {
       /*min-height: 700px;*/
-      /*height: calc(100vh - 80px - 72px - 42px - 40px);*/
+      height: calc(100% - 42px);
       /*渲染下载*/
 
       .outPutTable {
@@ -590,6 +590,16 @@
       }
     }
   }
+
+  .tableGroup {
+    height: calc(100% - 72px - 20px);
+
+    .myUploadTable,
+    .outPutTable {
+      height: calc(100%);
+    }
+  }
+
 </style>
 
 <style lang="less">
@@ -632,9 +642,18 @@
 
   .outPut-wrapper {
     overflow: hidden;
+    height: 100%;
 
-    .el-table__body-wrapper {
-      height: calc(100vh - 360px);
+    .outPut-table {
+      height: calc(100% - 52px);
+    }
+
+    .el-table {
+      height: calc(100% - 47px);
+
+      .el-table__body-wrapper {
+        height: calc(100% - 47px);
+      }
 
       tr {
         cursor: pointer;
@@ -642,6 +661,8 @@
     }
 
     .page {
+      position: relative;
+      width: calc(100% - 20px);
       margin: 10px;
       display: inline-flex;
       flex-wrap: nowrap;
@@ -651,11 +672,5 @@
         margin-left: 20px;
       }
     }
-
-    /*@media screen and (orientation: portrait) {*/
-    /*  /deep/ .el-table__body-wrapper {*/
-    /*    height: calc(100vw - 375px);*/
-    /*  }*/
-    /*}*/
   }
 </style>

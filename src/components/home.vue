@@ -372,7 +372,7 @@
     padding: 0px 50px;
     flex-grow: 1;
     align-content: flex-start;
-    height: calc(100vh - 120px - 24px);
+    height: calc(100% - 66px);
     overflow: hidden;
 
     .hi {

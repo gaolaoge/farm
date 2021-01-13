@@ -37,6 +37,15 @@
           show-overflow-tooltip
           min-width="180">
           <template slot-scope="scope">
+            <img src="@/icons/folder-a-icon.png" v-if="scope.row.fileType == '文件夹'" class="a-icon">
+            <img src="@/icons/mp3-a-icon.png" v-else-if="scope.row.fileType == 'MP3'" class="a-icon">
+            <img src="@/icons/mp4-a-icon.png" v-else-if="scope.row.fileType == 'MP4'" class="a-icon">
+            <img src="@/icons/ppt-a-icon.png" v-else-if="scope.row.fileType == 'ppt'" class="a-icon">
+            <img src="@/icons/word-a-icon.png" v-else-if="scope.row.fileType == 'word'" class="a-icon">
+            <img src="@/icons/exe-a-icon.png" v-else-if="scope.row.fileType == 'exe'" class="a-icon">
+            <img src="@/icons/txt-a-icon.png" v-else-if="scope.row.fileType == 'txt'" class="a-icon">
+            <img src="@/icons/html-a-icon.png" v-else-if="scope.row.fileType == 'html'" class="a-icon">
+            <img src="@/icons/file-a-icon.png" v-else class="a-icon">
             <span>{{ scope.row.fileName }}</span>
             <span v-show="scope.row.ing">.cloudtransfer.uploading</span>
           </template>
@@ -90,14 +99,19 @@
       <div class="farm-primary-form-btn btn" @click="refreshF(false)">
         <span>{{ refresh }}</span>
       </div>
+      <div class="gz" @click="openPlugin">
+        <img src="@/icons/gz-black.png" class="d">
+        <img src="@/icons/gz-blue.png" class="h">
+        <span>{{ $t('transportBtn') }}</span>
+      </div>
     </div>
     <el-dialog
       :show-close="false"
       :visible.sync="dialogVisible"
       width="50%">
       <header class="dl_header">
-        <span>{{ dl.title }}</span>
-        <img src="@/icons/shutDialogIcon.png" alt="" class="closeIcon" @click="shutDialog">
+        <span class="title">{{ dl.title }}</span>
+        <img src="@/icons/shutDialogIcon.png" class="closeIcon" @click="shutDialog">
       </header>
       <div class="dl-wrapper">
         <div class="tree">
@@ -248,6 +262,7 @@
                 'size': item.fileType == '文件夹' ? '-' : getFileSize(item.size)
               })
             })
+            console.log(this.table.tableData)
           } else if (data.msg == '601' && this.dialogVisible) {
             // 网盘tree
             let x = data.data.map(item => {
@@ -300,6 +315,11 @@
     },
     methods: {
       ...mapActions(['WEBSOCKET_PLUGIN_INIT']),
+      // 打开【传输列表】
+      openPlugin() {
+        if (this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_SEND', 'open')
+        else this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.$store.commit('WEBSOCKET_PLUGIN_SEND', 'open'))
+      },
       // 刷新
       refreshF(refresh) {
         if (!refresh) {
@@ -373,7 +393,6 @@
       filterHandler(value, row, column) {
         console.log(value, row, column)
       },
-
       // 上传 - 预判
       uploadFun(type) {
         if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.uploadingFun(type))
@@ -465,14 +484,16 @@
         else this.$prompt('请输入新名称', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
+            inputPattern: /^(?!.*[\\\/:*?"'<>|].*).*[^\.]$/i,
+            inputErrorMessage: '名称内不可包含特殊字符\\\/:*?"<>|且不可以.结尾'
           })
             .then(({value}) => {
               this.$store.commit('WEBSOCKET_BACKS_SEND', {
-                'code': 607,
-                'customerUuid': this.user.id,
-                'renameFilePath': this.path + this.table.selectionList[0]['fileName'],   // 被重命名的文件路径
-                'newFileName': value                                                     // 新文件名
-              })
+                  'code': 607,
+                  'customerUuid': this.user.id,
+                  'renameFilePath': this.path + this.table.selectionList[0]['fileName'],   // 被重命名的文件路径
+                  'newFileName': value                                                     // 新文件名
+                })
             })
             .catch(() => null)
       },
@@ -533,6 +554,10 @@
 </script>
 
 <style lang="less" scoped>
+  .a-icon {
+    vertical-align: middle;
+  }
+
   .unData {
     position: absolute;
     top: calc(47px + 42px);
@@ -558,25 +583,6 @@
     padding: 0px;
   }
 
-  .dl_header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 36px;
-    background-color: rgba(241, 244, 249, 1);
-    box-shadow: 0px 1px 6px 0px rgba(27, 83, 244, 0.3);
-    border-radius: 8px 8px 0px 0px;
-    padding: 0px 20px 0px 30px;
-
-    span {
-      user-select: none;
-    }
-
-    .closeIcon {
-      cursor: pointer;
-    }
-  }
-
   .custom-tree-node {
     display: flex;
     align-items: center;
@@ -591,17 +597,9 @@
   }
 
   .dl-wrapper {
-    position: relative;
-    padding: 8px;
     height: 540px;
-    background-color: rgba(255, 255, 255, 1);
-    border-radius: 0px 0px 8px 8px;
 
     .unzipItem {
-      /*display: flex;*/
-      /*justify-content: center;*/
-      /*align-items: center;*/
-
       .name {
         display: inline-block;
         width: 160px;

@@ -586,12 +586,20 @@
       left: 10px;
       bottom: 10px;
       display: inline-flex;
+      width: calc(100% - 20px);
 
       .btn {
         margin-left: 20px;
       }
     }
 
+    /deep/.el-table {
+      height: 100%;
+
+      .el-table__body-wrapper {
+        height: calc(100% - 47px - 52px);
+      }
+    }
   }
 </style>
 
@@ -682,7 +690,7 @@
     }
 
     .tableGroup {
-      flex-grow: 1;
+      height: calc(100% - 52px - 20px - 20px);
       margin: 0px 20px 20px 50px;
       display: flex;
       flex-direction: column;
@@ -727,6 +735,7 @@
 
     .tableList {
       flex-grow: 1;
+      height: calc(100% - 42px);
       /*渲染下载*/
 
       .progressBar {
@@ -771,12 +780,5 @@
   /deep/ .el-dialog__body {
     padding: 0px;
   }
-
-  /*@media screen and (orientation: portrait) {*/
-  /*  .task-wrapper .tableGroup .tableList {*/
-  /*    min-height: 0px;*/
-  /*    height: calc(100vw - 80px - 73px - 42px - 40px);*/
-  /*  }*/
-  /*}*/
 </style>
 

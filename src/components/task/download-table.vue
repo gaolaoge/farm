@@ -1,217 +1,215 @@
 <template>
-  <div class="download-table">
-    <div ref="downLoadTable">
-      <el-table
-        :data="table.RenderDownloadData"
-        @select="tableSelect"
-        @filter-change="filterChangeF"
-        @select-all="selectAll"
-        @row-click="showDetails"
-        :row-class-name="tableRowStyle"
-        class="r"
-        :border=true
-        row-key="rowId"
-        :tree-props="{children: 'children'}"
-        ref="renderTableImportant"
-        style="width: 100%">
+  <div class="download-table" ref="downLoadTable">
+    <el-table
+      :data="table.RenderDownloadData"
+      @select="tableSelect"
+      @filter-change="filterChangeF"
+      @select-all="selectAll"
+      @row-click="showDetails"
+      :row-class-name="tableRowStyle"
+      class="r"
+      :border=true
+      row-key="rowId"
+      :tree-props="{children: 'children'}"
+      ref="renderTableImportant"
+      style="width: 100%">
 
-        <el-table-column
-          type="selection"
-          align="right"
-          width="92"/>
-        <!--任务ID-->
-        <el-table-column
-          prop="id"
-          label="任务ID"
-          sortable
-          show-overflow-tooltip
-          width="146"/>
-        <!--场景名-->
-        <el-table-column
-          prop="sceneName"
-          label="场景名"
-          show-overflow-tooltip
-          width="224"/>
-        <!--状态-->
-        <el-table-column
-          label="状态"
-          :filters="zone == 1 ? table.statusList : table.statusList2"
-          column-key="status"
-          show-overflow-tooltip
-          width="110">
-          <template slot-scope="scope">
+      <el-table-column
+        type="selection"
+        align="right"
+        width="92"/>
+      <!--任务ID-->
+      <el-table-column
+        prop="id"
+        label="任务ID"
+        sortable
+        show-overflow-tooltip
+        width="146"/>
+      <!--场景名-->
+      <el-table-column
+        prop="sceneName"
+        label="场景名"
+        show-overflow-tooltip
+        width="224"/>
+      <!--状态-->
+      <el-table-column
+        label="状态"
+        :filters="zone == 1 ? table.statusList : table.statusList2"
+        column-key="status"
+        show-overflow-tooltip
+        width="110">
+        <template slot-scope="scope">
             <span v-if="scope.row.status !== '渲染完成' && scope.row.status !== '待全部渲染' && scope.row.status !== '渲染暂停'">
               {{ scope.row.status }}
             </span>
-            <span v-if="scope.row.status == '渲染完成'"
-                  style="color: rgba(0, 227, 255, 1)">
+          <span v-if="scope.row.status == '渲染完成'"
+                style="color: rgba(0, 227, 255, 1)">
               {{ scope.row.status }}
             </span>
-            <span v-if="scope.row.status == '待全部渲染'"
-                  style="color: rgba(70, 203, 93, 1)">
+          <span v-if="scope.row.status == '待全部渲染'"
+                style="color: rgba(70, 203, 93, 1)">
               {{ scope.row.status }}
             </span>
-            <span v-if="scope.row.status == '渲染暂停'"
-                  style="color: rgba(255, 191, 0, 1)">
+          <span v-if="scope.row.status == '渲染暂停'"
+                style="color: rgba(255, 191, 0, 1)">
               {{ scope.row.status }}
             </span>
-          </template>
-        </el-table-column>
-        <!--渲染进度-->
-        <el-table-column
-          label="渲染进度"
-          sortable
-          show-overflow-tooltip
-          width="170">
-          <template slot-scope="scope">
-            <el-progress :percentage="isNaN(scope.row.percent) ? 0 : scope.row.percent"
-                         :show-text="false"
-                         class="progressL"/>
-            <span clas="progressS">
+        </template>
+      </el-table-column>
+      <!--渲染进度-->
+      <el-table-column
+        label="渲染进度"
+        sortable
+        show-overflow-tooltip
+        width="170">
+        <template slot-scope="scope">
+          <el-progress :percentage="isNaN(scope.row.percent) ? 0 : scope.row.percent"
+                       :show-text="false"
+                       class="progressL"/>
+          <span clas="progressS">
               {{ scope.row.renderingProgress }}
             </span>
-          </template>
-        </el-table-column>
-        <!--所属项目-->
-        <el-table-column
-          prop="viewProject"
-          label="所属项目"
-          show-overflow-tooltip
-          column-key="task"
-          :filters="table.itemList"
-          width="186"/>
-        <!--渲染中-->
-        <el-table-column
-          prop="rendering"
-          sortable
-          width="86"
-          show-overflow-tooltip
-          label="渲染中"/>
-        <!--等待-->
-        <el-table-column
-          prop="wait"
-          sortable
-          width="86"
-          show-overflow-tooltip
-          label="等待"/>
-        <!--暂停-->
-        <el-table-column
-          prop="timeOut"
-          sortable
-          width="86"
-          show-overflow-tooltip
-          label="暂停"/>
-        <!--完成-->
-        <el-table-column
-          prop="carryOut"
-          sortable
-          width="86"
-          show-overflow-tooltip
-          label="完成"/>
-        <!--失败-->
-        <el-table-column
-          prop="failure"
-          label="失败"
-          width="86"
-          show-overflow-tooltip
-          sortable/>
-        <!--渲染时长-->
-        <el-table-column
-          prop="renderingTime"
-          label="渲染时长"
-          sortable
-          show-overflow-tooltip
-          width="170"/>
-        <!--渲染费用（金币）-->
-        <el-table-column
-          prop="renderingCost"
-          label="渲染费用（金币）"
-          sortable
-          show-overflow-tooltip
-          width="150"/>
-        <!--帧范围-->
-        <el-table-column
-          v-if="zone == 1"
-          prop="frameRange"
-          label="帧范围"
-          sortable
-          show-overflow-tooltip
-          width="110"/>
-        <!--间隔帧-->
-        <el-table-column
-          v-if="zone == 1"
-          prop="intervalFrame"
-          label="间隔帧"
-          sortable
-          show-overflow-tooltip
-          width="86"/>
-        <!--相机-->
-        <el-table-column
-          prop="camera"
-          width="142"
-          sortable
-          show-overflow-tooltip
-          label="相机"/>
-        <!--层名-->
-        <el-table-column
-          v-if="zone == 1"
-          prop="layerName"
-          label="层名"
-          sortable
-          show-overflow-tooltip
-          width="164"/>
-        <!--下载情况-->
-        <el-table-column
-          v-if="false"
-          label="下载情况"
-          show-overflow-tooltip
-          :filters="table.downloadStatusList"
-          column-key="download"
-          width="116">
-          <template slot-scope="scope">
+        </template>
+      </el-table-column>
+      <!--所属项目-->
+      <el-table-column
+        prop="viewProject"
+        label="所属项目"
+        show-overflow-tooltip
+        column-key="task"
+        :filters="table.itemList"
+        width="186"/>
+      <!--渲染中-->
+      <el-table-column
+        prop="rendering"
+        sortable
+        width="86"
+        show-overflow-tooltip
+        label="渲染中"/>
+      <!--等待-->
+      <el-table-column
+        prop="wait"
+        sortable
+        width="86"
+        show-overflow-tooltip
+        label="等待"/>
+      <!--暂停-->
+      <el-table-column
+        prop="timeOut"
+        sortable
+        width="86"
+        show-overflow-tooltip
+        label="暂停"/>
+      <!--完成-->
+      <el-table-column
+        prop="carryOut"
+        sortable
+        width="86"
+        show-overflow-tooltip
+        label="完成"/>
+      <!--失败-->
+      <el-table-column
+        prop="failure"
+        label="失败"
+        width="86"
+        show-overflow-tooltip
+        sortable/>
+      <!--渲染时长-->
+      <el-table-column
+        prop="renderingTime"
+        label="渲染时长"
+        sortable
+        show-overflow-tooltip
+        width="170"/>
+      <!--渲染费用（金币）-->
+      <el-table-column
+        prop="renderingCost"
+        label="渲染费用（金币）"
+        sortable
+        show-overflow-tooltip
+        width="150"/>
+      <!--帧范围-->
+      <el-table-column
+        v-if="zone == 1"
+        prop="frameRange"
+        label="帧范围"
+        sortable
+        show-overflow-tooltip
+        width="110"/>
+      <!--间隔帧-->
+      <el-table-column
+        v-if="zone == 1"
+        prop="intervalFrame"
+        label="间隔帧"
+        sortable
+        show-overflow-tooltip
+        width="86"/>
+      <!--相机-->
+      <el-table-column
+        prop="camera"
+        width="142"
+        sortable
+        show-overflow-tooltip
+        label="相机"/>
+      <!--层名-->
+      <el-table-column
+        v-if="zone == 1"
+        prop="layerName"
+        label="层名"
+        sortable
+        show-overflow-tooltip
+        width="164"/>
+      <!--下载情况-->
+      <el-table-column
+        v-if="false"
+        label="下载情况"
+        show-overflow-tooltip
+        :filters="table.downloadStatusList"
+        column-key="download"
+        width="116">
+        <template slot-scope="scope">
             <span v-if="scope.row.downloadStatus == '待下载'" style="color: #F90023">
               {{ scope.row.downloadStatus }}
             </span>
-            <span v-if="scope.row.downloadStatus == '已下载'" style="color: rgba(0, 97, 255, 1)">
+          <span v-if="scope.row.downloadStatus == '已下载'" style="color: rgba(0, 97, 255, 1)">
               {{ scope.row.downloadStatus }}
             </span>
-            <span v-if="scope.row.downloadStatus == '部分下载'" style="color: #E5C78A">
+          <span v-if="scope.row.downloadStatus == '部分下载'" style="color: #E5C78A">
               {{ scope.row.downloadStatus }}
             </span>
-          </template>
-        </el-table-column>
-        <!--渲染开始时间-->
-        <el-table-column
-          prop="renderingStartTime"
-          label="渲染开始时间"
-          sortable
-          show-overflow-tooltip
-          width="174"/>
-        <!--渲染结束时间-->
-        <el-table-column
-          prop="renderingEndTime"
-          label="渲染结束时间"
-          sortable
-          show-overflow-tooltip
-          width="174"/>
-        <!--创建人-->
-        <el-table-column
-          prop="founder"
-          label="创建人"
-          show-overflow-tooltip
-          column-key="founder"
-          :filters="table.usersList"
-          width="100"/>
-        <!--创建时间-->
-        <el-table-column
-          prop="creationTime"
-          label="创建时间"
-          sortable
-          show-overflow-tooltip
-          width="174"/>
+        </template>
+      </el-table-column>
+      <!--渲染开始时间-->
+      <el-table-column
+        prop="renderingStartTime"
+        label="渲染开始时间"
+        sortable
+        show-overflow-tooltip
+        width="174"/>
+      <!--渲染结束时间-->
+      <el-table-column
+        prop="renderingEndTime"
+        label="渲染结束时间"
+        sortable
+        show-overflow-tooltip
+        width="174"/>
+      <!--创建人-->
+      <el-table-column
+        prop="founder"
+        label="创建人"
+        show-overflow-tooltip
+        column-key="founder"
+        :filters="table.usersList"
+        width="100"/>
+      <!--创建时间-->
+      <el-table-column
+        prop="creationTime"
+        label="创建时间"
+        sortable
+        show-overflow-tooltip
+        width="174"/>
 
-      </el-table>
-    </div>
+    </el-table>
     <!--暂无数据-->
     <div class="nullTableData" v-if="!table.RenderDownloadData.length">
       <img src="@/icons/tableDataNull.png" alt="">
@@ -230,6 +228,11 @@
       </el-pagination>
       <div class="farm-primary-form-btn btn" @click="getList(null, true)">
         <span>{{ refresh }}</span>
+      </div>
+      <div class="gz" @click="openPlugin">
+        <img src="@/icons/gz-black.png" class="d">
+        <img src="@/icons/gz-blue.png" class="h">
+        <span>{{ $t('transportBtn') }}</span>
       </div>
     </div>
     <!--详情抽屉-->
@@ -406,6 +409,11 @@
       }
     },
     methods: {
+      // 打开【传输列表】
+      openPlugin() {
+        if (this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_SEND', 'open')
+        else this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.$store.commit('WEBSOCKET_PLUGIN_SEND', 'open'))
+      },
       // 获取项目列表 暂时关闭
       async getTaskItemListFun() {
         let data = await getTaskItemList()
@@ -856,7 +864,9 @@
             secretChild: children.length == 1 ? children : null,   // 伪child列表
           }
         })
-        this.table.usersList = [...usersList].map(curr => { return {'text': curr, 'value': curr}})  // 创建人列表
+        this.table.usersList = [...usersList].map(curr => {
+          return {'text': curr, 'value': curr}
+        })  // 创建人列表
         if (obj && obj.taskUuid) this.$nextTick(() => {
           this.$refs.renderTableImportant.toggleRowSelection(this.table.RenderDownloadData.find(item => item['taskUuid'] == obj['taskUuid']), true)
         })

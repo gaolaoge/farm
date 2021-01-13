@@ -1,5 +1,5 @@
 <template>
-  <div class="Navbar-wrapper">
+  <div class="Navbar-wrapper" ref="navbar">
     <svg height="100%" width="130" class="svg">
       <defs>
         <radialGradient id="gg" x1="0" y1="0" x2="0" y2="100%">
@@ -60,8 +60,8 @@
     <el-dialog :visible.sync="createTaskDialog"
                :show-close=false
                :destroy-on-close=true
-               top="8vh"
                @opened="r()"
+               top="8vh"
                width="862px">
       <newTask @closeDialogFun="closeDialogFun" ref="dialog"/>
     </el-dialog>
@@ -102,6 +102,7 @@
           }
         ],
         systemList: [
+          // 统计
           // {
           //   link: '/statisticsM',
           //   iconUrl: require('@/icons/console-icon-statistics-h.png'),
@@ -143,7 +144,7 @@
       },
       // 背景 svg
       createSVG() {
-        this.d = `M 0 0 H 100 A 20 20 0 0 1 120 20 V 552 C 120 567 123 569 114 598 C 104 627 52 632 52 676 C 51 735 120 723 120 786 V ${document.body.clientHeight - 20} A 20 20 0 0 1 100 ${document.body.clientHeight} H 0 Z`
+        this.d = `M 0 0 H 100 A 20 20 0 0 1 120 20 V 552 C 120 567 123 569 114 598 C 104 627 52 632 52 676 C 51 735 120 723 120 786 V ${this.$refs.navbar.offsetHeight - 20} A 20 20 0 0 1 100 ${this.$refs.navbar.offsetHeight} H 0 Z`
       }
     },
     mounted() {
@@ -178,12 +179,12 @@
   .Navbar-wrapper {
     position: relative;
     width: 120px;
-    height: 100vh;
     min-height: 950px;
     border-radius: 0px 20px 20px 0px;
     display: flex;
     flex-direction: column;
     align-items: center;
+
 
     .svg {
       position: absolute;

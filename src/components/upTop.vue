@@ -209,10 +209,10 @@
     <!--充值窗口-->
     <el-dialog title="" width="600px" :visible.sync="dialogNode">
       <header class="dl_header">
-        <span>{{ dialogNodeText.title }}</span>
+        <span class="title">{{ dialogNodeText.title }}</span>
         <img src="@/icons/shutDialogIcon.png" class="closeIcon" @click="dialogNode = false">
       </header>
-      <div class="dl_wrapper">
+      <div class="dl_wrapper2">
         <p class="f">亲爱的 {{ user.account }} ，您好！</p>
         <p class="f s">因服务更新原因，烦请您联系客服进行线下充值～</p>
         <div class="e">
@@ -733,29 +733,7 @@
     }
   }
 
-  .dl_header {
-    height: 36px;
-    text-align: center;
-    background-color: rgba(241, 244, 249, 1);
-    box-shadow: 0px 1px 6px 0px rgba(27, 83, 244, 0.3);
-    padding: 0px 30px;
-    box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    span {
-      font-size: 14px;
-      font-weight: 600;
-      color: rgba(22, 29, 37, 1);
-    }
-
-    img {
-      cursor: pointer;
-    }
-  }
-
-  .dl_wrapper {
+  .dl_wrapper2 {
     display: flex;
     flex-direction: column;
     align-items: flex-start;

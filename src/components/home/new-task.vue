@@ -1,11 +1,8 @@
 <template>
   <div class="newTask">
     <header class="header">
-      <span class="title">
-        {{ title }}
-      </span>
+      <span class="title">{{ title }}</span>
       <img src="@/icons/shutDialogIcon.png"
-           alt=""
            @click="closeDialogFun"
            class="closeBtn">
     </header>

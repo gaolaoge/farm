@@ -8,11 +8,6 @@
     <div class="mm" v-show="inHome">
       <iv/>
     </div>
-    <div class="gz" v-show="showGZ" @click="openPlugin">
-      <img src="@/icons/gz-black.png" alt="" class="d">
-      <img src="@/icons/gz-blue.png" alt="" class="h">
-      <span>{{ $t('transportBtn') }}</span>
-    </div>
     <!--帧大图-->
     <div class="thumb" v-show="thumb.showLargeThumbWin" @click="$store.commit('setShowThumb', false)">
       <img :src="thumb.LargeImgHref" alt="">
@@ -23,7 +18,7 @@
                top="34vh"
                width="360px">
       <header class="dl_header">
-        <span>{{ pluginDialog_.title }}</span>
+        <span class="title">{{ pluginDialog_.title }}</span>
         <img src="@/icons/shutDialogIcon.png" class="closeIcon" @click="$store.commit('openPluginDialog', false)">
       </header>
       <div class="dl_wrapper">
@@ -43,7 +38,7 @@
                top="30vh"
                width="520px">
       <header class="dl_header">
-        <span>{{ remoteLoginDialog.title }}</span>
+        <span class="title">{{ remoteLoginDialog.title }}</span>
         <img src="@/icons/shutDialogIcon.png" class="closeIcon" @click="shutRemoteLogin(false)">
       </header>
       <div class="dl_wrapper">
@@ -63,6 +58,38 @@
         </div>
       </div>
     </el-dialog>
+    <!--充值通知-->
+    <el-dialog :visible.sync="rechargeDialog.show"
+               :show-close=false
+               :destroy-on-close=true
+               width="548px">
+      <section>
+        <header class="dl_header">
+          <span class="title">{{ rechargeDialog.title }}</span>
+          <img src="@/icons/shutDialogIcon.png"
+               class="closeIcon"
+               @click="rechargeDialog.show = false">
+        </header>
+        <div class="dl_wrapper">
+          <div class="body">
+            <p class="header">{{ rechargeDialog.header1 }}{{ user.account }}{{ rechargeDialog.header2 }}</p>
+            <!--欠费-->
+            <p class="contant">
+              {{ rechargeDialog.contant1 }}{{ user.balance }}{{ rechargeDialog.contant2 }}{{ rechargeDialog.contant3 }}
+            </p>
+            <!--余额为零-->
+            <p class="contant">
+              {{ rechargeDialog.contant4 }}{{ user.balance }}{{ rechargeDialog.contant2 }}{{ rechargeDialog.contant3 }}
+            </p>
+            <div class="download_btn z" @click="shutRemoteLogin(false)">
+              <span>{{ rechargeDialog.btn }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </el-dialog>
+    <!--余额不足通知-->
+
   </div>
 </template>
 
@@ -107,6 +134,17 @@
           contant4: '修改密码',
           contant5: '。',
           btn: '重新登录'
+        },
+        rechargeDialog: {
+          show: true,
+          title: '充值通知',
+          header1: '亲爱的',
+          header2: '，您好！',
+          contant1: '您当前账户已欠费',
+          contant4: '您当前账户余额为',
+          contant2: '金币，烦请您先充值后在进行【',
+          contant3: '】操作。',
+          btn: '立即充值'
         }
       }
     },
@@ -157,11 +195,6 @@
         // son.src = 'jhzy://'
         son.src= 'cloudtransfer://'
         son.contentDocument.open()
-      },
-      // 打开【传输列表】
-      openPlugin() {
-        if (this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_SEND', 'open')
-        else this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.$store.commit('WEBSOCKET_PLUGIN_SEND', 'open'))
       }
     }
   }
@@ -173,9 +206,9 @@
     background-color: rgba(241, 244, 249, 1);
     display: flex;
     flex-wrap: nowrap;
-    height: 100vh;
-    min-height: 810px;
-    width: 100vw;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
 
     .navbar {
       flex-shrink: 0;
@@ -184,7 +217,7 @@
     .main {
       flex-grow: 1;
       flex-shrink: 1;
-      width: calc(100vw - 120px);
+      width: calc(100% - 120px);
     }
 
     .mm {
@@ -192,47 +225,6 @@
       width: 366px;
       height: 100%;
       padding: 20px 20px 0px 0px;
-    }
-
-    .gz {
-      position: fixed;
-      bottom: 34px;
-      right: 34px;
-      width: 86px;
-      height: 24px;
-      border-radius: 2px;
-      border: 1px solid rgba(22, 29, 37, 0.19);
-      background-color: rgba(255, 255, 255, 1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-
-      span {
-        font-size: 12px;
-        font-family: PingFangSC-Regular, PingFang SC;
-        color: rgba(22, 29, 37, 0.8);
-      }
-
-      .h {
-        display: none;
-      }
-
-      &:hover {
-        border: 1px solid rgba(27, 83, 244, 0.19);
-
-        span {
-          color: rgba(27, 83, 244, 1);
-        }
-
-        .d {
-          display: none;
-        }
-
-        .h {
-          display: inline-block;
-        }
-      }
     }
   }
 
@@ -256,25 +248,9 @@
   }
 
   .dl_header {
-    height: 36px;
     text-align: center;
-    background-color: rgba(241, 244, 249, 1);
-    box-shadow: 0px 1px 6px 0px rgba(27, 83, 244, 0.3);
     padding: 0px 30px;
     box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    span {
-      font-size: 14px;
-      font-weight: 600;
-      color: rgba(22, 29, 37, 1);
-    }
-
-    img {
-      cursor: pointer;
-    }
   }
 
   .dl_wrapper {
