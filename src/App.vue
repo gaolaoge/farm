@@ -27,7 +27,7 @@ export default {
     height: 100vh;
     width: 100vw;
     min-height: 950px;
-    min-width: 1920px;
+    min-width: 1500px;
   }
 
 

@@ -46,7 +46,15 @@
             <img src="@/icons/txt-a-icon.png" v-else-if="scope.row.fileType == 'txt'" class="a-icon">
             <img src="@/icons/html-a-icon.png" v-else-if="scope.row.fileType == 'html'" class="a-icon">
             <img src="@/icons/file-a-icon.png" v-else class="a-icon">
-            <span>{{ scope.row.fileName }}</span>
+            <div class="fileNameBox" :style="{'width': scope.row.fileName.length * 10 + 'px'}">
+              <input type="text"
+                     :ref="'renameInput-' + scope.row.index_"
+                     v-model="scope.row.nameInput"
+                     :class="['renameInputFromTab', {'rename': scope.row.rename}]"
+                     @keyup.center="confirmToRename(scope.row)"
+                     @blur="confirmToRename(scope.row)">
+              <span :class="['name', {'rename': scope.row.rename}]">{{ scope.row.fileName }}</span>
+            </div>
             <span v-show="scope.row.ing">.cloudtransfer.uploading</span>
           </template>
         </el-table-column>
@@ -251,18 +259,20 @@
             this.nav = nav
             this.path = data.other == '' ? '/' : data.other
 
-            this.table.tableData = data.data.map(item => {
+            this.table.tableData = data.data.map((item, index_) => {
               return Object.assign(item, {
                 'updateTime': createDateFun(new Date(item.updateTime)),
                 'completedTime': item.completedTime,
                 'validPeriod': consum(item.validPeriod),
                 'fileName': item.fileType == '文件夹' ? item.fileName.slice(0, item.fileName.length - 1) : item.fileName,
+                'nameInput': item.fileType == '文件夹' ? item.fileName.slice(0, item.fileName.length - 1) : item.fileName,
                 'position': this.path + item.fileName,
                 'ing': item.completedTime != 0 ? false : true,
-                'size': item.fileType == '文件夹' ? '-' : getFileSize(item.size)
+                'size': item.fileType == '文件夹' ? '-' : getFileSize(item.size),
+                'rename': false,
+                index_
               })
             })
-            console.log(this.table.tableData)
           } else if (data.msg == '601' && this.dialogVisible) {
             // 网盘tree
             let x = data.data.map(item => {
@@ -290,7 +300,10 @@
             messageFun('success', '操作成功')
             this.shutDialog()
             this.getAssetsCatalog(this.path, this.searchInputVal)
-          } else if (data.msg == '6052' || data.msg == '6062' || data.msg == '6032' || data.msg == '6072') messageFun('info', '选定目标内已存在相同名称文件或文件夹，操作失败')
+          } else if (data.msg == '6072') {
+            messageFun('error', '文件名重复，请重新输入')
+            this.getAssetsCatalog(this.path, this.searchInputVal)
+          } else if (data.msg == '6052' || data.msg == '6062' || data.msg == '6032') messageFun('info', '选定目标内已存在相同名称文件或文件夹，操作失败')
           else if (data.msg == '6081') messageFun('info', '解压失败')
           else if (data.msg == '6053' || data.msg == '6063' || data.msg == '6073' || data.msg == '6082') messageFun('error', '报错，操作失败')
           else if (data.msg == '6083') {
@@ -477,25 +490,29 @@
           this.dl.dlType = 'copy'
         }
       },
-      // 重命名
+      // 开启重命名视图
       rename() {
-        if (this.table.selectionList.length != 1) return
-        else if (this.table.selectionList[0]['ing']) messageFun('info', '目标正在上传中，无法操作')
-        else this.$prompt('请输入新名称', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-            inputPattern: /^(?!.*[\\\/:*?"'<>|].*).*[^\.]$/i,
-            inputErrorMessage: '名称内不可包含特殊字符\\\/:*?"<>|且不可以.结尾'
-          })
-            .then(({value}) => {
-              this.$store.commit('WEBSOCKET_BACKS_SEND', {
-                  'code': 607,
-                  'customerUuid': this.user.id,
-                  'renameFilePath': this.path + this.table.selectionList[0]['fileName'],   // 被重命名的文件路径
-                  'newFileName': value                                                     // 新文件名
-                })
-            })
-            .catch(() => null)
+        let {selectionList} = this.table
+        if (selectionList.length != 1) return false
+        else if (selectionList[0]['ing']) messageFun('info', '目标正在上传中，无法操作')
+        else {
+          selectionList[0]['rename'] = true
+          this.$refs['renameInput-' + selectionList[0]['index_']].focus()
+        }
+      },
+      // 重命名
+      confirmToRename(row) {
+        row.rename = false
+        if (row.nameInput == row.fileName) return false
+        else if (!/^(?!.*[\\\/:*?"'<>|].*).*[^\.]$/i.test(row.nameInput)) {
+          messageFun('error', '名称内不可包含特殊字符\\\/:*?"<>|且不可以.结尾')
+          row.nameInput = row.fileName
+        } else this.$store.commit('WEBSOCKET_BACKS_SEND', {
+          'code': 607,
+          'customerUuid': this.user.id,
+          'renameFilePath': this.path + row['fileName'],   // 被重命名的文件路径
+          'newFileName': row.nameInput                     // 新文件名
+        })
       },
       // 解压
       unzip(password) {
@@ -539,7 +556,8 @@
           keyword,
           filePath
         })
-      }
+      },
+
     },
     mounted() {
       this.getAssetsCatalog('', this.searchInputVal)
@@ -554,6 +572,48 @@
 </script>
 
 <style lang="less" scoped>
+  .fileNameBox {
+    position: relative;
+    display: inline-block;
+    height: 20px;
+    vertical-align: middle;
+
+    .renameInputFromTab {
+      position: absolute;
+      left: 1px;
+      width: 210px;
+      background-color: transparent;
+      border: 0px;
+      border-bottom: 1px solid rgba(27, 83, 244, 1);
+      color: rgba(22, 29, 37, 0.79);
+      font-size: 14px;
+      line-height: 20px;
+      font-family: PingFangSC-Regular, PingFang SC;
+      opacity: 0;
+      z-index: 1;
+      outline: none;
+
+      &.rename {
+        opacity: 1;
+      }
+    }
+
+    span {
+      position: absolute;
+      left: 1px;
+      color: rgba(22, 29, 37, 0.79);
+      /*color: tomato;*/
+      font-size: 14px;
+      line-height: 20px;
+      font-family: PingFangSC-Regular, PingFang SC;
+      opacity: 1;
+
+      &.rename {
+        opacity: 0;
+      }
+    }
+  }
+
   .a-icon {
     vertical-align: middle;
   }

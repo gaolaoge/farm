@@ -260,7 +260,7 @@
     flex-wrap: nowrap;
     width: 100%;
     height: 100%;
-    overflow: auto;
+    overflow: hidden;
 
     .navbar {
       flex-shrink: 0;
@@ -392,7 +392,7 @@
     .balanceOverdue {
       display: inline-block;
       padding: 0px 4px;
-      font-size: 19px;
+      font-size: 18px;
     }
     .balanceEmpty {
       color: RGBA(255, 191, 0, 1);

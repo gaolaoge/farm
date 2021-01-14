@@ -191,7 +191,7 @@
           ],
           moreBtnText: this.$t('assets.moreBtnText'),
           moreBtnIcon: require('@/icons/more-btn.png'),
-          moreBtnList: this.$t('assets.moreBtnList'),    // ['移动到', '复制到', '重命名', '解压']
+          moreBtnList: this.$t('assets.moreBtnList'),    // ['移动到', '复制到', '解压']
           showMoreBtnList: false,
           howToCreateBtn: this.$t('assets.howToCreateBtn'),  // ['手动创建资产目录', '自动创建资产目录']
           howToCreateIindex: '0'
