@@ -14,8 +14,8 @@
              v-for="(item,index) in btnGroup.uploadBtnGroup"
              @click="uploadOperating(item['text'])"
              :key="'uploadBtn-' + index">
-          <img :src="item.initialIcon" alt="" v-if="item.initialIcon" class="btnIcon default">
-          <img :src="item.selectedIcon" alt="" v-if="item.selectedIcon" class="btnIcon hover">
+          <img :src="item.initialIcon" v-if="item.initialIcon" class="btnIcon default">
+          <img :src="item.selectedIcon" v-if="item.selectedIcon" class="btnIcon hover">
           <span>
             {{ item['text'] }}
           </span>
@@ -75,7 +75,6 @@
                  placeholder="输入场景名、任务ID">
           <!--搜索按钮-->
           <img src="@/icons/global-search-icon.png"
-               alt=""
                class="searchIcon"
                @click="searchRenderInput">
         </div>

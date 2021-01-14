@@ -464,8 +464,10 @@
   import {
     consum,
     createDateFun,
-    itemDownloadStatus
-  } from '@/assets/common.js'
+    itemDownloadStatus,
+    updateBalance,
+    createThrowInfo
+  } from '@/assets/common'
   import {mapState} from 'vuex'
 
   export default {
@@ -816,9 +818,23 @@
             break
         }
       },
-      // 渲染结果 - 主 - 操作 - 开始
+      // 渲染结果 - 主 - 操作 - 【开始】前预判
       async operateStart() {
         if (this.result.operateBtnList[0]['classState']) return false
+        // 判断余额是否充足
+        updateBalance('开始')
+          .then(data => {
+            if (data) this.operateStartReal()
+          })
+          .catch(() => createThrowInfo({
+            type:'error',
+            title:'获取余额情况失败',
+            info:'在层任务【开始】操作前判断',
+            site:'components/task/drawer/result-cardM:822'
+          }))
+      },
+      // 渲染结果 - 主 - 操作 - 开始
+      async operateStartReal() {
         let data = await itemStart({
           "instructType": 11,
           "frameUuidList": this.result.selectionResult.map(curr => curr.frameTaskUuid)
@@ -841,20 +857,28 @@
           this.getRenderItemMoreTableF()
         } else messageFun('error', '报错，操作失败')
       },
-      // 渲染结果 - 主 - 操作 - 下载完成帧
+      // 渲染结果 - 主 - 操作 - 【下载完成帧】前预判
       operateDownloadFrame() {
         if (this.result.operateBtnList[2]['classState']) return false
         if (!this.result.selectionResult.length) return false
-        if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.operateDownloadingFrame())
-        else this.operateDownloadingFrame()
-        // let data = await seeBalance()
-        // if (data.data.code == 1001) {
-        //   messageFun('error', `当前账户余额为${data.data.data}，请先进行充值！`);
-        //   return false
-        // }
+        if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => next())
+        else next()
+        function next() {
+          // 判断余额是否充足
+          updateBalance('下载完成帧')
+            .then(data => {
+              if (data) this.operateDownloadFrameReal()
+            })
+            .catch(() => createThrowInfo({
+              type:'error',
+              title:'获取余额情况失败',
+              info:'在层任务【下载完成帧】操作前判断',
+              site:'components/task/drawer/result-cardM:847'
+            }))
+        }
       },
       // 渲染结果 - 主 - 操作 - 下载完成帧
-      async operateDownloadingFrame() {
+      async operateDownloadFrameReal() {
         let fileList = this.result.selectionResult.map(item => {
           let index = item['outFilePath'].indexOf(item.taskTaskUuid)
           return {
@@ -871,9 +895,23 @@
           fileList
         })
       },
-      // 渲染结果 - 主 - 操作 - 重新渲染
+      // 渲染结果 - 主 - 操作 - 【重新渲染】前预判
       operateRenderAgain() {
         if (this.result.operateBtnList[3]['classState']) return false
+        // 判断余额是否充足
+        updateBalance('重新渲染')
+          .then(data => {
+            if (data) this.operateRenderAgainReal()
+          })
+          .catch(() => createThrowInfo({
+            type:'error',
+            title:'获取余额情况失败',
+            info:'在层任务【重新渲染】操作前判断',
+            site:'components/task/drawer/result-cardM:899'
+          }))
+      },
+      // 渲染结果 - 主 - 操作 - 重新渲染
+      operateRenderAgainReal() {
         this.$confirm('此操作将重新渲染选中项, 是否继续?', '提示信息', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',

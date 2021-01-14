@@ -14,7 +14,7 @@
       </defs>
       <path :d="d" stroke="url(#gg)" stroke-width="5" fill="rgba(255,255,255,1)"/>
     </svg>
-    <img src="@/icons/logo2.png" alt="" class="mainLogo" @click="$router.push('/')">
+    <img src="@/icons/logo2.png" class="mainLogo" @click="$router.push('/')">
     <div class="navList">
       <ul>
         <li v-for="(item,index) in navList"
@@ -25,8 +25,8 @@
             ]"
             @click="jump(index,item.link)">
           <div class="ib">
-            <img :src="item.iconUrl" alt="" class="selectIcon">
-            <img :src="item.iconsUrlDefault" alt="" class="defaultIcon">
+            <img :src="item.iconUrl" class="selectIcon">
+            <img :src="item.iconsUrlDefault" class="defaultIcon">
           </div>
           <span class="text">
             {{ item.text }}
@@ -35,7 +35,7 @@
       </ul>
     </div>
     <div class="addTask" @click="createTask">
-      <img src="@/icons/addIcon-Whit.png" alt="" class="addTaskIcon">
+      <img src="@/icons/addIcon-Whit.png" class="addTaskIcon">
     </div>
     <div class="systemList">
       <ul>
@@ -47,8 +47,8 @@
             ]"
             @click="jump(index + 4,item.link)">
           <div class="ib">
-            <img :src="item.iconUrl" alt="" class="selectIcon">
-            <img :src="item.iconsUrlDefault" alt="" class="defaultIcon">
+            <img :src="item.iconUrl" class="selectIcon">
+            <img :src="item.iconsUrlDefault" class="defaultIcon">
           </div>
           <span class="text">
             {{ item.text }}
@@ -70,6 +70,13 @@
 
 <script>
   import newTask from '@/components/home/new-task'
+  import {
+    updateBalance,
+    createThrowInfo
+  } from '@/assets/common'
+  import {
+    mapState
+  } from 'vuex'
 
   export default {
     name: 'Navbar',
@@ -136,7 +143,17 @@
       },
       // 新建任务
       createTask() {
-        this.createTaskDialog = true
+        // 判断余额是否充足
+        updateBalance('新建任务')
+          .then(data => {
+            if(data) this.createTaskDialog = true
+          })
+          .catch(() => createThrowInfo({
+            type:'error',
+            title:'获取余额情况失败',
+            info:'在【新建任务】操作前判断',
+            site:'layout/components/Navbar:145'
+          }))
       },
       // 关闭新建任务弹窗
       closeDialogFun() {
@@ -171,6 +188,9 @@
         },
         immediate: true
       }
+    },
+    computed: {
+      ...mapState(['user'])
     }
   }
 </script>

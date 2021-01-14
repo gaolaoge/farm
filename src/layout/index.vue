@@ -10,7 +10,7 @@
     </div>
     <!--帧大图-->
     <div class="thumb" v-show="thumb.showLargeThumbWin" @click="$store.commit('setShowThumb', false)">
-      <img :src="thumb.LargeImgHref" alt="">
+      <img :src="thumb.LargeImgHref">
     </div>
     <!--打开插件窗口-->
     <el-dialog :visible.sync="pluginDialog"
@@ -58,10 +58,11 @@
         </div>
       </div>
     </el-dialog>
-    <!--充值通知-->
+    <!--金币余额不足通知-->
     <el-dialog :visible.sync="rechargeDialog.show"
                :show-close=false
                :destroy-on-close=true
+               top="30vh"
                width="548px">
       <section>
         <header class="dl_header">
@@ -74,21 +75,29 @@
           <div class="body">
             <p class="header">{{ rechargeDialog.header1 }}{{ user.account }}{{ rechargeDialog.header2 }}</p>
             <!--欠费-->
-            <p class="contant">
-              {{ rechargeDialog.contant1 }}{{ user.balance }}{{ rechargeDialog.contant2 }}{{ rechargeDialog.contant3 }}
+            <p class="contant" v-if="rechargeDialog.state == 'overdue'">
+              {{ rechargeDialog.contant1 }}
+              <span class="balanceOverdue">{{ user.balance }}</span>
+              {{ rechargeDialog.contant2 }}
+              {{ rechargeDialog.action }}
+              {{ rechargeDialog.contant3 }}
             </p>
             <!--余额为零-->
-            <p class="contant">
-              {{ rechargeDialog.contant4 }}{{ user.balance }}{{ rechargeDialog.contant2 }}{{ rechargeDialog.contant3 }}
+            <p class="contant" v-if="rechargeDialog.state == 'empty'">
+              {{ rechargeDialog.contant4 }}
+              <span class="balanceEmpty">{{ user.balance }}</span>
+              {{ rechargeDialog.contant2 }}
+              {{ rechargeDialog.action }}
+              {{ rechargeDialog.contant3 }}
             </p>
-            <div class="download_btn z" @click="shutRemoteLogin(false)">
+            <div class="download_btn z" @click="goToUpTopPage">
               <span>{{ rechargeDialog.btn }}</span>
             </div>
           </div>
         </div>
       </section>
     </el-dialog>
-    <!--余额不足通知-->
+    <!--容量不足通知-->
 
   </div>
 </template>
@@ -115,6 +124,7 @@
       return {
         inHome: false,
         showGZ: false,
+        // 下载或启动插件win
         pluginDialog_: {
           title: '提示信息',
           dialogMainText: '需要安装传输插件才能进行文件传输若已安装过插件，请点此',
@@ -122,6 +132,7 @@
           downloadText: '下载传输插件',
           warnInfo: '若已启用，依然无法传输，\n' + '请联系24小时在线客服18560651927',
         },
+        // 下线通知win
         remoteLoginDialog: {
           show: false,
           title: '下线通知',
@@ -135,8 +146,11 @@
           contant5: '。',
           btn: '重新登录'
         },
+        // 金币余额不足win
         rechargeDialog: {
-          show: true,
+          show: false,
+          state: null,
+          action: null,    // 触发验证的动作
           title: '充值通知',
           header1: '亲爱的',
           header2: '，您好！',
@@ -155,7 +169,18 @@
       iv
     },
     computed: {
-      ...mapState(['login', 'user', 'thumb', 'socket_plugin', 'pluginDialog', 'remoteLoginDate', 'socket_backS_msg'])
+      ...mapState([
+        'login',
+        'user',
+        'thumb',
+        'socket_plugin',
+        'pluginDialog',
+        'remoteLoginDate',
+        'socket_backS_msg',
+        'openOverdueBillsWin',    // 打开已欠费窗口
+        'openBalanceIsEmptyWin',  // 打开余额为零窗口
+        'openCapacityIsLessWin'   // 打开容量不足窗口
+      ])
     },
     watch: {
       '$route': {
@@ -168,7 +193,7 @@
         immediate: true
       },
       'remoteLoginDate': function (date) {
-        if(!date) return false
+        if (!date) return false
         this.remoteLoginDialog.date = createDateFun(new Date(date), null, true)
         this.remoteLoginDialog.show = true
       },
@@ -178,11 +203,38 @@
           if (data.code == 858) setTimeout(() => getInfo(), 1000)
         },
       },
+      'openOverdueBillsWin': function (obj) {
+        if (!obj.bool) return false
+        this.rechargeDialog.show = true
+        this.rechargeDialog.state = 'overdue'
+        this.rechargeDialog.action = obj.action
+        this.$store.commit('hasBeenOverdueBills', false)
+      },
+      'openBalanceIsEmptyWin': function (obj) {
+        if (!obj.bool) return false
+        this.rechargeDialog.show = true
+        this.rechargeDialog.state = 'empty'
+        this.rechargeDialog.action = obj.action
+        this.$store.commit('theBalanceIsZero', false)
+      },
+      'openCapacityIsLessWin': function (obj) {
+        if (!obj.bool) return false
+        this.rechargeDialog.show = true
+        this.$store.commit('theCapacityIsLess', false)
+      },
     },
     methods: {
-      shutRemoteLogin(editPS){
+      // 转到充值页面
+      goToUpTopPage() {
+        this.rechargeDialog.show = false
+        this.$router.push({name: 'upTop'})
+      },
+      shutRemoteLogin(editPS) {
         this.remoteLoginDialog.show = false
-        editPS ? this.$router.push({name: 'login', params: {modify: true}}) : this.$router.push({name: 'login', params: {modify: false}})
+        editPS ? this.$router.push({name: 'login', params: {modify: true}}) : this.$router.push({
+          name: 'login',
+          params: {modify: false}
+        })
       },
       // 跳转到下载
       w() {
@@ -193,7 +245,7 @@
         let son = document.createElement('IFRAME')
         document.body.appendChild(son)
         // son.src = 'jhzy://'
-        son.src= 'cloudtransfer://'
+        son.src = 'cloudtransfer://'
         son.contentDocument.open()
       }
     }
@@ -330,6 +382,23 @@
         cursor: pointer;
         text-decoration: underline;
       }
+    }
+
+    .balanceOverdue {
+
+    }
+
+    .balanceEmpty,
+    .balanceOverdue {
+      display: inline-block;
+      padding: 0px 4px;
+      font-size: 19px;
+    }
+    .balanceEmpty {
+      color: RGBA(255, 191, 0, 1);
+    }
+    .balanceOverdue {
+      color: RGBA(255, 62, 77, 1);
     }
   }
 

@@ -25,9 +25,9 @@
              v-for="(item,index) in btnGroup.myUploadBtnGroup"
              :key="index"
              @click="operating('upload', item['text'])">
-          <img :src="item.initialIcon" alt="" v-if="item.initialIcon" class="btnIcon default"
+          <img :src="item.initialIcon" v-if="item.initialIcon" class="btnIcon default"
                :style="{'transform': item.css }">
-          <img :src="item.selectedIcon" alt="" v-if="item.selectedIcon" class="btnIcon hover"
+          <img :src="item.selectedIcon" v-if="item.selectedIcon" class="btnIcon hover"
                :style="{'transform': item.css }">
           <span>
             {{ item['text'] }}
@@ -82,7 +82,6 @@
                  @keyup.enter="searchFun('upload')"
                  placeholder="文件名">
           <img src="@/icons/global-search-icon.png"
-               alt=""
                class="searchIcon"
                @click="searchFun('upload')">
         </div>
@@ -93,7 +92,6 @@
                  @keyup.enter="searchFun('render')"
                  placeholder="文件名">
           <img src="@/icons/global-search-icon.png"
-               alt=""
                class="searchIcon"
                @click="searchFun('render')">
         </div>

@@ -3,12 +3,12 @@
     <!--公共部分-->
     <div class="personInfo">
       <div class="info">
-        <img :src="user.avatar ? user.avatar : require('@/assets/userImg.png')" alt="" class="avatar">
+        <img :src="user.avatar ? user.avatar : require('@/assets/userImg.png')" class="avatar">
         <div class="name">
           {{ user.name }}
         </div>
         <div class="level">
-          <img :src="info.levelIcon" alt="" class="i">
+          <img :src="info.levelIcon" class="i">
           <span>
             {{ user.level }}
           </span>

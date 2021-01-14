@@ -41,7 +41,7 @@
           <div class="sw" v-for="(item,index) in statistics.list" :key="index">
             <div class="dd">
               <div class="d">
-                <img :src="item.iconImg" alt="">
+                <img :src="item.iconImg">
                 <span>{{ item.text }}</span>
               </div>
             </div>
@@ -65,7 +65,7 @@
                 @click="recentIndex = index">
               <div class="a">
                 <div class="avatarBox">
-                  <img :src="item.thumbnail" alt="">
+                  <img :src="item.thumbnail">
                 </div>
                 <div class="t">
                   <h6>{{ item.projectName || 'null'}}</h6>
@@ -119,14 +119,14 @@
           <div class="occlusion"></div>
           <div class="btnList" v-show="recentList.length > 3">
             <div class="btnL btn">
-              <img src="@/icons/recentLeftA.png" alt="" class="c" v-show="recentShowIndex > 0"
+              <img src="@/icons/recentLeftA.png" class="c" v-show="recentShowIndex > 0"
                    @click="recentShowIndex --">
-              <img src="@/icons/recentLeft.png" alt="" v-show="recentShowIndex == 0">
+              <img src="@/icons/recentLeft.png" v-show="recentShowIndex == 0">
             </div>
             <div class="btnR btn">
-              <img src="@/icons/recentRightA.png" alt="" class="c" v-show="recentList.length - 4 > recentShowIndex"
+              <img src="@/icons/recentRightA.png" class="c" v-show="recentList.length - 4 > recentShowIndex"
                    @click="recentShowIndex ++">
-              <img src="@/icons/recentRight.png" alt="" v-show="recentList.length - 4 == recentShowIndex">
+              <img src="@/icons/recentRight.png" v-show="recentList.length - 4 == recentShowIndex">
             </div>
           </div>
         </div>

@@ -38,7 +38,7 @@
             <ul>
               <li class="li" :class="[{'active': stepOneBase.index == index}]"
                   v-for="(item,index) in stepOneBase.btnList" :key="index" @click="changeFileSelection(index)">
-                <img class="img" :src="item.imgUrl" alt="">
+                <img class="img" :src="item.imgUrl">
                 <span class="span">{{ item.span }}</span>
               </li>
             </ul>
@@ -68,7 +68,7 @@
                       v-if="stepOneBase.showMe"
                       :props="stepOneBase.netdisc.defaultProps">
                       <span class="custom-tree-node" slot-scope="{ node, data }">
-                        <img src="@/icons/folder.png" alt="">
+                        <img src="@/icons/folder.png">
                         <span>{{ node.label }}</span>
                       </span>
                     </el-tree>
@@ -92,7 +92,7 @@
                             @click="jumpThroughNav(null, 'base')">{{ stepOneBase.netdisc.myAssets }}：</span>
                       <span class="filePathLi" v-for="(item,index) in stepOneBase.netdisc.sceneFilePath" :key="index">
                         <span class="s" @click="jumpThroughNav(item)">{{ item }}</span>
-                        <img src="@/icons/enter.png" alt="" class="im">
+                        <img src="@/icons/enter.png" class="im">
                       </span>
                     </div>
                     <!--场景文件tree-->
@@ -113,7 +113,7 @@
                           </el-checkbox>
                           <!--文件夹-->
                           <span v-show="data.type == 'folder'" @click="scenesTreeNodeClick(data.label)">
-                            <img src="@/icons/folder-icon.png" alt="">
+                            <img src="@/icons/folder-icon.png">
                             <span>{{ node.label }}</span>
                           </span>
                        </span>
@@ -121,7 +121,7 @@
                     </div>
                     <!--请先选择工程路径-->
                     <div class="null" v-show="!stepOneBase.netdisc.treeData.length">
-                      <img src="@/icons/warningIcon_.png" alt="">
+                      <img src="@/icons/warningIcon_.png">
                       <span class="span">{{ stepOneBase.netdisc.warnSpan }}</span>
                     </div>
                   </div>
@@ -188,7 +188,6 @@
             <div class="set-renderTemplate-item addMore"
                  @click="addTemplate('addMore','')">
               <img src="@/icons/addIcon.png"
-                   alt=""
                    class="addMoreIcon">
               <span class="addMoreText">
                 {{ stepTwoBase.addMoreText }}
@@ -218,12 +217,10 @@
                   <span v-show="stepTwoBase.renderListActive != index">
                     <!--编辑-->
                     <img src="@/icons/set-renderTemplate-item-edit-b.png"
-                         alt=""
                          @click.stop="addTemplate('editOne',index)"
                          class="item-icon">
                     <!--删除-->
                     <img src="@/icons/set-renderTemplate-item-delete-b.png"
-                         alt=""
                          @click="deleteTemplate(index)"
                          class="item-icon">
                   </span>
@@ -298,7 +295,7 @@
               </div>
               <!--提示-->
               <span class="info">
-                <img src="@/icons/warningIcon.png" alt="">
+                <img src="@/icons/warningIcon.png">
                 {{ stepThreeBase.priority.info }}
               </span>
             </div>
@@ -389,7 +386,7 @@
                                 effect="dark"
                                 content="单帧渲染时长超过设定，系统发送提醒消息给联系人，具体通知方式可在“消息设置”中完成"
                                 placement="right">
-                      <img src="@/icons/question-mark-icon.png" alt="" class="mark">
+                      <img src="@/icons/question-mark-icon.png" class="mark">
                     </el-tooltip>
                   </span>
                   <el-slider v-model="stepThreeBase.other.remindVal"
@@ -411,7 +408,7 @@
                                 effect="dark"
                                 content="单帧渲染时长超过设定，系统停止当前帧的渲染并发送消息给联系人"
                                 placement="right">
-                    <img src="@/icons/question-mark-icon.png" alt="" class="mark">
+                    <img src="@/icons/question-mark-icon.png" class="mark">
                   </el-tooltip>
                   </span>
                   <el-slider v-model="stepThreeBase.other.stopVal"
@@ -556,7 +553,6 @@
                   </span>
                   <span class="choiceIcon">
                     <img src="@/icons/choiceIcon.png"
-                         alt=""
                          v-show="item.status == true"
                          class="icon">
                   </span>
@@ -579,7 +575,6 @@
                   </span>
                   <span class="deleteNIcon" @click='deleteSeletedOption(item,index)'>
                     <img src="@/icons/deleteLiIcon.png"
-                         alt=""
                          class="icon">
                   </span>
                 </div>

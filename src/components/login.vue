@@ -1,7 +1,7 @@
 <template>
   <div class="login-wrapper">
     <canvas ref="canvas" class="canvas" :width="screenWidth" :height="screenHeight"/>
-    <img src="@/icons/login-logo.png" alt="" class="img_logo">
+    <img src="@/icons/login-logo.png" class="img_logo">
     <div class="vv">
       <section>
         <!--登录-->
@@ -114,9 +114,9 @@
                        type="password"
                        class="farm-input"/>
                 <div class="swicthPWI">
-                  <img src="@/icons/openPW.png" alt="" v-show="login.accountForm.passwordEye"
+                  <img src="@/icons/openPW.png" v-show="login.accountForm.passwordEye"
                        @click="login.accountForm.passwordEye = false">
-                  <img src="@/icons/shuPW.png" alt="" v-show="!login.accountForm.passwordEye"
+                  <img src="@/icons/shuPW.png" v-show="!login.accountForm.passwordEye"
                        @click="login.accountForm.passwordEye = true">
                 </div>
                 <span class="warnInfo" v-show="login.formStatus.password === false">密码错误</span>
@@ -219,9 +219,9 @@
                        class="farm-input"/>
                 <!--查看密码-->
                 <!--                <div class="swicthPWI">-->
-                <!--                  <img src="@/icons/openPW.png" alt="" v-show="login.forgetMode.passwordEye"-->
+                <!--                  <img src="@/icons/openPW.png" v-show="login.forgetMode.passwordEye"-->
                 <!--                       @click="login.forgetMode.passwordEye = false">-->
-                <!--                  <img src="@/icons/shuPW.png" alt="" v-show="!login.forgetMode.passwordEye"-->
+                <!--                  <img src="@/icons/shuPW.png" v-show="!login.forgetMode.passwordEye"-->
                 <!--                       @click="login.forgetMode.passwordEye = true">-->
                 <!--                </div>-->
                 <span class="warnInfo" v-show="login.formStatus.newPassWord === false">
@@ -244,9 +244,9 @@
                        class="farm-input"/>
                 <!--查看密码-->
                 <!--                <div class="swicthPWI">-->
-                <!--                  <img src="@/icons/openPW.png" alt="" v-show="login.forgetMode.passwordEyeAgain"-->
+                <!--                  <img src="@/icons/openPW.png" v-show="login.forgetMode.passwordEyeAgain"-->
                 <!--                       @click="login.forgetMode.passwordEyeAgain = false">-->
-                <!--                  <img src="@/icons/shuPW.png" alt="" v-show="!login.forgetMode.passwordEyeAgain"-->
+                <!--                  <img src="@/icons/shuPW.png" v-show="!login.forgetMode.passwordEyeAgain"-->
                 <!--                       @click="login.forgetMode.passwordEyeAgain = true">-->
                 <!--                </div>-->
                 <span class="warnInfo" v-show="login.formStatus.newPassWordAgain === false">
@@ -310,8 +310,8 @@
                      class="farm-input"
                      :class="[{'inputError': registered.status.password === false && !registered.status.passwordInit}]"/>
               <div class="swicthPWI">
-                <img src="@/icons/openPW.png" alt="" v-show="registered.passwordEye" @click="changePSType(false)">
-                <img src="@/icons/shuPW.png" alt="" v-show="!registered.passwordEye" @click="changePSType(true)">
+                <img src="@/icons/openPW.png" v-show="registered.passwordEye" @click="changePSType(false)">
+                <img src="@/icons/shuPW.png" v-show="!registered.passwordEye" @click="changePSType(true)">
               </div>
               <span class="warnInfo" v-show="registered.status.password === false && !registered.status.passwordInit">{{ registered.warnInfo.password }}</span>
               <img src="@/icons/login-success.png" class="i"
@@ -382,9 +382,9 @@
             <!--协议-->
             <div class="v">
               <div class="protocol">
-                <img src="@/icons/df.png" alt="" class="protocolIcon" v-show="!registered.tick"
+                <img src="@/icons/df.png" class="protocolIcon" v-show="!registered.tick"
                      @click="registered.tick = true">
-                <img src="@/icons/dfg.png" alt="" class="protocolIcon" v-show="registered.tick"
+                <img src="@/icons/dfg.png" class="protocolIcon" v-show="registered.tick"
                      @click="registered.tick = false">
                 <span class="r">{{ $t('login_page.register.text1') }}</span>
                 <span class="protocolLetter" @click="showPDF">{{ $t('login_page.register.text2') }}</span>

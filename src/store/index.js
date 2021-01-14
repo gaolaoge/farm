@@ -60,6 +60,9 @@ export default new Vuex.Store({
     pluginDialog: false,    // 打开插件窗口
     remoteLoginDate: null,  // 异地登录事件触发时间
     taskState: null,        // 站内信选中项目
+    openOverdueBillsWin: {bool: false, action: null},     // 打开已欠费窗口
+    openBalanceIsEmptyWin: {bool: false, action: null},   // 打开余额为零窗口
+    openCapacityIsLessWin: {bool: false, action: null}    // 打开容量不足窗口
   },
   getter: {},
   mutations: {
@@ -130,6 +133,18 @@ export default new Vuex.Store({
       if (!state.socket_backS) return false
       state.socket_backS.close()
       state.socket_backS = null
+    },
+    // 打开已欠费窗口
+    hasBeenOverdueBills(state, obj) {
+      state.openOverdueBillsWin = obj
+    },
+    // 打开余额为零窗口
+    theBalanceIsZero(state, obj) {
+      state.openBalanceIsEmptyWin = obj
+    },
+    // 打开容量不足窗口
+    theCapacityIsLess(state, obj) {
+      state.openCapacityIsLessWin = obj
     },
     // 下载插件
     downloadPlugin() {

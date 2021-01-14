@@ -212,7 +212,7 @@
     </el-table>
     <!--暂无数据-->
     <div class="nullTableData" v-if="!table.RenderDownloadData.length">
-      <img src="@/icons/tableDataNull.png" alt="">
+      <img src="@/icons/tableDataNull.png">
       <span>
         暂无数据
       </span>
@@ -306,8 +306,10 @@
     messageFun,
     itemDownloadStatus,
     UuidFun,
-    exportDownloadFun
-  } from '@/assets/common.js'
+    exportDownloadFun,
+    updateBalance,
+    createThrowInfo
+  } from '@/assets/common'
 
   export default {
     name: 'download-table',
@@ -871,8 +873,22 @@
           this.$refs.renderTableImportant.toggleRowSelection(this.table.RenderDownloadData.find(item => item['taskUuid'] == obj['taskUuid']), true)
         })
       },
-      // 操作 - 开始
+      // 操作 - 【开始】前预判
       startFun() {
+        // 判断余额是否充足
+        updateBalance('开始')
+          .then(data => {
+            if (data) this.startFunReal()
+          })
+          .catch(() => createThrowInfo({
+            type:'error',
+            title:'获取余额情况失败',
+            info:'在主任务【开始】操作前判断',
+            site:'components/task/download-table:877'
+          }))
+      },
+      // 操作 - 开始
+      startFunReal() {
         if (!this.table.renderSelectionList.length) return false
         this.$confirm('选中项将开始渲染, 是否继续?', '提示信息', {
           confirmButtonText: '确定',
@@ -883,7 +899,6 @@
             async () => {
               let dataList = []
               this.table.renderSelectionList.forEach(curr => {
-                console.log(curr)
                 if (('selfIndex' in curr) && !curr['secretChild']) return false
                 let dataListIndex = dataList.findIndex(item => item.taskUuid == curr.FatherTaskUuId)
                 if (dataListIndex == -1) {
@@ -908,9 +923,12 @@
             () => messageFun('info', '已取消操作')
           )
           .catch(error => {
-            messageFun('error', '报错，操作失败')
-            console.log('---------【开始】报错-----------')
-            console.log(error)
+            createThrowInfo({
+              type:'error',
+              title:'报错，操作失败',
+              info:`主任务【开始】操作请求报错, ${error}`,
+              site:'components/task/download-table:877'
+            })
           })
       },
       // 操作 - 归档
@@ -940,13 +958,29 @@
             () => messageFun('info', '已取消归档')
           )
           .catch(error => {
-            messageFun('error', '报错，操作失败')
-            console.log('---------【归档】报错-----------')
-            console.log(error)
+            createThrowInfo({
+              type:'error',
+              title:'报错，操作失败',
+              info:`主任务【归档】操作请求报错, ${error}`,
+              site:'components/task/download-table:919'})
           })
       },
-      // 操作 - 全部渲染
+      // 操作 - 【全部渲染】前预判
       renderAllFun() {
+        // 判断余额是否充足
+        updateBalance('全部渲染')
+          .then(data => {
+            if (data) this.renderAllFunReal()
+          })
+          .catch(() => createThrowInfo({
+            type:'error',
+            title:'获取余额情况失败',
+            info:'在主任务【全部渲染】操作前判断',
+            site:'components/task/download-table:951'
+          }))
+      },
+      // 操作 - 全部渲染
+      renderAllFunReal() {
         if (!this.table.renderSelectionList.length) return false
         this.$confirm('确认进行全部渲染吗？建议您在确认优先渲染的测试帧无误后再进行', '提示信息', {
           confirmButtonText: '确定',
@@ -980,9 +1014,12 @@
             () => messageFun('info', '已取消操作')
           )
           .catch(error => {
-            messageFun('error', '报错，操作失败')
-            console.log('---------【全部渲染】报错-----------')
-            console.log(error)
+            createThrowInfo({
+              type:'error',
+              title:'报错，操作失败',
+              info:`主任务【全部渲染】操作请求报错, ${error}`,
+              site:'components/task/download-table:960'
+            })
           })
       },
       // 操作 - 删除
@@ -1030,9 +1067,12 @@
             () => messageFun('info', '已取消删除')
           )
           .catch(error => {
-            messageFun('error', '报错，操作失败')
-            console.log('---------【删除】报错-----------')
-            console.log(error)
+            createThrowInfo({
+              type:'error',
+              title:'报错，操作失败',
+              info:`主任务【删除】操作请求报错, ${error}`,
+              site:'components/task/download-table:991'
+            })
           })
       },
       // 操作 - 暂停
@@ -1071,27 +1111,49 @@
             () => messageFun('info', '已取消暂停')
           )
           .catch(error => {
-            messageFun('error', '报错，操作失败')
-            console.log('---------【暂停】报错-----------')
-            console.log(error)
+            createThrowInfo({
+              type:'error',
+              title:'报错，操作失败',
+              info:`主任务【暂停】操作请求报错, ${error}`,
+              site:'components/task/download-table:1041'
+            })
           })
       },
       // 操作 - 重新渲染
       renderAgainFun() {
-        this.dialogTableVisible = true
+        // 判断余额是否充足
+        updateBalance('重新渲染')
+          .then(data => {
+            if (data) this.dialogTableVisible = true
+          })
+          .catch(() => createThrowInfo({
+            type:'error',
+            title:'获取余额情况失败',
+            info:'在主任务【重新渲染】操作前判断，获取余额情况请求报错',
+            site:'components/task/download-table:1082'
+          }))
       },
-      // 操作 - 下载完成帧 - 前期预判
+      // 操作 - 【下载完成帧】前预判
       downloadFils() {
         if (!this.table.renderSelectionList.length) return false
-        if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.downloadingFile())
-        else this.downloadingFile()
-        // let r = await seeBalance()
-        // if (r.data.code == 1001) {
-        //   messageFun('info', `当前账户余额为${r.data.data}，请先进行充值！`);
-        //   return false
-        // }
+        if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => next())
+        else next()
+
+        function next() {
+          // 判断余额是否充足
+          updateBalance('下载完成帧')
+            .then(data => {
+              if (data) this.downloadingFile()
+            })
+            .catch(() => createThrowInfo({
+              type:'error',
+              title:'获取余额情况失败',
+              info:'在主任务【下载完成帧】操作前判断',
+              site:'components/task/download-table:1091'
+            }))
+        }
       },
-      // 操作 - 下载完成帧 - ing
+      // 操作 - 下载完成帧
       async downloadingFile() {
         let list = this.computedResult()
         for (const taskItem of list) {

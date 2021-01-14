@@ -2,6 +2,38 @@ import {
   Message
 } from 'element-ui'
 import store from '../store'
+import {
+  getCurrentBalance
+} from '@/api/base'
+
+// 更新余额
+const updateBalance = function (action) {
+  return new Promise((resolve, reject) => {
+    getCurrentBalance(store.state.user.id).then(({data}) => {
+      if (data.code != 200) reject()
+      else {
+        store.commit('changeUserBalance', data.data.toFixed(3))
+        if(data.data > 0) resolve(true)
+        else if (data.data == 0) {
+          store.commit('theBalanceIsZero', {bool: true, action})
+          resolve(false)
+        } else if (data.data < 0) {
+          store.commit('hasBeenOverdueBills', {bool: true, action})
+          resolve(false)
+        }
+      }
+    })
+  })
+}
+
+// 报错
+const createThrowInfo = function ({type, title, info, site}) {
+  messageFun(type, title)
+  console.log('╔══════════════════════════════════════╗')
+  console.log(`║ 错误：【${title}】， 位置：【${site}】`)
+  console.log('║ 描述：' + info)
+  console.log('╚══════════════════════════════════════╝')
+}
 
 // 读取时间戳
 const createCalendar = function (date) {
@@ -338,6 +370,8 @@ export {
   getFileSize,
   sortF,
   sortDateF,
+  updateBalance,
+  createThrowInfo
 }
 
 

@@ -9,7 +9,7 @@
           </span>
         </div>
         <div class="closeIcon">
-          <img src="@/icons/icon_ close1.png" alt="" @click="closeDrawer">
+          <img src="@/icons/icon_ close1.png" @click="closeDrawer">
         </div>
       </div>
       <div class="farm-drawer-body e">
@@ -68,7 +68,7 @@
                :style="{'opacity': details.errorList[0] ? 1 : 0}">
             <div class="farm-drawer-list-item" v-for="(item,index) in details.errorList">
               <div class="icon">
-                <img src="@/icons/errorIcon.png" alt="">
+                <img src="@/icons/errorIcon.png">
               </div>
               <div class="text">
                 <span class="t">
@@ -88,7 +88,7 @@
                :style="{'opacity': details.warningList[0] ? 1 : 0}">
             <div class="farm-drawer-list-item" v-for="(item,index) in details.warningList">
               <div class="icon">
-                <img src="@/icons/warningIcon.png" alt="">
+                <img src="@/icons/warningIcon.png">
               </div>
               <div class="text">
                 <span class="t">
@@ -130,7 +130,7 @@
           </span>
         </div>
         <div class="closeIcon">
-          <img src="@/icons/icon_ close1.png" alt="" @click="closeDrawer">
+          <img src="@/icons/icon_ close1.png" @click="closeDrawer">
         </div>
       </div>
       <div class="farm-drawer-body e">
@@ -163,7 +163,7 @@
                           effect="dark"
                           content="如果您需要将场景文件的毎一层都可以作为一个子任务单独进行渲染，请启用此项。"
                           placement="bottom-end">
-                <img src="@/icons/question-mark-icon.png" alt="" class="mark">
+                <img src="@/icons/question-mark-icon.png" class="mark">
               </el-tooltip>
             </div>
           </div>
@@ -386,7 +386,7 @@
           </div>
           <!--提示-->
           <span class="info">
-            <img src="@/icons/warningIcon.png" alt="">
+            <img src="@/icons/warningIcon.png">
             {{ setting.priority.info }}
           </span>
         </div>
@@ -439,7 +439,6 @@
               <!--新建项目-->
               <span class="createBtn" @click="createItem">
                 <img src="@/icons/createIcon.png"
-                     alt=""
                      class="createIcon">
                 {{ setting.other.btn }}
               </span>
@@ -462,7 +461,7 @@
                           effect="dark"
                           content="单帧渲染时长超过设定，系统发送提醒消息给联系人，具体通知方式可在“消息设置”中完成"
                           placement="right">
-                <img src="@/icons/question-mark-icon.png" alt="" class="mark">
+                <img src="@/icons/question-mark-icon.png" class="mark">
               </el-tooltip>
             </div>
             <!--超时提醒-->
@@ -483,7 +482,7 @@
                           effect="dark"
                           content="单帧渲染时长超过设定，系统停止当前帧的渲染并发送消息给联系人"
                           placement="right">
-                <img src="@/icons/question-mark-icon.png" alt="" class="mark">
+                <img src="@/icons/question-mark-icon.png" class="mark">
               </el-tooltip>
             </div>
           </div>
@@ -537,7 +536,7 @@
           </div>
         </div>
         <div class="closeIcon">
-          <img src="@/icons/icon_ close1.png" alt="" @click="closeDrawer">
+          <img src="@/icons/icon_ close1.png" @click="closeDrawer">
         </div>
       </div>
       <!--表体-->
@@ -701,14 +700,14 @@
                    @click="operateFun(item.text)"
                    v-for="(item,index) in result.operateBtnList"
                    :key="index">
-                <img :src="item.imgUrlR" alt="" v-if="item.imgUrlR" class="r">
-                <img :src="item.imgUrlH" alt="" v-if="item.imgUrlH" class="h">
+                <img :src="item.imgUrlR" v-if="item.imgUrlR" class="r">
+                <img :src="item.imgUrlH" v-if="item.imgUrlH" class="h">
                 <span class="text">
                 {{ item.text }}
               </span>
               </div>
               <div class="searchBase">
-                <img src="@/icons/global-search-icon.png" alt="" class="i" @click="getRenderItemMoreTableF">
+                <img src="@/icons/global-search-icon.png" class="i" @click="getRenderItemMoreTableF">
                 <input type="text"
                        v-model="result.searchInpVal"
                        class="search"
@@ -730,7 +729,6 @@
               </div>
               <div class="searchBase">
                 <img src="@/icons/global-search-icon.png"
-                     alt=""
                      class="i"
                      @click="">
                 <input type="text"
