@@ -1,5 +1,9 @@
 <template>
-  <div class="farm-drawer-wrapper">
+  <div class="farm-drawer-wrapper"
+       v-loading="loading"
+       element-loading-background="rgba(0, 0, 0, 0.49)"
+       element-loading-spinner="el-icon-loading"
+       element-loading-text="拼命加载中...">
     <!--分析结果-->
     <div :class="[{'active': showDrawer}, 'farm-drawer']" v-show="typeInfo == 'upload-table'">
       <div class="farm-drawer-title">
@@ -996,7 +1000,9 @@
     exportDownloadFun,
     messageFun,
     itemDownloadStatus,
-    sortF
+    sortF,
+    updateBalance,
+    createThrowInfo
   } from '@/assets/common.js'
   import elTableInfiniteScroll from 'el-table-infinite-scroll'
   import {mapState} from 'vuex'
@@ -1280,7 +1286,7 @@
           lock: true,                  // 渲染提交事件锁
         },
         demo: ``,
-        loading: null
+        loading: false
       }
     },
     props: {
@@ -1359,12 +1365,7 @@
       },
       // 进入 - 获取详情
       getData() {
-        this.loading = this.$loading({
-          lock: true,
-          text: '拼命加载中...',
-          spinner: 'el-icon-loading',
-          background: 'rgba(0, 0, 0, 0.7)'
-        })
+        this.loading = true
         if (this.typeInfo == 'upload-table') this.getUpTopItemMore()
         else this.getRenderItemMoreF()
       },
@@ -1403,12 +1404,12 @@
             this.details.showProgress = true
             break
         }
-        this.loading.close()
+        this.loading = false
         // } else {
         // 分析状态
         // this.details.showProgress = false
         let data = await upTopTableSeeMore(`taskUuid=${this.taskData.taskUuid}`)
-        this.loading.close()
+        this.loading = false
         if (data.data.data.status) this.details.status = data.data.data.status
         this.getItemList()
         if (data.data.data.warningMessage)
@@ -1429,7 +1430,7 @@
       },
       // 渲染下载 - 获取详情 - 渲染结果
       getRenderItemMoreF() {
-        this.loading.close()
+        this.loading = true
         this.getRenderItemMoreTableF()
       },
       // 渲染下载 - 详情 mainTable more
@@ -1916,6 +1917,18 @@
       // 渲染结果 - 主 - 操作 - 开始
       async operateStart() {
         if (this.result.operateBtnList[0]['classState']) return false
+        // 判断余额是否充足
+        updateBalance('开始')
+          .then(data => data ? this.operateStartReal() : null)
+          .catch(() => createThrowInfo({
+            type:'error',
+            title:'获取余额情况失败',
+            info:'在层任务【开始】操作前判断',
+            site:'components/task/farm-drawer:1918'
+          }))
+      },
+      // 渲染结果 - 主 - 操作 - 开始
+      async operateStartReal() {
         let data = await itemStart({
           "instructType": 11,
           "frameUuidList": this.result.selectionResult.map(curr => curr.frameTaskUuid)
@@ -1940,19 +1953,27 @@
           messageFun('error', '报错，操作失败')
         }
       },
-      // 渲染结果 - 主 - 操作 - 下载完成帧 - 前期预判
+      // 渲染结果 - 主 - 操作 - 【下载完成帧 】前预判
       async operateDownloadFrame() {
         if (!this.result.selectionResult.length || this.result.operateBtnList[2]['classState']) return false
-        else if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.operateDownloadFrameing())
-        else this.operateDownloadFrameing()
-        // let data = await seeBalance()
-        // if (data.data.code == 1001) {
-        //   messageFun('error', `当前账户余额为${data.data.data}，请先进行充值！`);
-        //   return false
-        // }
+        else if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => next())
+        else next()
+        function next() {
+          // 判断余额是否充足
+          updateBalance('下载完成帧')
+            .then(data => {
+              if (data) this.operateDownloadFrameReal()
+            })
+            .catch(() => createThrowInfo({
+              type:'error',
+              title:'获取余额情况失败',
+              info:'在层任务【下载完成帧】操作前判断',
+              site:'components/task/farm-drawer:1957'
+            }))
+        }
       },
-      // 渲染结果 - 主 - 操作 - 下载完成帧 - ing
-      operateDownloadFrameing() {
+      // 渲染结果 - 主 - 操作 - 下载完成帧
+      operateDownloadFrameReal() {
         this.$confirm('将下载选中选, 是否继续?', '提示信息', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -1975,9 +1996,21 @@
             () => messageFun('info', '已取消下载')
           )
       },
-      // 渲染结果 - 主 - 操作 - 重新渲染
+      // 渲染结果 - 主 - 操作 - 【重新渲染】前预判
       operateRenderAgain() {
-        if (this.result.operateBtnList[3]['classState']) return false
+        if (!this.result.selectionResult.length || this.result.operateBtnList[3]['classState']) return false
+        // 判断余额是否充足
+        updateBalance('重新渲染')
+          .then(data => data ? this.operateRenderAgainReal() : null)
+          .catch(() => createThrowInfo({
+            type:'error',
+            title:'获取余额情况失败',
+            info:'在层任务【重新渲染】操作前判断',
+            site:'components/task/farm-drawer:2000'
+          }))
+      },
+      // 渲染结果 - 主 - 操作 - 重新渲染
+      operateRenderAgainReal() {
         this.$confirm('此操作将重新渲染选中项, 是否继续?', '提示信息', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -2014,20 +2047,12 @@
       },
       // 分析结果 - 进入设置参数 - 获取预设信息
       async setParameter() {
-        const loading = this.$loading({
-          lock: true,
-          text: 'Loading',
-          spinner: 'el-icon-loading',
-          background: 'rgba(0, 0, 0, 0.7)'
-        })
+        this.loading = true
         let data_ = await upTopTableSet(this.taskData.taskUuid)
-        loading.close()
+        this.loading = false
         let data = data_.data
-        if (data.code != 200) {
-          messageFun('error', '报错，数据请求失败')
-          return false
-        }
-        this.setParameterNext(data)
+        if (data.code != 200) messageFun('error', '报错，数据请求失败')
+        else this.setParameterNext(data)
       },
       // 翻到指定页 【分析结果-details】【设置参数-setting】【渲染结果-result】
       turnPage(path) {

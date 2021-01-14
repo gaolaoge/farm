@@ -617,6 +617,12 @@
       // 获取列表
       async getList(obj, reset) {
         if (reset) this.closeDrawer()
+        const loading = this.$loading({
+          lock: true,
+          text: 'Loading',
+          spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0.49)'
+        })
         // {
         //   zoneUuid: '',            // 分区ID
         //   keyword: '',             // 关键字
@@ -872,6 +878,7 @@
         if (obj && obj.taskUuid) this.$nextTick(() => {
           this.$refs.renderTableImportant.toggleRowSelection(this.table.RenderDownloadData.find(item => item['taskUuid'] == obj['taskUuid']), true)
         })
+        loading.close()
       },
       // 操作 - 【开始】前预判
       startFun() {

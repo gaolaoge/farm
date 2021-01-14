@@ -1,5 +1,9 @@
 <template>
-  <div class="result-cardM farm-drawer t">
+  <div class="result-cardM farm-drawer t"
+       v-loading="loading"
+       element-loading-background="rgba(0, 0, 0, 0.49)"
+       element-loading-spinner="el-icon-loading"
+       element-loading-text="拼命加载中...">
     <!--表头-->
     <div class="farm-drawer-title">
       <!--关闭icon-->
@@ -609,7 +613,7 @@
           lock: true,                  // 渲染提交事件锁
         },
         demo: ``,
-        loading: null
+        loading: false
       }
     },
     props: {
@@ -678,12 +682,7 @@
       },
       // 进入 - 获取详情
       getData() {
-        this.loading = this.$loading({
-          lock: true,
-          text: '拼命加载中...',
-          spinner: 'el-icon-loading',
-          background: 'rgba(0, 0, 0, 0.7)'
-        })
+        // this.loading = true
         this.getRenderItemMoreTableF()
       },
       // 渲染下载 - 详情 - 缩略图
@@ -713,7 +712,6 @@
         this.result.miniImgHref = null
         let t = this.taskData,
           parameter = `taskUuid=${t.FatherTaskUuId}&layerTaskUuid=${t.layerTaskUuid}&keyword=${this.result.searchInpVal}&pageIndex=1&pageSize=999`
-          console.log(this.taskData)
 
         let data = await getRenderTSeeMore(parameter),
           data_ = data.data.data
@@ -786,7 +784,7 @@
           creationTimeVal: createDateFun(new Date(data_.taskInfo.createTime))          // 创建时间
         })
         this.showMiniImg(this.result.tableData[0])
-        this.loading.close()
+        this.loading = false
       },
       //关闭详情 复位
 
