@@ -46,7 +46,7 @@ export default new Vuex.Store({
     zoneId: null,           // 所在区ID
     zone: null,             // 分区 1影视区 2效果图区
     taskType: 'profession', // 渲染模式 「profession」专业版 「easy」一键版
-    isGup: null,
+    isGpu: null,
     socket_plugin: null,    // 与插件关联的websocket
     socket_plugin_msg: null,// 与插件关联的websocket接收的参数
     socket_plugin_time: 0,  // 重连次数
@@ -224,7 +224,7 @@ export default new Vuex.Store({
       s.taskType = val
     },
     changeIsGpu(s, val) {
-      s.isGup = val
+      s.isGpu = val
     },
     changeSocket_Plugin(s, val) {
       s.socket_Plugin = val

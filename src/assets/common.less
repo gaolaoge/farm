@@ -324,8 +324,6 @@ div {
     }
 
     .el-table__body-wrapper {
-      max-height: 152px;
-
       &::-webkit-scrollbar {
         /*滚动条整体样式*/
         width: 8px; /*高宽分别对应横竖滚动条的尺寸*/
@@ -346,7 +344,6 @@ div {
         background-color: rgba(52, 59, 67, 0);
       }
     }
-
   }
 }
 
@@ -1067,19 +1064,6 @@ td {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-
-    &.one {
-      height: 165px;
-    }
-
-    &.two {
-      height: calc(100vh - 360px);
-    }
-
-    &.three {
-      max-height: 240px;
-      overflow: hidden;
-    }
 
     //键值对
     .farm-drawer-item {

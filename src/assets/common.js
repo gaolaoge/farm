@@ -6,6 +6,8 @@ import {
   getCurrentBalance
 } from '@/api/base'
 
+//
+
 // 更新余额
 const updateBalance = function (action) {
   return new Promise((resolve, reject) => {
