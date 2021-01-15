@@ -186,7 +186,7 @@
             <el-table-column
               prop="name"
               :label="zone == 1 ? '层名' : '图像名称'"
-              width="180"/>
+              width="160"/>
             <!--帧范围-->
             <el-table-column
               label="帧范围"
@@ -280,7 +280,7 @@
             <!--输出格式-->
             <el-table-column
               label="输出格式"
-              width="160">
+              width="120">
               <template slot-scope="scope">
                 <el-select v-model="scope.row.format">
                   <el-option
@@ -295,7 +295,7 @@
             <!--相机-->
             <el-table-column
               label="相机"
-              width="180">
+              width="160">
               <template slot-scope="scope">
                 <el-select v-model="scope.row.camera">
                   <el-option

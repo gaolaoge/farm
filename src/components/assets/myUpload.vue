@@ -37,14 +37,18 @@
           show-overflow-tooltip
           min-width="180">
           <template slot-scope="scope">
-            <img src="@/icons/folder-a-icon.png" v-if="scope.row.fileType == '文件夹'" class="a-icon">
-            <img src="@/icons/mp3-a-icon.png" v-else-if="scope.row.fileType == 'MP3'" class="a-icon">
-            <img src="@/icons/mp4-a-icon.png" v-else-if="scope.row.fileType == 'MP4'" class="a-icon">
-            <img src="@/icons/ppt-a-icon.png" v-else-if="scope.row.fileType == 'ppt'" class="a-icon">
-            <img src="@/icons/word-a-icon.png" v-else-if="scope.row.fileType == 'word'" class="a-icon">
-            <img src="@/icons/exe-a-icon.png" v-else-if="scope.row.fileType == 'exe'" class="a-icon">
-            <img src="@/icons/txt-a-icon.png" v-else-if="scope.row.fileType == 'txt'" class="a-icon">
-            <img src="@/icons/html-a-icon.png" v-else-if="scope.row.fileType == 'html'" class="a-icon">
+            <img src="@/icons/folder-a-icon.png" v-if="['文件夹'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/mp3-a-icon.png" v-else-if="['aiff', 'cd', 'MP3', 'wav', 'wma', 'vqf'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/mp4-a-icon.png" v-else-if="['mp4', '3pg', 'avi', 'asf', 'flv', 'mpeg', 'mov', 'rm', 'wmv'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/ppt-a-icon.png" v-else-if="['ppt'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/word-a-icon.png" v-else-if="['doc', 'docx'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/exe-a-icon.png" v-else-if="['zip', '7z', 'rar', 'rar4', 'tar.gz', 'tar.xz', 'tar.bz2', 'tar.z'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/txt-a-icon.png" v-else-if="['txt'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/html-a-icon.png" v-else-if="['html'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/img-a-icon.png" v-else-if="['ai', 'als', 'avif', 'bmp', 'bit', 'cdr', 'cin', 'cth', 'ct', 'dds', 'dxf', 'exr', 'exif', 'eps', 'fpx', 'gif', 'hdr', 'iff', 'jpg', 'mt', 'nt', 'pcx', 'pcd', 'pic', 'picture','png','psd', 'ppm', 'ps', 'raw', 'rla', 'rgb', 'svg', 'sgi', 'st', 'tga', 'tif', 'tiff', 'tim', 'tt', 'ufo', 'WMF', 'webp', 'xpm', 'yuv', 'zt'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/pdf-a-icon.png" v-else-if="['pdf'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/maya-a-icon.png" v-else-if="['ma', 'mb'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/max-a-icon.png" v-else-if="['max'].some(type => type == scope.row.fileType)" class="a-icon">
             <img src="@/icons/file-a-icon.png" v-else class="a-icon">
             <div class="fileNameBox" :style="{'width': scope.row.fileName.length * 10 + 'px'}">
               <input type="text"
