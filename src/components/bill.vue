@@ -413,7 +413,7 @@
       }
 
       .el-table__body-wrapper {
-        height: 100%;
+        height: calc(100% - 47px);
 
         tbody {
 

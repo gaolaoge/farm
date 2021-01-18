@@ -215,7 +215,7 @@
     border-radius: 0px 0px 8px 8px;
     padding: 50px;
     box-sizing: border-box;
-    height: calc(100vh - 144px);
+    height: calc(100% - 144px);
 
     .f {
       width: 100%;

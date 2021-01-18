@@ -460,7 +460,9 @@
 
 <style lang="less" scoped>
   .projectSetting {
-    height: calc(100vh - 203px);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 
     .operating {
       padding: 30px 27px 10px;
@@ -470,6 +472,18 @@
       .btnGroup {
         display: flex;
         align-items: center;
+      }
+    }
+
+    .table {
+      flex-grow: 1;
+
+      /deep/ .el-table {
+        height: 100%;
+
+        .el-table__body-wrapper {
+          height: calc(100% - 47px);
+        }
       }
     }
   }
@@ -659,9 +673,12 @@
     }
   }
 
-  /deep/ .el-table .el-table__row:hover::after {
-    display: none;
+  /deep/ .el-table {
+    .el-table__row:hover::after {
+      display: none;
+    }
   }
+
 
   .avatar-uploader {
     opacity: 0;

@@ -133,20 +133,25 @@
   .s {
     display: flex;
     align-items: center;
+
     span {
       position: relative;
       font-size: 14px;
     }
   }
 
-  .el-table__body-wrapper {
-    height: calc(100vh - 250px);
-  }
+  .el-table {
+    height: calc(100% - 10px);
 
-  .el-table__row {
-    td:nth-of-type(3) .cell {
-      color: rgba(22, 29, 37, 0.5);
-      font-size: 10px;
+    .el-table__body-wrapper {
+      height: 100%;
+    }
+
+    .el-table__row {
+      td:nth-of-type(3) .cell {
+        color: rgba(22, 29, 37, 0.5);
+        font-size: 10px;
+      }
     }
   }
 </style>

@@ -566,8 +566,12 @@
   .invoiceImmediately {
     width: 100%;
 
+    .tableGroup {
+      height: calc(100% - 20px);
+    }
+
     .t {
-      height: calc(100vh - 142px);
+      height: calc(100% - 46px);
       overflow-y: auto;
       padding: 46px 30px;
       box-sizing: border-box;
