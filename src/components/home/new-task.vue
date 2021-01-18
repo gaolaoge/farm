@@ -6,6 +6,7 @@
            @click="closeDialogFun"
            class="closeBtn">
     </header>
+    <!--步骤-->
     <section class="stepGroup">
       <!--面包屑-->
       <div class="navL">
@@ -44,21 +45,17 @@
             </ul>
           </div>
           <div class="sec">
-            <!--我的网盘-->
+            <!--我的资产-->
             <div class="netdist" v-show="stepOneBase.index == 0">
               <div class="farm-form">
                 <!--工程路径-->
                 <div class="farm-form-item">
                   <div class="farm-form-item-label">{{ stepOneBase.netdisc.pathLabel }}：</div>
                   <div class="farm-form-item-input p" @click="expandDiskDirectory">
-                    <span class="sp">
-                      {{ stepOneBase.netdisc.pathV }}
-                    </span>
-                    <img src="@/icons/more-btn.png"
-                         class="im"
-                         :class="[{'active': stepOneBase.showMe}]">
+                    <span class="sp">{{ stepOneBase.netdisc.pathV }}</span>
+                    <img src="@/icons/more-btn.png" :class="['im', {'active': stepOneBase.showMe}]">
                   </div>
-                  <div class="netCatalogue" :class="[{'active': stepOneBase.showMe}]">
+                  <div :class="['netCatalogue', {'active': stepOneBase.showMe}]">
                     <el-tree
                       :data="stepOneBase.netdisc.catalogData"
                       node-key="id"
@@ -68,7 +65,8 @@
                       v-if="stepOneBase.showMe"
                       :props="stepOneBase.netdisc.defaultProps">
                       <span class="custom-tree-node" slot-scope="{ node, data }">
-                        <img src="@/icons/folder.png">
+                        <img src="@/icons/folder-icon.png" class="shut_icon">
+                        <img src="@/icons/folder-open-icon.png" class="open_icon">
                         <span>{{ node.label }}</span>
                       </span>
                     </el-tree>
@@ -104,11 +102,12 @@
                         :data="stepOneBase.netdisc.treeData"
                         node-key="id"
                         :props="stepOneBase.netdisc.defaultProps">
-                        <span class="custom-tree-node" slot-scope="{ node, data }">
+                        <span class="custom-tree-node haveCheck" slot-scope="{ node, data }">
                           <!--文件-->
                           <el-checkbox v-model="stepOneBase.netdisc.sceneFileSelection" :label="data.id"
                                        v-show="data.type == 'file'">
-                            <img src="@/icons/maya-icon.png" v-if="data.format == 'ma' || data.format == 'mb'">
+                            <img src="@/icons/maya-a-icon.png" v-if="data.format == 'ma' || data.format == 'mb'">
+                            <img src="@/icons/max-a-icon.png" v-if="data.format == 'max'">
                             <span>{{ node.label }}</span>
                           </el-checkbox>
                           <!--文件夹-->
@@ -183,6 +182,25 @@
         <!--设置渲染模板-->
         <div class="stepBody-item"
              v-show="stepBtnActive == 2">
+          <div class="selectProject">
+            <!--所属项目-->
+            <span class="label star">{{ stepThreeBase.other.viewLabel }}</span>
+            <el-select v-model="stepThreeBase.other.view"
+                       placeholder="选择已有项目名称"
+                       class="selectInput">
+              <el-option
+                v-for="(item,index) in stepThreeBase.other.viewList"
+                :key="index"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+            <!--新建项目-->
+            <span class="createBtn" @click="createItem">
+              <img src="@/icons/createIcon.png" class="createIcon">
+              <span>{{ stepThreeBase.other.btn }}</span>
+            </span>
+          </div>
           <div class="set-renderTemplate setScollBarStyle">
             <!--添加模板-->
             <div class="set-renderTemplate-item addMore"
@@ -328,25 +346,7 @@
                 <span class="farm-drawer-body-item-header-main">{{ stepThreeBase.other.title }}</span>
               </div>
               <div class="farm-drawer-body">
-                <!--所属项目-->
-                <div class="farm-drawer-item">
-                  <span class="farm-drawer-item-label star">{{ stepThreeBase.other.viewLabel }}</span>
-                  <el-select v-model="stepThreeBase.other.view"
-                             placeholder="选择已有项目名称"
-                             class="workBench-optionBase haveBorder">
-                    <el-option
-                      v-for="(item,index) in stepThreeBase.other.viewList"
-                      :key="index"
-                      :label="item.label"
-                      :value="item.value">
-                    </el-option>
-                  </el-select>
-                  <!--新建项目-->
-                  <span class="createBtn" @click="createItem">
-                    <img src="@/icons/createIcon.png" class="createIcon">
-                    {{ stepThreeBase.other.btn }}
-                  </span>
-                </div>
+
                 <!--分层渲染-->
                 <div class="farm-drawer-item" v-if="zone == '1'">
                   <span class="farm-drawer-item-label">{{ stepThreeBase.other.stratifyLabel }}</span>
@@ -878,7 +878,7 @@
         infoMessageShow: false,     // 选择渲染文件 - 我的电脑 - 工程路径 - 问号
         renderFileTypeList: [],     // 可用的场景文件格式
         confirmLock: true,          // 开始渲染事件锁
-        initialAcquV: true,         // 首次获取场景文件tree
+        initialAcquV: true          // 首次获取场景文件tree
       }
     },
     props: {},
@@ -1752,7 +1752,14 @@
           position: relative;
           height: 100%;
           display: flex;
-          flex-direction: row;
+
+          &:nth-of-type(1) {
+            flex-direction: row;
+          }
+
+          &:nth-of-type(2) {
+            flex-direction: column;
+          }
 
           /*选择场景文件*/
 
@@ -2055,8 +2062,35 @@
 
           /*设置渲染模板*/
 
+          .selectProject {
+            width: 100%;
+            height: 36px;
+            margin: 2px 0px 28px 0px;
+            display: flex;
+            align-items: center;
+
+            .label {
+              font-size: 14px;
+              color: rgba(22, 29, 37, 0.6);
+              display: inline-block;
+              margin: 0px 18px 0px 26px;
+            }
+
+            .selectInput {
+              width: 315px;
+              height: 36px;
+              border-radius: 6px;
+              border: 1px solid rgba(22, 29, 37, 0.3);
+
+              /deep/.el-input__inner {
+                border: 0px;
+                height: 38px;
+              }
+            }
+          }
+
           .set-renderTemplate {
-            height: 100%;
+            height: calc(100% - 64px);
             width: 100%;
             /*padding: 0px 20px;*/
             box-sizing: border-box;
@@ -2604,17 +2638,17 @@
   }
 
   .createBtn {
-    display: inline-block;
     margin-left: 4px;
     font-size: 14px;
-    font-weight: 400;
     color: rgba(10, 98, 241, 1);
     cursor: pointer;
+    display: inline-flex;
+
 
     .createIcon {
       width: 18px;
-      vertical-align: middle;
-      margin-left: 20px;
+      height: 18px;
+      margin: 0px 10px 0px 20px;
     }
   }
 
@@ -2630,25 +2664,52 @@
     }
   }
 
-  .custom-tree-node {
-    font-size: 12px;
-    font-family: PingFangSC-Regular, PingFang SC;
-    color: rgba(22, 29, 37, 0.8);
+  /deep/ .el-tree-node__content {
+    img.shut_icon {
+      display: inline-block;
+    }
+
+    img.open_icon {
+      display: none;
+    }
   }
 
-  /deep/ .custom-tree-node {
+  /deep/ [aria-expanded=true] > .el-tree-node__content {
+    img.open_icon {
+      display: inline-block;
+    }
+
+    img.shut_icon {
+      display: none;
+    }
+  }
+
+
+  .custom-tree-node {
     display: flex;
     align-items: center;
     font-size: 14px;
+    font-family: PingFangSC-Regular, PingFang SC;
+    color: rgba(22, 29, 37, 0.8);
 
     & > span {
       display: flex;
       align-items: center;
     }
 
+    &.haveCheck {
+      img {
+        /*width: 14px;*/
+        height: 14px;
+        margin-left: 23px;
+        margin-right: 4px;
+        vertical-align: middle;
+      }
+    }
+
     img {
-      margin-left: 23px;
-      margin-right: 4px;
+      margin-left: 0px;
+      margin-right: 10px;
     }
 
     .el-checkbox {
