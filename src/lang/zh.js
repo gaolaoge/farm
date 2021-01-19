@@ -193,7 +193,13 @@ export default {
     config: '确认',
     cancel: '取消',
     editSuc: '修改成功',
-    noTimes: '本月更新次数已用完',
-
+    noTimes: '本月更新次数已用完'
+  },
+  public_text: {
+    refresh: '刷新',
+    prompt: '提示',
+    config: '确认',
+    confirm: '确定',
+    cancel: '取消',
   }
 }

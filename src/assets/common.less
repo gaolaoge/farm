@@ -37,7 +37,6 @@ div {
 
   span {
     font-size: 12px;
-    font-family: PingFangSC-Regular, PingFang SC;
     color: rgba(22, 29, 37, 0.8);
   }
 
@@ -166,35 +165,34 @@ div {
     z-index: 1;
     background-color: rgba(250, 252, 255, 1);
     border-radius: 8px;
-    box-shadow: 0px 0px 1px 1px rgba(241, 244, 249, 1);
+    box-shadow: 0px 0px 1px 1px rgba(241, 244, 249, 1) inset;
+    overflow: hidden;
 
     &:hover {
       td {
-        background-color: rgba(255, 255, 255, 1) !important;
+        background-color: rgba(233, 241, 254, 1) !important;
 
         .cell {
           color: rgba(22, 29, 37, 1);
         }
       }
-
-      //&::after {
-      //  position: absolute;
-      //  left: 0;
-      //  z-index: 1;
-      //  height: 47px;
-      //  content: '';
-      //  box-shadow: inset 0px 1px 1px 1px rgba(27, 83, 244, 1);
-      //  border-radius: 8px !important;
-      //  //border: 1px solid rgba(0, 97, 255, 1) !important;
-      //  pointer-events: none;
-      //}
     }
 
     &.farmTableSelected {
-      box-shadow: 0px 0px 1px 1px rgba(27, 83, 244, 1);
+      box-shadow: 0px 0px 1px 1px rgba(27, 83, 244, 1) inset;
+
+      &:hover {
+        td {
+          background-color: rgba(255, 255, 255, 0.2) !important;
+
+          .cell {
+            color: #161d25;
+          }
+        }
+      }
 
       td {
-        background-color: rgba(255, 255, 255, 1);
+        background-color: rgba(255, 255, 255, 0.2);
 
         .cell {
           color: rgba(22, 29, 37, 1);
@@ -203,24 +201,6 @@ div {
         &:nth-of-type(1) {
           border-radius: 8px 0px 0px 8px;
         }
-      }
-
-      &:hover {
-        td {
-          //background: rgba(0, 97, 255, 1) !important;
-        }
-
-        //&::after {
-        //  position: absolute;
-        //  left: 0;
-        //  z-index: 2;
-        //  height: 47px;
-        //  content: '';
-        //  box-shadow: none;
-        //  border-radius: 8px !important;
-        //  border: 0px !important;
-        //  pointer-events: none;
-        //}
       }
     }
 
@@ -1442,7 +1422,6 @@ td {
 
   .el-message-box__title {
     font-size: 14px;
-    font-family: PingFangSC-Semibold, PingFang SC;
     font-weight: 600;
     color: rgba(22, 29, 37, 1);
     line-height: 36px;
@@ -1682,7 +1661,6 @@ td {
 
       span {
         font-size: 14px;
-        font-family: PingFangSC-Semibold, PingFang SC;
         font-weight: 600;
         color: rgba(22, 29, 37, 1);
       }

@@ -119,7 +119,6 @@
 
   .readAll {
     font-size: 14px;
-    font-family: PingFangSC-Medium, PingFang SC;
     font-weight: 500;
     color: rgba(22, 29, 37, 0.8);
     margin-right: 40px;

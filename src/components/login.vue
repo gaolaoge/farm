@@ -1672,7 +1672,6 @@
   .findBack {
     .loginNav .forgetPW {
       font-size: 18px;
-      font-family: PingFangSC-Regular, PingFang SC;
       color: rgba(22, 29, 37, 1) !important;
     }
 

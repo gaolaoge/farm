@@ -516,7 +516,7 @@
                 sessionStorage.setItem('taskListActive', '0')
                 this.table.navListActiveIndex = 0
                 this.$refs.uploadMode.specialJump = true
-                this.$refs.uploadMode.getList({parametersToBeSet: 1})
+                this.$refs.uploadMode.getList({setParameters: true})
                 break
               case this.$t('task.status.render_ing'):       // 渲染中
                 sessionStorage.setItem('taskListActive', '1')

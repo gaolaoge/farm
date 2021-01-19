@@ -469,6 +469,10 @@
 
     .tableGroup {
       height: 100%;
+      padding-bottom: 20px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
     }
 
     .tableList {
@@ -577,10 +581,6 @@
         .s {
           margin-right: 10px;
         }
-
-        &.active {
-
-        }
       }
 
       .btn {
@@ -615,7 +615,7 @@
       &:nth-last-of-type(1) {
         margin-bottom: 0px;
         border-radius: 8px;
-        height: 198px;
+        flex-grow: 1;
       }
     }
 
@@ -740,7 +740,6 @@
 
     .f {
       font-size: 14px;
-      font-family: PingFangSC-Medium, PingFang SC;
       font-weight: 500;
       color: rgba(22, 29, 37, 1);
       margin-left: 59px;
@@ -757,7 +756,6 @@
 
       p {
         font-size: 14px;
-        font-family: PingFangSC-Medium, PingFang SC;
         font-weight: 500;
         color: rgba(27, 83, 244, 1);
         line-height: 27px;
@@ -779,7 +777,6 @@
 
         p {
           font-size: 14px;
-          font-family: PingFangSC-Regular, PingFang SC;
           font-weight: 400;
           color: rgba(22, 29, 37, 1);
           margin-top: 12px;

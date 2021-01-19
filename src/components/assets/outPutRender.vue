@@ -105,7 +105,7 @@
         :total="table.outPutTableTotal">
       </el-pagination>
       <div class="farm-primary-form-btn btn" @click="refreshF(false)">
-        <span>{{ refresh }}</span>
+        <span>{{ $t('public_text.refresh') }}</span>
       </div>
       <div class="gz" @click="openPlugin">
         <img src="@/icons/gz-black.png" class="d">
@@ -173,8 +173,7 @@
               name: 'main'
             }
           ],
-        },
-        refresh: '刷新'
+        }
       }
     },
     props: {

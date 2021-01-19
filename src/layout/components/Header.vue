@@ -877,7 +877,6 @@
           span {
             font-size: 14px;
             line-height: 44px;
-            font-family: PingFangSC-Semibold, PingFang SC;
             vertical-align: text-bottom;
 
             &.tit {

@@ -261,6 +261,7 @@
     width: 100%;
     height: 100%;
     overflow: hidden;
+    font-family: PingFangSC-Medium, PingFang SC;
 
     .navbar {
       flex-shrink: 0;

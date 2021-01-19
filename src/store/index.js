@@ -52,6 +52,7 @@ export default new Vuex.Store({
     socket_plugin_time: 0,  // 重连次数
     socket_backS: null,     // 与后台关联的websocket
     socket_backS_msg: null, // 与后台关联的websocket接收的参数
+    socket_backs_status: false, // 与后台关联的websocket的状态
     socket_backS_time: 0,
     thumb: {
       showLargeThumbWin: false,
@@ -72,6 +73,7 @@ export default new Vuex.Store({
       state.socket_backS.addEventListener('open', () => {
         console.log('--与后台连接成功--')
         this.commit('toZore', 'socket_backS_time')
+        this.commit('websocketConnectonSuc', 'backs')
       })
       state.socket_backS.addEventListener('error', () => {
         if (state.socket_backS_time >= 5) {
@@ -133,6 +135,10 @@ export default new Vuex.Store({
       if (!state.socket_backS) return false
       state.socket_backS.close()
       state.socket_backS = null
+    },
+    // websocket连接成功
+    websocketConnectonSuc(state, type) {
+      if(type == 'backs') state.socket_backs_status = true
     },
     // 打开已欠费窗口
     hasBeenOverdueBills(state, obj) {

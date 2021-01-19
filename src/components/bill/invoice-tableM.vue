@@ -134,7 +134,7 @@
         :current-page.sync="table.currentPage"
         :total="table.total"/>
       <div class="farm-primary-form-btn btn" @click="getList">
-        <span>{{ refresh }}</span>
+        <span>{{ $t('public_text.refresh') }}</span>
       </div>
     </div>
   </div>
@@ -210,8 +210,7 @@
           iquireBtn: '查询',
           resetBtn: '重置',
           exportBtn: '导出记录'
-        },
-        refresh: '刷新'
+        }
       }
     },
     components: {

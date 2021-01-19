@@ -949,6 +949,7 @@
       },
       'zoneId': {
         handler: async function (id) {
+          if(!id) return false
           let data = await getRenderMode(id)
           this.stepThreeBase.mode.modeList = data.data.data.map(item => {
             return {
@@ -1787,7 +1788,6 @@
 
               .span {
                 font-size: 14px;
-                font-family: PingFangSC-Regular, PingFang SC;
                 color: rgba(22, 29, 37, 1);
               }
 
@@ -1840,7 +1840,6 @@
                       color: rgba(22, 29, 37, 0.6);
                       font-size: 14px;
                       cursor: pointer;
-                      font-family: PingFangSC-Regular, PingFang SC;
 
                       &:hover {
                         color: rgba(22, 29, 37, 0.8);
@@ -1870,7 +1869,6 @@
                           color: rgba(22, 29, 37, 0.6);
                           font-size: 14px;
                           cursor: pointer;
-                          font-family: PingFangSC-Regular, PingFang SC;
 
                           &:hover {
                             color: rgba(22, 29, 37, 0.8);
@@ -1902,7 +1900,6 @@
 
                       .span {
                         font-size: 14px;
-                        font-family: PingFangSC-Regular, PingFang SC;
                         color: rgba(22, 29, 37, 0.29);
                       }
                     }
@@ -1924,7 +1921,6 @@
 
                     .sp {
                       font-size: 14px;
-                      font-family: PingFangSC-Regular, PingFang SC;
                       color: rgba(22, 29, 37, 0.4);
                     }
 
@@ -1974,7 +1970,6 @@
 
                     span {
                       font-size: 14px;
-                      font-family: PingFangSC-Regular, PingFang SC;
                       color: rgba(22, 29, 37, 0.5);
                       margin-right: 30px;
                       cursor: pointer;
@@ -2243,12 +2238,10 @@
 
       .base {
         font-size: 14px;
-        font-family: PingFangSC-Regular, PingFang SC;
         color: rgba(22, 29, 37, 0.6);
 
         .num {
           font-size: 20px;
-          font-family: PingFangSC-Semibold, PingFang SC;
           font-weight: 600;
           color: rgba(27, 83, 244, 1);
         }
@@ -2689,7 +2682,6 @@
     display: flex;
     align-items: center;
     font-size: 14px;
-    font-family: PingFangSC-Regular, PingFang SC;
     color: rgba(22, 29, 37, 0.8);
 
     & > span {

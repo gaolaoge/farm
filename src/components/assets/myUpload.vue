@@ -20,6 +20,7 @@
         @selection-change="handleSelectionChange"
         @filter-change="filterHandler"
         @row-click="enterFolder"
+        @sort-change="sortChange"
         :border=true
         class="o"
         style="width: 100%">
@@ -33,7 +34,8 @@
         <!--文件名-->
         <el-table-column
           label="文件名"
-          sortable
+          prop="fileName"
+          sortable="custom"
           show-overflow-tooltip
           min-width="180">
           <template slot-scope="scope">
@@ -64,9 +66,9 @@
         </el-table-column>
         <!--文件大小-->
         <el-table-column
-          prop="size"
+          prop="fileSize"
           label="文件大小"
-          sortable
+          sortable="custom"
           show-overflow-tooltip
           width="120"/>
         <!--文件类型-->
@@ -80,14 +82,14 @@
           v-if="false"
           prop="validPeriod"
           label="剩余有效期（天）"
-          sortable
+          sortable="custom"
           show-overflow-tooltip
           width="220"/>
         <!--更新时间-->
         <el-table-column
           prop="updateTime"
           label="更新时间"
-          sortable
+          sortable="custom"
           show-overflow-tooltip
           width="280"/>
 
@@ -109,7 +111,7 @@
         :total="table.total">
       </el-pagination>
       <div class="farm-primary-form-btn btn" @click="refreshF(false)">
-        <span>{{ refresh }}</span>
+        <span>{{ $t('public_text.refresh') }}</span>
       </div>
       <div class="gz" @click="openPlugin">
         <img src="@/icons/gz-black.png" class="d">
@@ -199,6 +201,9 @@
           tableData: [],
           total: 0,
           pageIndex: 1,
+          pageSize: 10,
+          sortBy: 'fileName',           // 排序关键字   文件名fileName  文件大小fileSize  更新时间updateTime
+          sortType: 0,                  // 排序方向  0降序 1升序
           selectionList: [],            // table选中项
           rowUuid: null,                // 选中行Uuid
           objectName: null,             // 项目名
@@ -223,7 +228,6 @@
           },
           resolve: null,         // 回调函数
         },
-        refresh: '刷新',
         createBaseShow: false,
         createProject: {
           tit: '新建文件夹',
@@ -262,7 +266,7 @@
             })
             this.nav = nav
             this.path = data.other == '' ? '/' : data.other
-
+            this.table.total = data.total
             this.table.tableData = data.data.map((item, index_) => {
               return Object.assign(item, {
                 'updateTime': createDateFun(new Date(item.updateTime)),
@@ -272,7 +276,7 @@
                 'nameInput': item.fileType == '文件夹' ? item.fileName.slice(0, item.fileName.length - 1) : item.fileName,
                 'position': this.path + item.fileName,
                 'ing': item.completedTime != 0 ? false : true,
-                'size': item.fileType == '文件夹' ? '-' : getFileSize(item.size),
+                'fileSize': item.fileType == '文件夹' ? '-' : getFileSize(item.size),
                 'rename': false,
                 index_
               })
@@ -332,6 +336,17 @@
     },
     methods: {
       ...mapActions(['WEBSOCKET_PLUGIN_INIT']),
+      // 排序
+      sortChange({column, prop, order}) {
+        let {table, path, searchInputVal} = this
+        if(order == 'ascending') table.sortType = 1
+        else table.sortType = 0
+        if(!order) table.sortBy = 'fileName'
+        else table.sortBy = prop
+        table.pageIndex = 1
+        console.log(table)
+        this.getAssetsCatalog(path, searchInputVal)
+      },
       // 打开【传输列表】
       openPlugin() {
         if (this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_SEND', 'open')
@@ -392,14 +407,17 @@
       // 进入文件夹
       enterFolder(row, column, event) {
         if (row.fileType != '文件夹') return false
+        else if (event.toElement && event.toElement.classList.contains('rename')) return false   // 点击事件在【重命名】DOM上触发 谷歌
+        else if (event.srcElement && event.srcElement.classList.contains('rename')) return false   // 点击事件在【重命名】DOM上触发 火狐
         this.table.tableData = []
         this.path += (row.fileName + '/')
         this.searchInputVal = ''
         this.getAssetsCatalog(this.path, this.searchInputVal)
       },
       // 翻页
-      handleCurrentChange(val) {
-
+      handleCurrentChange(index) {
+        this.table.pageIndex = index
+        this.getAssetsCatalog(this.path, this.searchInputVal)
       },
       // 多选
       handleSelectionChange(val) {
@@ -478,11 +496,12 @@
       },
       // 确认 - 移动/复制
       configF(type) {
-        if (this.dl.checkPath) this.$store.commit('WEBSOCKET_BACKS_SEND', {
+        let {dl, table, user} = this
+        if (dl.checkPath) this.$store.commit('WEBSOCKET_BACKS_SEND', {
           'code': type == 'move' ? 605 : 606,
-          'customerUuid': this.user.id,
-          'targetFolderPath': this.dl.checkPath,
-          'filePathList': this.table.selectionList.map(item => item.position)
+          'customerUuid': user.id,
+          'targetFolderPath': dl.checkPath,
+          'filePathList': table.selectionList.map(item => item.position)
         })
       },
       // 复制到
@@ -553,13 +572,20 @@
       },
       // 获取网盘各级目录
       getAssetsCatalog(filePath, keyword) {
-        if (!this.socket_backS) setTimeout(() => this.getAssetsCatalog(filePath, keyword), 1000)
-        else this.$store.commit('WEBSOCKET_BACKS_SEND', {
-          'code': 601,
-          'customerUuid': this.user.id,
-          keyword,
-          filePath
-        })
+        if (!this.socket_backs_status) setTimeout(() => this.getAssetsCatalog(filePath, keyword), 1000)
+        else {
+          let {pageIndex, pageSize, sortBy, sortType} = this.table
+          this.$store.commit('WEBSOCKET_BACKS_SEND', {
+            'code': 601,
+            'customerUuid': this.user.id,
+            keyword,
+            filePath,
+            pageIndex,
+            pageSize,
+            sortBy,
+            sortType
+          })
+        }
       },
 
     },
@@ -567,7 +593,7 @@
       this.getAssetsCatalog('', this.searchInputVal)
     },
     computed: {
-      ...mapState(['user', 'socket_backS', 'socket_plugin', 'socket_backS_msg', 'socket_plugin_msg']),
+      ...mapState(['user', 'socket_backS', 'socket_plugin', 'socket_backS_msg', 'socket_backs_status', 'socket_plugin_msg']),
       verif() {
         return (Boolean(this.newNameErr) || !Boolean(this.createProject.name.trim()))
       },
@@ -592,7 +618,6 @@
       color: rgba(22, 29, 37, 0.79);
       font-size: 14px;
       line-height: 20px;
-      font-family: PingFangSC-Regular, PingFang SC;
       opacity: 0;
       z-index: 1;
       outline: none;
@@ -609,7 +634,6 @@
       /*color: tomato;*/
       font-size: 14px;
       line-height: 20px;
-      font-family: PingFangSC-Regular, PingFang SC;
       opacity: 1;
 
       &.rename {
@@ -704,7 +728,6 @@
         margin-right: 20px;
 
         span {
-          font-family: PingFangSC-Medium, PingFang SC;
           font-weight: 500;
           font-size: 14px;
         }

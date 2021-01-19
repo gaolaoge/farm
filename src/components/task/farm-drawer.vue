@@ -1,11 +1,12 @@
 <template>
-  <div class="farm-drawer-wrapper"
-       v-loading="loading"
-       element-loading-background="rgba(0, 0, 0, 0.49)"
-       element-loading-spinner="el-icon-loading"
-       element-loading-text="拼命加载中...">
+  <div class="farm-drawer-wrapper">
     <!--分析结果-->
-    <div :class="[{'active': showDrawer}, 'farm-drawer']" v-show="typeInfo == 'upload-table'">
+    <div :class="[{'active': showDrawer}, 'farm-drawer']"
+         v-show="typeInfo == 'upload-table'"
+         v-loading="loading"
+         element-loading-background="rgba(0, 0, 0, 0.49)"
+         element-loading-spinner="el-icon-loading"
+         element-loading-text="拼命加载中...">
       <div class="farm-drawer-title">
         <div class="drawer-t">
           <span class="drawer-text">{{ details.t }}</span>
@@ -464,7 +465,12 @@
       </div>
     </div>
     <!--渲染结果-->
-    <div :class="['farm-drawer', 'r', {'active': showDrawer}]" v-show="typeInfo == 'result'">
+    <div :class="['farm-drawer', 'r', {'active': showDrawer}]"
+         v-show="typeInfo == 'result'"
+         v-loading="loading"
+         element-loading-background="rgba(0, 0, 0, 0.49)"
+         element-loading-spinner="el-icon-loading"
+         element-loading-text="拼命加载中...">
       <!--表头-->
       <div class="farm-drawer-title">
         <div class="drawer-t">
@@ -1288,6 +1294,7 @@
       },
       'zoneId': {
         handler: function (id) {
+          if(!id) return false
           this.getRenderModeF(id)
         },
         immediate: true
@@ -1296,6 +1303,7 @@
     methods: {
       // 获取渲染模式
       async getRenderModeF(id) {
+        if(!id) return false
         let data = await getRenderMode(id)
         this.setting.mode.modeList = data.data.data.map(item => {
           return {
@@ -1319,7 +1327,7 @@
       getData() {
         this.loading = true
         if (this.typeInfo == 'upload-table') this.getUpTopItemMore()
-        else this.getRenderItemMoreF()
+        else this.getRenderItemMoreTableF()
       },
       // 上传分析 -  获取详情
       async getUpTopItemMore() {
@@ -1357,34 +1365,24 @@
             details.showProgress = true
             break
         }
-        this.loading = false
-        // } else {
-        // 分析状态
-        // this.details.showProgress = false
         let {data} = await upTopTableSeeMore(`taskUuid=${taskData.taskUuid}`)
+        if (data.data && data.data.status) details.status = data.data.status
+        if (data.data && data.data.warningMessage)
+          details.warningList = data.data.warningMessage.map(curr => ({
+              title: curr,
+              content: ''
+            }))
+        if (data.data && data.data.errorMessage)
+          details.errorList = data.data.errorMessage.map(curr => ({
+              title: curr,
+              content: ''
+            }))
         this.loading = false
-        if (data.data.status) details.status = data.data.status
-        if (data.data.warningMessage)
-          details.warningList = data.data.warningMessage.map(curr => {
-            return {
-              title: curr,
-              content: ''
-            }
-          })
-        if (data.data.errorMessage)
-          details.errorList = data.data.errorMessage.map(curr => {
-            return {
-              title: curr,
-              content: ''
-            }
-          })
-        // }
       },
-      // 渲染下载 - 获取详情 - 渲染结果
-      getRenderItemMoreF() {
-        this.loading = true
-        this.getRenderItemMoreTableF()
-      },
+      // // 渲染下载 - 获取详情 - 渲染结果
+      // getRenderItemMoreF() {
+      //   this.getRenderItemMoreTableF()
+      // },
       // 渲染下载 - 详情 - 缩略图
       async showMiniImg(row, column, event) {
         try {
@@ -1483,6 +1481,7 @@
           creationTimeVal: createDateFun(new Date(taskInfo.createTime))          // 创建时间
         })
         this.showMiniImg(result.tableData[0])
+        this.loading = false
       },
       //关闭抽屉 复位
       closeDrawer() {
@@ -2302,7 +2301,7 @@
     border: 0px;
     color: rgba(22, 29, 37, 0.79);
     font-size: 14px;
-    font-family: 'SourceHanSansCN', 'Arial Bold';
+    font-family: PingFangSC-Medium, PingFang SC;
 
     &.show {
       opacity: 1;
@@ -2735,5 +2734,11 @@
 
   /deep/.el-table__body-wrapper {
     height: auto !important;
+  }
+
+  .task-table-seeMore {
+    /deep/.el-table__body-wrapper {
+      height: 556px !important;
+    }
   }
 </style>

@@ -181,8 +181,8 @@
     },
     watch: {
       '$route.params': {
-        handler: function(val){
-          if(val.index) this.table.navListActiveIndex = val.index
+        handler: function (val) {
+          if (val.index) this.table.navListActiveIndex = val.index
         },
         immediate: true
       }
@@ -368,12 +368,10 @@
       height: calc(100% - 530px);
     }
 
-    /deep/ .el-date-editor {
-      .el-range__icon,
-      .el-range-separator,
-      .el-input__icon.el-range__close-icon {
-        line-height: 22px;
-      }
+    .el-range__icon,
+    .el-range-separator,
+    .el-input__icon.el-range__close-icon {
+      line-height: 22px;
     }
 
     .recharge-table,
