@@ -3,7 +3,7 @@
     <div class="container">
       <p class="title">
         <span>{{ title }}</span>
-        <img src="@/icons/shutDialogIcon.png" alt="" class="shutImg" @click="cancelFun">
+        <img src="@/icons/shutDialogIcon.png" class="shutImg" @click="cancelFun">
       </p>
       <!--编辑-->
       <div class="content" v-show="editing">
@@ -75,7 +75,7 @@
       </div>
       <!--修改成功-->
       <div class="success" v-show="!editing">
-        <img src="@/icons/smail.png" alt="">
+        <img src="@/icons/smail.png">
         <h5 class="tit">{{ successTit }}</h5>
         <span class="dire">{{ time }}{{ unit }}{{ dire }}</span>
         <div class="btnn" @click="cancelFun"><span>{{ btnn }}</span></div>

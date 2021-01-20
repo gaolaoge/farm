@@ -15,7 +15,7 @@
       <div class="oper" :class="[{'inhome': inHome}]">
         <!--选择分区-->
         <div class="workbench">
-          <div class="switch"><img src="@/icons/switch-icon.png" alt=""></div>
+          <div class="switch"><img src="@/icons/switch-icon.png"></div>
           <el-select v-model="workBenchVal" class="workBench-optionBase">
             <el-option
               v-for="(item,index) in workBenchList"
@@ -88,7 +88,7 @@
                      <span class="sb">
                        {{ user.name }}
                      </span>
-                      <img :src="userOperateList[0]['iconUrl']" alt="" class="iconUrl">
+                      <img :src="userOperateList[0]['iconUrl']" class="iconUrl">
                   </span>
                 </span>
                 </li>
@@ -154,78 +154,78 @@
       <div class="guide-wrapper" v-if="guideShow">
         <!--第一步-->
         <div class="guide-step step-one" v-show="guideShowStep == 1">
-          <img src="@/icons/step-jump-over.png" alt="" class="jump-btn" @click="showGuide">
+          <img src="@/icons/step-jump-over.png" class="jump-btn" @click="showGuide">
           <div class="step-content">
-            <img src="@/assets/step-one.png" alt="" class="welcome" @click="guideShowStep = 2">
+            <img src="@/assets/step-one.png" class="welcome" @click="guideShowStep = 2">
           </div>
         </div>
         <!--第二步-->
         <div class="guide-step step-two" v-show="guideShowStep == 2">
-          <img src="@/icons/step-jump-over.png" alt="" class="jump-btn" @click="showGuide">
+          <img src="@/icons/step-jump-over.png" class="jump-btn" @click="showGuide">
           <div class="step-content">
-            <img src="@/assets/step-two.png" class="newTesk" alt="">
+            <img src="@/assets/step-two.png" class="newTesk">
             <div class="step-btn">
-              <img src="@/icons/step-previous.png" alt="" class="previous first">
-              <img src="@/icons/step-next.png" alt="" class="next" @click="guideShowStep = 3">
+              <img src="@/icons/step-previous.png" class="previous first">
+              <img src="@/icons/step-next.png" class="next" @click="guideShowStep = 3">
             </div>
           </div>
         </div>
         <!--第三步-->
         <div class="guide-step step-three" v-show="guideShowStep == 3">
-          <img src="@/icons/step-jump-over.png" alt="" class="jump-btn" @click="showGuide">
+          <img src="@/icons/step-jump-over.png" class="jump-btn" @click="showGuide">
           <div class="step-content">
-            <img src="@/assets/step-three.png" alt="" class="newMode">
+            <img src="@/assets/step-three.png" class="newMode">
             <div class="step-btn">
-              <img src="@/icons/step-next.png" alt="" class="previous" style="transform: rotate(180deg)"
+              <img src="@/icons/step-next.png" class="previous" style="transform: rotate(180deg)"
                    @click="guideShowStep = 2">
-              <img src="@/icons/step-next.png" alt="" class="next" @click="guideShowStep = 4">
+              <img src="@/icons/step-next.png" class="next" @click="guideShowStep = 4">
             </div>
           </div>
         </div>
         <!--第四步-->
         <div class="guide-step step-four" v-show="guideShowStep == 4">
-          <img src="@/icons/step-jump-over.png" alt="" class="jump-btn" @click="showGuide">
+          <img src="@/icons/step-jump-over.png" class="jump-btn" @click="showGuide">
           <div class="step-content">
-            <img src="@/assets/step-four.png" alt="" class="set">
+            <img src="@/assets/step-four.png" class="set">
             <div class="step-btn">
-              <img src="@/icons/step-next.png" alt="" class="previous" style="transform: rotate(180deg)"
+              <img src="@/icons/step-next.png" class="previous" style="transform: rotate(180deg)"
                    @click="guideShowStep = 3">
-              <img src="@/icons/step-next.png" alt="" class="next" @click="guideShowStep = 5">
+              <img src="@/icons/step-next.png" class="next" @click="guideShowStep = 5">
             </div>
           </div>
         </div>
         <!--第五步-->
         <div class="guide-step step-five" v-show="guideShowStep == 5">
-          <img src="@/icons/step-jump-over.png" alt="" class="jump-btn" @click="showGuide">
+          <img src="@/icons/step-jump-over.png" class="jump-btn" @click="showGuide">
           <div class="step-content">
-            <img src="@/assets/step-five.png" alt="" class="down">
+            <img src="@/assets/step-five.png" class="down">
             <div class="step-btn">
-              <img src="@/icons/step-next.png" alt="" class="previous" style="transform: rotate(180deg)"
+              <img src="@/icons/step-next.png" class="previous" style="transform: rotate(180deg)"
                    @click="guideShowStep = 4">
-              <img src="@/icons/step-next.png" alt="" class="next" @click="guideShowStep = 6">
+              <img src="@/icons/step-next.png" class="next" @click="guideShowStep = 6">
             </div>
           </div>
         </div>
         <!--第六步 补加-->
         <div class="guide-step step-additional" v-show="guideShowStep == 6">
-          <img src="@/icons/step-jump-over.png" alt="" class="jump-btn" @click="showGuide">
+          <img src="@/icons/step-jump-over.png" class="jump-btn" @click="showGuide">
           <div class="step-content">
-            <img src="@/assets/step-six.png" alt="" class="additional">
+            <img src="@/assets/step-six.png" class="additional">
             <div class="step-btn">
-              <img src="@/icons/step-next.png" alt="" class="previous" style="transform: rotate(180deg)"
+              <img src="@/icons/step-next.png" class="previous" style="transform: rotate(180deg)"
                    @click="guideShowStep = 5">
-              <img src="@/icons/step-next.png" alt="" class="next" @click="guideShowStep = 7">
+              <img src="@/icons/step-next.png" class="next" @click="guideShowStep = 7">
             </div>
           </div>
         </div>
         <!--第7步-->
         <div class="guide-step step-six" v-show="guideShowStep == 7" @click="showGuide">
           <div class="step-content">
-            <img src="@/assets/six-main.png" alt="" class="main">
-            <img src="@/assets/six-top-left.png" alt="" class="tl">
-            <img src="@/assets/six-top-right.png" alt="" class="tr">
-            <img src="@/assets/six-bottom-left.png" alt="" class="bl">
-            <img src="@/assets/six-bottom-right.png" alt="" class="br">
+            <img src="@/assets/six-main.png" class="main">
+            <img src="@/assets/six-top-left.png" class="tl">
+            <img src="@/assets/six-top-right.png" class="tr">
+            <img src="@/assets/six-bottom-left.png" class="bl">
+            <img src="@/assets/six-bottom-right.png" class="br">
           </div>
         </div>
       </div>
@@ -877,7 +877,6 @@
           span {
             font-size: 14px;
             line-height: 44px;
-            font-family: PingFangSC-Semibold, PingFang SC;
             vertical-align: text-bottom;
 
             &.tit {

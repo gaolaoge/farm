@@ -209,10 +209,10 @@
     <!--充值窗口-->
     <el-dialog title="" width="600px" :visible.sync="dialogNode">
       <header class="dl_header">
-        <span>{{ dialogNodeText.title }}</span>
+        <span class="title">{{ dialogNodeText.title }}</span>
         <img src="@/icons/shutDialogIcon.png" class="closeIcon" @click="dialogNode = false">
       </header>
-      <div class="dl_wrapper">
+      <div class="dl_wrapper2">
         <p class="f">亲爱的 {{ user.account }} ，您好！</p>
         <p class="f s">因服务更新原因，烦请您联系客服进行线下充值～</p>
         <div class="e">
@@ -469,6 +469,10 @@
 
     .tableGroup {
       height: 100%;
+      padding-bottom: 20px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
     }
 
     .tableList {
@@ -577,10 +581,6 @@
         .s {
           margin-right: 10px;
         }
-
-        &.active {
-
-        }
       }
 
       .btn {
@@ -615,7 +615,7 @@
       &:nth-last-of-type(1) {
         margin-bottom: 0px;
         border-radius: 8px;
-        height: 198px;
+        flex-grow: 1;
       }
     }
 
@@ -733,36 +733,13 @@
     }
   }
 
-  .dl_header {
-    height: 36px;
-    text-align: center;
-    background-color: rgba(241, 244, 249, 1);
-    box-shadow: 0px 1px 6px 0px rgba(27, 83, 244, 0.3);
-    padding: 0px 30px;
-    box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    span {
-      font-size: 14px;
-      font-weight: 600;
-      color: rgba(22, 29, 37, 1);
-    }
-
-    img {
-      cursor: pointer;
-    }
-  }
-
-  .dl_wrapper {
+  .dl_wrapper2 {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
 
     .f {
       font-size: 14px;
-      font-family: PingFangSC-Medium, PingFang SC;
       font-weight: 500;
       color: rgba(22, 29, 37, 1);
       margin-left: 59px;
@@ -779,7 +756,6 @@
 
       p {
         font-size: 14px;
-        font-family: PingFangSC-Medium, PingFang SC;
         font-weight: 500;
         color: rgba(27, 83, 244, 1);
         line-height: 27px;
@@ -801,7 +777,6 @@
 
         p {
           font-size: 14px;
-          font-family: PingFangSC-Regular, PingFang SC;
           font-weight: 400;
           color: rgba(22, 29, 37, 1);
           margin-top: 12px;

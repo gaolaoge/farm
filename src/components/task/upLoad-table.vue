@@ -113,6 +113,11 @@
       <div class="farm-primary-form-btn btn" @click="getList(null, true)">
         <span>{{ refresh }}</span>
       </div>
+      <div class="gz" @click="openPlugin">
+        <img src="@/icons/gz-black.png" class="d">
+        <img src="@/icons/gz-blue.png" class="h">
+        <span>{{ $t('transportBtn') }}</span>
+      </div>
     </div>
     <!--详情抽屉-->
     <farmDrawer :showDrawer="showDrawer"
@@ -171,6 +176,7 @@
           selectionList: [],            // table 选中项
           uploadStatus: [],             // 上传状态数组
           analyseStatus: [],            // 分析状态数组
+          setParameters: false,         // 筛选 - 待设置参数 true/false
           projectList: [],              // 筛选 - 所属项目数组
           statusList: [
             // {text: '全部', value: '全部'},
@@ -195,6 +201,11 @@
       }
     },
     methods: {
+      // 打开【传输列表】
+      openPlugin() {
+        if (this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_SEND', 'open')
+        else this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.$store.commit('WEBSOCKET_PLUGIN_SEND', 'open'))
+      },
       // 清除筛选条件
       clearFilterF(type) {
         // this.$refs.uploadTableImportant.clearFilter(type)
@@ -308,7 +319,7 @@
           lock: true,
           text: 'Loading',
           spinner: 'el-icon-loading',
-          background: 'rgba(0, 0, 0, 0.7)'
+          background: 'rgba(0, 0, 0, 0.49)'
         })
         // {
         //   zoneUuid: this.zoneId,             //分区UUID
@@ -319,32 +330,33 @@
         //   analyseStatus: this.table.analyseStatus,             //分析状态数组
         //   projectUuid: this.projectUuidList                    //项目UUID数组
         // }
-        let parametersToBeSet = (obj && obj.parametersToBeSet) ? obj.parametersToBeSet : '',
-          projectUuid = (obj && obj.projectUuid) ? [obj.projectUuid] : ''
-        if (obj && obj.pageIndex) this.table.current = obj.pageIndex
+        let projectUuid = (obj && obj.projectUuid) ? [obj.projectUuid] : '',
+          {table, searchInput, zoneId} = this
+        if(obj && obj.setParameters) table.setParameters = true
+        if (obj && obj.pageIndex) table.current = obj.pageIndex
         if (obj && obj.type) switch (obj.type) {
           case 'waitSetUpParam':       // 待设置参数
-            parametersToBeSet = 1
+            table.setParameters = true
             break
           case 'analyzing':       // 分析中
-            this.table.analyseStatus = [2]
+            table.analyseStatus = [2]
             break
           case 'analyseFail':       // 分析失败
-            this.table.analyseStatus = [5]
+            table.analyseStatus = [5]
             break
           case 'analyseWarn':       // 分析警告
-            this.table.analyseStatus = [4]
+            table.analyseStatus = [4]
             break
         }
         let data = await getTaskTableList({
-            zoneUuid: this.zoneId,
-            keyword: this.searchInput,
-            pageIndex: this.table.current,
-            pageSize: this.table.pageSize,
-            uploadStatus: this.table.uploadStatus,
-            analyseStatus: this.table.analyseStatus,
+            zoneUuid: zoneId,
+            keyword: searchInput,
+            pageIndex: table.current,
+            pageSize: table.pageSize,
+            uploadStatus: table.uploadStatus,
+            analyseStatus: table.analyseStatus,
             projectUuid,
-            setParameters: parametersToBeSet
+            setParameters: table.setParameters          // 1待设置参数 0非待设置参数
           }),
           usersList = new Set(),
           statusList = new Set()

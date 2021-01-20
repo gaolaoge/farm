@@ -1,6 +1,6 @@
 <template>
   <div class="demo">
-    <img src="@/assets/404.png" alt="">
+    <img src="@/assets/404.png">
     <span>{{ text }}</span>
     <div class="btn" @click="$router.push('/')">{{ btn }}</div>
   </div>

@@ -33,7 +33,7 @@
 <style scoped lang="less">
   .appMain-wrapper {
     width: 100%;
-    height: calc(100vh - 120px);
+    height: calc(100% - 120px);
     /*padding-bottom: 20px;*/
     /*box-sizing: border-box;*/
     overflow: hidden;
@@ -48,7 +48,7 @@
     }
 
     &.non-home {
-      height: calc(100vh - 80px);
+      height: calc(100% - 80px);
     }
   }
   /*@media screen and (orientation: portrait) {*/

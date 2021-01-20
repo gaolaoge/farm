@@ -4,12 +4,12 @@
       <div class="f">
         <!--头像-->
         <div class="avatar">
-          <img :src="user.avatar ? user.avatar : require('@/assets/userImg.png')" alt="">
+          <img :src="user.avatar ? user.avatar : require('@/assets/userImg.png')">
         </div>
         <!--账号&等级-->
         <div class="nl">
           <div class="name">{{ user.name }}</div>
-          <div class="level"><img src="@/icons/vipIcon.png" alt="">{{ user.level }}</div>
+          <div class="level"><img src="@/icons/vipIcon.png">{{ user.level }}</div>
         </div>
         <!--下拉框-->
         <div class="list" v-operating>

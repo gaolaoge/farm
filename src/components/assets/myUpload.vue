@@ -20,6 +20,7 @@
         @selection-change="handleSelectionChange"
         @filter-change="filterHandler"
         @row-click="enterFolder"
+        @sort-change="sortChange"
         :border=true
         class="o"
         style="width: 100%">
@@ -33,19 +34,41 @@
         <!--文件名-->
         <el-table-column
           label="文件名"
-          sortable
+          prop="fileName"
+          sortable="custom"
           show-overflow-tooltip
           min-width="180">
           <template slot-scope="scope">
-            <span>{{ scope.row.fileName }}</span>
+            <img src="@/icons/folder-a-icon.png" v-if="['文件夹'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/mp3-a-icon.png" v-else-if="['aiff', 'cd', 'MP3', 'wav', 'wma', 'vqf'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/mp4-a-icon.png" v-else-if="['mp4', '3pg', 'avi', 'asf', 'flv', 'mpeg', 'mov', 'rm', 'wmv'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/ppt-a-icon.png" v-else-if="['ppt'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/word-a-icon.png" v-else-if="['doc', 'docx'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/exe-a-icon.png" v-else-if="['zip', '7z', 'rar', 'rar4', 'tar.gz', 'tar.xz', 'tar.bz2', 'tar.z'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/txt-a-icon.png" v-else-if="['txt'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/html-a-icon.png" v-else-if="['html'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/img-a-icon.png" v-else-if="['ai', 'als', 'avif', 'bmp', 'bit', 'cdr', 'cin', 'cth', 'ct', 'dds', 'dxf', 'exr', 'exif', 'eps', 'fpx', 'gif', 'hdr', 'iff', 'jpg', 'mt', 'nt', 'pcx', 'pcd', 'pic', 'picture','png','psd', 'ppm', 'ps', 'raw', 'rla', 'rgb', 'svg', 'sgi', 'st', 'tga', 'tif', 'tiff', 'tim', 'tt', 'ufo', 'WMF', 'webp', 'xpm', 'yuv', 'zt'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/pdf-a-icon.png" v-else-if="['pdf'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/maya-a-icon.png" v-else-if="['ma', 'mb'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/max-a-icon.png" v-else-if="['max'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/file-a-icon.png" v-else class="a-icon">
+            <div class="fileNameBox" :style="{'width': scope.row.fileName.length * 10 + 'px'}">
+              <input type="text"
+                     :ref="'renameInput-' + scope.row.index_"
+                     v-model="scope.row.nameInput"
+                     :class="['renameInputFromTab', {'rename': scope.row.rename}]"
+                     @keyup.center="confirmToRename(scope.row)"
+                     @blur="confirmToRename(scope.row)">
+              <span :class="['name', {'rename': scope.row.rename}]">{{ scope.row.fileName }}</span>
+            </div>
             <span v-show="scope.row.ing">.cloudtransfer.uploading</span>
           </template>
         </el-table-column>
         <!--文件大小-->
         <el-table-column
-          prop="size"
+          prop="fileSize"
           label="文件大小"
-          sortable
+          sortable="custom"
           show-overflow-tooltip
           width="120"/>
         <!--文件类型-->
@@ -59,14 +82,14 @@
           v-if="false"
           prop="validPeriod"
           label="剩余有效期（天）"
-          sortable
+          sortable="custom"
           show-overflow-tooltip
           width="220"/>
         <!--更新时间-->
         <el-table-column
           prop="updateTime"
           label="更新时间"
-          sortable
+          sortable="custom"
           show-overflow-tooltip
           width="280"/>
 
@@ -88,7 +111,12 @@
         :total="table.total">
       </el-pagination>
       <div class="farm-primary-form-btn btn" @click="refreshF(false)">
-        <span>{{ refresh }}</span>
+        <span>{{ $t('public_text.refresh') }}</span>
+      </div>
+      <div class="gz" @click="openPlugin">
+        <img src="@/icons/gz-black.png" class="d">
+        <img src="@/icons/gz-blue.png" class="h">
+        <span>{{ $t('transportBtn') }}</span>
       </div>
     </div>
     <el-dialog
@@ -96,8 +124,8 @@
       :visible.sync="dialogVisible"
       width="50%">
       <header class="dl_header">
-        <span>{{ dl.title }}</span>
-        <img src="@/icons/shutDialogIcon.png" alt="" class="closeIcon" @click="shutDialog">
+        <span class="title">{{ dl.title }}</span>
+        <img src="@/icons/shutDialogIcon.png" class="closeIcon" @click="shutDialog">
       </header>
       <div class="dl-wrapper">
         <div class="tree">
@@ -173,6 +201,9 @@
           tableData: [],
           total: 0,
           pageIndex: 1,
+          pageSize: 10,
+          sortBy: 'fileName',           // 排序关键字   文件名fileName  文件大小fileSize  更新时间updateTime
+          sortType: 0,                  // 排序方向  0降序 1升序
           selectionList: [],            // table选中项
           rowUuid: null,                // 选中行Uuid
           objectName: null,             // 项目名
@@ -197,7 +228,6 @@
           },
           resolve: null,         // 回调函数
         },
-        refresh: '刷新',
         createBaseShow: false,
         createProject: {
           tit: '新建文件夹',
@@ -236,16 +266,19 @@
             })
             this.nav = nav
             this.path = data.other == '' ? '/' : data.other
-
-            this.table.tableData = data.data.map(item => {
+            this.table.total = data.total
+            this.table.tableData = data.data.map((item, index_) => {
               return Object.assign(item, {
                 'updateTime': createDateFun(new Date(item.updateTime)),
                 'completedTime': item.completedTime,
                 'validPeriod': consum(item.validPeriod),
                 'fileName': item.fileType == '文件夹' ? item.fileName.slice(0, item.fileName.length - 1) : item.fileName,
+                'nameInput': item.fileType == '文件夹' ? item.fileName.slice(0, item.fileName.length - 1) : item.fileName,
                 'position': this.path + item.fileName,
                 'ing': item.completedTime != 0 ? false : true,
-                'size': item.fileType == '文件夹' ? '-' : getFileSize(item.size)
+                'fileSize': item.fileType == '文件夹' ? '-' : getFileSize(item.size),
+                'rename': false,
+                index_
               })
             })
           } else if (data.msg == '601' && this.dialogVisible) {
@@ -275,7 +308,10 @@
             messageFun('success', '操作成功')
             this.shutDialog()
             this.getAssetsCatalog(this.path, this.searchInputVal)
-          } else if (data.msg == '6052' || data.msg == '6062' || data.msg == '6032' || data.msg == '6072') messageFun('info', '选定目标内已存在相同名称文件或文件夹，操作失败')
+          } else if (data.msg == '6072') {
+            messageFun('error', '文件名重复，请重新输入')
+            this.getAssetsCatalog(this.path, this.searchInputVal)
+          } else if (data.msg == '6052' || data.msg == '6062' || data.msg == '6032') messageFun('info', '选定目标内已存在相同名称文件或文件夹，操作失败')
           else if (data.msg == '6081') messageFun('info', '解压失败')
           else if (data.msg == '6053' || data.msg == '6063' || data.msg == '6073' || data.msg == '6082') messageFun('error', '报错，操作失败')
           else if (data.msg == '6083') {
@@ -300,6 +336,22 @@
     },
     methods: {
       ...mapActions(['WEBSOCKET_PLUGIN_INIT']),
+      // 排序
+      sortChange({column, prop, order}) {
+        let {table, path, searchInputVal} = this
+        if(order == 'ascending') table.sortType = 1
+        else table.sortType = 0
+        if(!order) table.sortBy = 'fileName'
+        else table.sortBy = prop
+        table.pageIndex = 1
+        console.log(table)
+        this.getAssetsCatalog(path, searchInputVal)
+      },
+      // 打开【传输列表】
+      openPlugin() {
+        if (this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_SEND', 'open')
+        else this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.$store.commit('WEBSOCKET_PLUGIN_SEND', 'open'))
+      },
       // 刷新
       refreshF(refresh) {
         if (!refresh) {
@@ -355,14 +407,17 @@
       // 进入文件夹
       enterFolder(row, column, event) {
         if (row.fileType != '文件夹') return false
+        else if (event.toElement && event.toElement.classList.contains('rename')) return false   // 点击事件在【重命名】DOM上触发 谷歌
+        else if (event.srcElement && event.srcElement.classList.contains('rename')) return false   // 点击事件在【重命名】DOM上触发 火狐
         this.table.tableData = []
         this.path += (row.fileName + '/')
         this.searchInputVal = ''
         this.getAssetsCatalog(this.path, this.searchInputVal)
       },
       // 翻页
-      handleCurrentChange(val) {
-
+      handleCurrentChange(index) {
+        this.table.pageIndex = index
+        this.getAssetsCatalog(this.path, this.searchInputVal)
       },
       // 多选
       handleSelectionChange(val) {
@@ -373,7 +428,6 @@
       filterHandler(value, row, column) {
         console.log(value, row, column)
       },
-
       // 上传 - 预判
       uploadFun(type) {
         if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.uploadingFun(type))
@@ -442,11 +496,12 @@
       },
       // 确认 - 移动/复制
       configF(type) {
-        if (this.dl.checkPath) this.$store.commit('WEBSOCKET_BACKS_SEND', {
+        let {dl, table, user} = this
+        if (dl.checkPath) this.$store.commit('WEBSOCKET_BACKS_SEND', {
           'code': type == 'move' ? 605 : 606,
-          'customerUuid': this.user.id,
-          'targetFolderPath': this.dl.checkPath,
-          'filePathList': this.table.selectionList.map(item => item.position)
+          'customerUuid': user.id,
+          'targetFolderPath': dl.checkPath,
+          'filePathList': table.selectionList.map(item => item.position)
         })
       },
       // 复制到
@@ -458,27 +513,33 @@
           this.dl.dlType = 'copy'
         }
       },
-      // 重命名
+      // 开启重命名视图
       rename() {
-        if (this.table.selectionList.length != 1) return
-        else if (this.table.selectionList[0]['ing']) messageFun('info', '目标正在上传中，无法操作')
-        else this.$prompt('请输入新名称', '提示', {
-            confirmButtonText: '确定',
-            cancelButtonText: '取消',
-          })
-            .then(({value}) => {
-              this.$store.commit('WEBSOCKET_BACKS_SEND', {
-                'code': 607,
-                'customerUuid': this.user.id,
-                'renameFilePath': this.path + this.table.selectionList[0]['fileName'],   // 被重命名的文件路径
-                'newFileName': value                                                     // 新文件名
-              })
-            })
-            .catch(() => null)
+        let {selectionList} = this.table
+        if (selectionList.length != 1) return false
+        else if (selectionList[0]['ing']) messageFun('info', '目标正在上传中，无法操作')
+        else {
+          selectionList[0]['rename'] = true
+          this.$refs['renameInput-' + selectionList[0]['index_']].focus()
+        }
+      },
+      // 重命名
+      confirmToRename(row) {
+        row.rename = false
+        if (row.nameInput == row.fileName) return false
+        else if (!/^(?!.*[\\\/:*?"'<>|].*).*[^\.]$/i.test(row.nameInput)) {
+          messageFun('error', '名称内不可包含特殊字符\\\/:*?"<>|且不可以.结尾')
+          row.nameInput = row.fileName
+        } else this.$store.commit('WEBSOCKET_BACKS_SEND', {
+          'code': 607,
+          'customerUuid': this.user.id,
+          'renameFilePath': this.path + row['fileName'],   // 被重命名的文件路径
+          'newFileName': row.nameInput                     // 新文件名
+        })
       },
       // 解压
       unzip(password) {
-        let type = ['zip', 'rar', 'tar', 'tar.gz', 'tar.bz2', 'tar.Z']
+        let type = ['zip', 'rar', 'tar', 'tar.gz', 'gz', 'tar.bz2', 'bz2', 'tar.Z', 'Z', '7z']
         if (this.table.selectionList.length != 1) messageFun('info', '压缩动作只能针对单一文件，操作失败')
         else if (this.table.selectionList[0]['ing']) messageFun('info', '目标正在上传中，无法操作')
         else if (!type.some(curr => curr == this.table.selectionList[0]['fileType'])) messageFun('info', '非压缩文件，无法操作')
@@ -511,20 +572,28 @@
       },
       // 获取网盘各级目录
       getAssetsCatalog(filePath, keyword) {
-        if (!this.socket_backS) setTimeout(() => this.getAssetsCatalog(filePath, keyword), 1000)
-        else this.$store.commit('WEBSOCKET_BACKS_SEND', {
-          'code': 601,
-          'customerUuid': this.user.id,
-          keyword,
-          filePath
-        })
-      }
+        if (!this.socket_backs_status) setTimeout(() => this.getAssetsCatalog(filePath, keyword), 1000)
+        else {
+          let {pageIndex, pageSize, sortBy, sortType} = this.table
+          this.$store.commit('WEBSOCKET_BACKS_SEND', {
+            'code': 601,
+            'customerUuid': this.user.id,
+            keyword,
+            filePath,
+            pageIndex,
+            pageSize,
+            sortBy,
+            sortType
+          })
+        }
+      },
+
     },
     mounted() {
       this.getAssetsCatalog('', this.searchInputVal)
     },
     computed: {
-      ...mapState(['user', 'socket_backS', 'socket_plugin', 'socket_backS_msg', 'socket_plugin_msg']),
+      ...mapState(['user', 'socket_backS', 'socket_plugin', 'socket_backS_msg', 'socket_backs_status', 'socket_plugin_msg']),
       verif() {
         return (Boolean(this.newNameErr) || !Boolean(this.createProject.name.trim()))
       },
@@ -533,6 +602,50 @@
 </script>
 
 <style lang="less" scoped>
+  .fileNameBox {
+    position: relative;
+    display: inline-block;
+    height: 20px;
+    vertical-align: middle;
+
+    .renameInputFromTab {
+      position: absolute;
+      left: 1px;
+      width: 210px;
+      background-color: transparent;
+      border: 0px;
+      border-bottom: 1px solid rgba(27, 83, 244, 1);
+      color: rgba(22, 29, 37, 0.79);
+      font-size: 14px;
+      line-height: 20px;
+      opacity: 0;
+      z-index: 1;
+      outline: none;
+
+      &.rename {
+        opacity: 1;
+      }
+    }
+
+    span {
+      position: absolute;
+      left: 1px;
+      color: rgba(22, 29, 37, 0.79);
+      /*color: tomato;*/
+      font-size: 14px;
+      line-height: 20px;
+      opacity: 1;
+
+      &.rename {
+        opacity: 0;
+      }
+    }
+  }
+
+  .a-icon {
+    vertical-align: middle;
+  }
+
   .unData {
     position: absolute;
     top: calc(47px + 42px);
@@ -558,25 +671,6 @@
     padding: 0px;
   }
 
-  .dl_header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    height: 36px;
-    background-color: rgba(241, 244, 249, 1);
-    box-shadow: 0px 1px 6px 0px rgba(27, 83, 244, 0.3);
-    border-radius: 8px 8px 0px 0px;
-    padding: 0px 20px 0px 30px;
-
-    span {
-      user-select: none;
-    }
-
-    .closeIcon {
-      cursor: pointer;
-    }
-  }
-
   .custom-tree-node {
     display: flex;
     align-items: center;
@@ -591,17 +685,9 @@
   }
 
   .dl-wrapper {
-    position: relative;
-    padding: 8px;
     height: 540px;
-    background-color: rgba(255, 255, 255, 1);
-    border-radius: 0px 0px 8px 8px;
 
     .unzipItem {
-      /*display: flex;*/
-      /*justify-content: center;*/
-      /*align-items: center;*/
-
       .name {
         display: inline-block;
         width: 160px;
@@ -642,7 +728,6 @@
         margin-right: 20px;
 
         span {
-          font-family: PingFangSC-Medium, PingFang SC;
           font-weight: 500;
           font-size: 14px;
         }

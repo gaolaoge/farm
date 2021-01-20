@@ -3,12 +3,12 @@
     <!--公共部分-->
     <div class="personInfo">
       <div class="info">
-        <img :src="user.avatar ? user.avatar : require('@/assets/userImg.png')" alt="" class="avatar">
+        <img :src="user.avatar ? user.avatar : require('@/assets/userImg.png')" class="avatar">
         <div class="name">
           {{ user.name }}
         </div>
         <div class="level">
-          <img :src="info.levelIcon" alt="" class="i">
+          <img :src="info.levelIcon" class="i">
           <span>
             {{ user.level }}
           </span>
@@ -181,8 +181,8 @@
     },
     watch: {
       '$route.params': {
-        handler: function(val){
-          if(val.index) this.table.navListActiveIndex = val.index
+        handler: function (val) {
+          if (val.index) this.table.navListActiveIndex = val.index
         },
         immediate: true
       }
@@ -194,6 +194,7 @@
   .bill-wrapper {
     overflow: hidden;
     width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
 
@@ -319,6 +320,7 @@
 
     .tableGroup {
       flex-grow: 1;
+      height: calc(100% - 191px - 20px - 20px);
 
       .remind {
         position: absolute;
@@ -335,6 +337,10 @@
           }
         }
       }
+
+      .tableList {
+        height: calc(100% - 42px);
+      }
     }
   }
 
@@ -346,27 +352,33 @@
 </style>
 
 <style lang="less">
+  .rechargeTable,
+  .consumptionTable,
+  .invoicingTable {
+    height: 100%;
+  }
+
   .recharge-centre,
   .invoicing,
   .consumption-wrapper {
     overflow: hidden;
+    height: 100%;
 
     /deep/ .el-table__body-wrapper {
-      height: calc(100vh - 530px);
+      height: calc(100% - 530px);
     }
 
-    /deep/ .el-date-editor {
-      .el-range__icon,
-      .el-range-separator,
-      .el-input__icon.el-range__close-icon {
-        line-height: 22px;
-      }
+    .el-range__icon,
+    .el-range-separator,
+    .el-input__icon.el-range__close-icon {
+      line-height: 22px;
     }
 
     .recharge-table,
     .invoicing-table,
     .recharge-table {
       overflow: hidden;
+      height: calc(100% - 52px);
 
       .filter {
         position: relative;
@@ -392,6 +404,19 @@
         margin-top: 8px;
         background-color: rgba(22, 29, 37, 0.1);
         height: 1px;
+      }
+
+      .el-table {
+        height: calc(100% - 70px - 9px);
+      }
+
+      .el-table__body-wrapper {
+        height: calc(100% - 47px);
+
+        tbody {
+
+          overflow-y: scroll;
+        }
       }
     }
 

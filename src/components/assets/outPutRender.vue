@@ -105,7 +105,12 @@
         :total="table.outPutTableTotal">
       </el-pagination>
       <div class="farm-primary-form-btn btn" @click="refreshF(false)">
-        <span>{{ refresh }}</span>
+        <span>{{ $t('public_text.refresh') }}</span>
+      </div>
+      <div class="gz" @click="openPlugin">
+        <img src="@/icons/gz-black.png" class="d">
+        <img src="@/icons/gz-blue.png" class="h">
+        <span>{{ $t('transportBtn') }}</span>
       </div>
     </div>
   </div>
@@ -168,8 +173,7 @@
               name: 'main'
             }
           ],
-        },
-        refresh: '刷新'
+        }
       }
     },
     props: {
@@ -182,6 +186,11 @@
       ...mapState(['user', 'socket_plugin'])
     },
     methods: {
+      // 打开【传输列表】
+      openPlugin() {
+        if (this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_SEND', 'open')
+        else this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.$store.commit('WEBSOCKET_PLUGIN_SEND', 'open'))
+      },
       // 刷新
       refreshF(refresh) {
         if(refresh) this.$emit('clearInput', 'render')

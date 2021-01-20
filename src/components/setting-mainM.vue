@@ -63,7 +63,9 @@
     flex-direction: column;
     .tableList {
       flex-grow: 1;
-      .renderM {
+      .renderM,
+      .messageM,
+      .projectM {
         height: 100%;
       }
     }

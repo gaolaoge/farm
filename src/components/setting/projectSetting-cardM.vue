@@ -92,7 +92,7 @@
         :total="page.total">
       </el-pagination>
       <div class="farm-primary-form-btn btn" @click="getList('', 1, page.size)">
-        <span>{{ refresh }}</span>
+        <span>{{ $t('public_text.refresh') }}</span>
       </div>
     </div>
 
@@ -114,10 +114,10 @@
           <el-checkbox v-model="createProject.checked" true-label='1' false-label='0' label="设为当前项目"/>
           <div class="btn-group">
             <div class="farm-btn cancel" @click="createCancelBtnFun">
-              <span>{{ btnCancel }}</span>
+              <span>{{ $t('public_text.cancel') }}</span>
             </div>
             <div class="farm-btn save" :class="[{'cannotBeGo': verif}]" @click="createSaveBtnFun">
-              <span>{{ btnSave }}</span>
+              <span>{{ $t('public_text.confirm') }}</span>
             </div>
           </div>
         </div>
@@ -171,12 +171,12 @@
           </div>
           <div class="btn-group">
             <div class="farm-btn cancel" @click="editCancelBtnFun">
-              <span>{{ btnCancel }}</span>
+              <span>{{ $t('public_text.cancel') }}</span>
             </div>
             <div class="farm-btn save"
                  :class="[{'cannotBeGo': editVerif}]"
                  @click="editSaveBtnFun">
-              <span>{{ btnSave }}</span>
+              <span>{{ $t('public_text.confirm') }}</span>
             </div>
           </div>
         </div>
@@ -257,10 +257,7 @@
           size: 10,
           total: 0
         },
-        btnCancel: '取消',
-        btnSave: '确定',
-        editAvatar: '修改图片',
-        refresh: '刷新'
+        editAvatar: '修改图片'
       }
     },
     watch: {
@@ -460,7 +457,9 @@
 
 <style lang="less" scoped>
   .projectSetting {
-    height: calc(100vh - 203px);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 
     .operating {
       padding: 30px 27px 10px;
@@ -470,6 +469,18 @@
       .btnGroup {
         display: flex;
         align-items: center;
+      }
+    }
+
+    .table {
+      flex-grow: 1;
+
+      /deep/ .el-table {
+        height: 100%;
+
+        .el-table__body-wrapper {
+          height: calc(100% - 47px);
+        }
       }
     }
   }
@@ -617,7 +628,6 @@
 
           .label {
             font-size: 14px;
-            font-family: PingFangSC-Regular, PingFang SC;
             color: rgba(22, 29, 37, 0.6);
           }
 
@@ -659,9 +669,12 @@
     }
   }
 
-  /deep/ .el-table .el-table__row:hover::after {
-    display: none;
+  /deep/ .el-table {
+    .el-table__row:hover::after {
+      display: none;
+    }
   }
+
 
   .avatar-uploader {
     opacity: 0;

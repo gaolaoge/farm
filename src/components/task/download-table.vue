@@ -1,220 +1,218 @@
 <template>
-  <div class="download-table">
-    <div ref="downLoadTable">
-      <el-table
-        :data="table.RenderDownloadData"
-        @select="tableSelect"
-        @filter-change="filterChangeF"
-        @select-all="selectAll"
-        @row-click="showDetails"
-        :row-class-name="tableRowStyle"
-        class="r"
-        :border=true
-        row-key="rowId"
-        :tree-props="{children: 'children'}"
-        ref="renderTableImportant"
-        style="width: 100%">
+  <div class="download-table" ref="downLoadTable">
+    <el-table
+      :data="table.RenderDownloadData"
+      @select="tableSelect"
+      @filter-change="filterChangeF"
+      @select-all="selectAll"
+      @row-click="showDetails"
+      :row-class-name="tableRowStyle"
+      class="r"
+      :border=true
+      row-key="rowId"
+      :tree-props="{children: 'children'}"
+      ref="renderTableImportant"
+      style="width: 100%">
 
-        <el-table-column
-          type="selection"
-          align="right"
-          width="92"/>
-        <!--任务ID-->
-        <el-table-column
-          prop="id"
-          label="任务ID"
-          sortable
-          show-overflow-tooltip
-          width="146"/>
-        <!--场景名-->
-        <el-table-column
-          prop="sceneName"
-          label="场景名"
-          show-overflow-tooltip
-          width="224"/>
-        <!--状态-->
-        <el-table-column
-          label="状态"
-          :filters="zone == 1 ? table.statusList : table.statusList2"
-          column-key="status"
-          show-overflow-tooltip
-          width="110">
-          <template slot-scope="scope">
+      <el-table-column
+        type="selection"
+        align="right"
+        width="92"/>
+      <!--任务ID-->
+      <el-table-column
+        prop="id"
+        label="任务ID"
+        sortable
+        show-overflow-tooltip
+        width="146"/>
+      <!--场景名-->
+      <el-table-column
+        prop="sceneName"
+        label="场景名"
+        show-overflow-tooltip
+        width="224"/>
+      <!--状态-->
+      <el-table-column
+        label="状态"
+        :filters="zone == 1 ? table.statusList : table.statusList2"
+        column-key="status"
+        show-overflow-tooltip
+        width="110">
+        <template slot-scope="scope">
             <span v-if="scope.row.status !== '渲染完成' && scope.row.status !== '待全部渲染' && scope.row.status !== '渲染暂停'">
               {{ scope.row.status }}
             </span>
-            <span v-if="scope.row.status == '渲染完成'"
-                  style="color: rgba(0, 227, 255, 1)">
+          <span v-if="scope.row.status == '渲染完成'"
+                style="color: rgba(0, 227, 255, 1)">
               {{ scope.row.status }}
             </span>
-            <span v-if="scope.row.status == '待全部渲染'"
-                  style="color: rgba(70, 203, 93, 1)">
+          <span v-if="scope.row.status == '待全部渲染'"
+                style="color: rgba(70, 203, 93, 1)">
               {{ scope.row.status }}
             </span>
-            <span v-if="scope.row.status == '渲染暂停'"
-                  style="color: rgba(255, 191, 0, 1)">
+          <span v-if="scope.row.status == '渲染暂停'"
+                style="color: rgba(255, 191, 0, 1)">
               {{ scope.row.status }}
             </span>
-          </template>
-        </el-table-column>
-        <!--渲染进度-->
-        <el-table-column
-          label="渲染进度"
-          sortable
-          show-overflow-tooltip
-          width="170">
-          <template slot-scope="scope">
-            <el-progress :percentage="isNaN(scope.row.percent) ? 0 : scope.row.percent"
-                         :show-text="false"
-                         class="progressL"/>
-            <span clas="progressS">
+        </template>
+      </el-table-column>
+      <!--渲染进度-->
+      <el-table-column
+        label="渲染进度"
+        sortable
+        show-overflow-tooltip
+        width="170">
+        <template slot-scope="scope">
+          <el-progress :percentage="isNaN(scope.row.percent) ? 0 : scope.row.percent"
+                       :show-text="false"
+                       class="progressL"/>
+          <span clas="progressS">
               {{ scope.row.renderingProgress }}
             </span>
-          </template>
-        </el-table-column>
-        <!--所属项目-->
-        <el-table-column
-          prop="viewProject"
-          label="所属项目"
-          show-overflow-tooltip
-          column-key="task"
-          :filters="table.itemList"
-          width="186"/>
-        <!--渲染中-->
-        <el-table-column
-          prop="rendering"
-          sortable
-          width="86"
-          show-overflow-tooltip
-          label="渲染中"/>
-        <!--等待-->
-        <el-table-column
-          prop="wait"
-          sortable
-          width="86"
-          show-overflow-tooltip
-          label="等待"/>
-        <!--暂停-->
-        <el-table-column
-          prop="timeOut"
-          sortable
-          width="86"
-          show-overflow-tooltip
-          label="暂停"/>
-        <!--完成-->
-        <el-table-column
-          prop="carryOut"
-          sortable
-          width="86"
-          show-overflow-tooltip
-          label="完成"/>
-        <!--失败-->
-        <el-table-column
-          prop="failure"
-          label="失败"
-          width="86"
-          show-overflow-tooltip
-          sortable/>
-        <!--渲染时长-->
-        <el-table-column
-          prop="renderingTime"
-          label="渲染时长"
-          sortable
-          show-overflow-tooltip
-          width="170"/>
-        <!--渲染费用（金币）-->
-        <el-table-column
-          prop="renderingCost"
-          label="渲染费用（金币）"
-          sortable
-          show-overflow-tooltip
-          width="150"/>
-        <!--帧范围-->
-        <el-table-column
-          v-if="zone == 1"
-          prop="frameRange"
-          label="帧范围"
-          sortable
-          show-overflow-tooltip
-          width="110"/>
-        <!--间隔帧-->
-        <el-table-column
-          v-if="zone == 1"
-          prop="intervalFrame"
-          label="间隔帧"
-          sortable
-          show-overflow-tooltip
-          width="86"/>
-        <!--相机-->
-        <el-table-column
-          prop="camera"
-          width="142"
-          sortable
-          show-overflow-tooltip
-          label="相机"/>
-        <!--层名-->
-        <el-table-column
-          v-if="zone == 1"
-          prop="layerName"
-          label="层名"
-          sortable
-          show-overflow-tooltip
-          width="164"/>
-        <!--下载情况-->
-        <el-table-column
-          v-if="false"
-          label="下载情况"
-          show-overflow-tooltip
-          :filters="table.downloadStatusList"
-          column-key="download"
-          width="116">
-          <template slot-scope="scope">
+        </template>
+      </el-table-column>
+      <!--所属项目-->
+      <el-table-column
+        prop="viewProject"
+        label="所属项目"
+        show-overflow-tooltip
+        column-key="task"
+        :filters="table.itemList"
+        width="186"/>
+      <!--渲染中-->
+      <el-table-column
+        prop="rendering"
+        sortable
+        width="86"
+        show-overflow-tooltip
+        label="渲染中"/>
+      <!--等待-->
+      <el-table-column
+        prop="wait"
+        sortable
+        width="86"
+        show-overflow-tooltip
+        label="等待"/>
+      <!--暂停-->
+      <el-table-column
+        prop="timeOut"
+        sortable
+        width="86"
+        show-overflow-tooltip
+        label="暂停"/>
+      <!--完成-->
+      <el-table-column
+        prop="carryOut"
+        sortable
+        width="86"
+        show-overflow-tooltip
+        label="完成"/>
+      <!--失败-->
+      <el-table-column
+        prop="failure"
+        label="失败"
+        width="86"
+        show-overflow-tooltip
+        sortable/>
+      <!--渲染时长-->
+      <el-table-column
+        prop="renderingTime"
+        label="渲染时长"
+        sortable
+        show-overflow-tooltip
+        width="170"/>
+      <!--渲染费用（金币）-->
+      <el-table-column
+        prop="renderingCost"
+        label="渲染费用（金币）"
+        sortable
+        show-overflow-tooltip
+        width="150"/>
+      <!--帧范围-->
+      <el-table-column
+        v-if="zone == 1"
+        prop="frameRange"
+        label="帧范围"
+        sortable
+        show-overflow-tooltip
+        width="110"/>
+      <!--间隔帧-->
+      <el-table-column
+        v-if="zone == 1"
+        prop="intervalFrame"
+        label="间隔帧"
+        sortable
+        show-overflow-tooltip
+        width="86"/>
+      <!--相机-->
+      <el-table-column
+        prop="camera"
+        width="142"
+        sortable
+        show-overflow-tooltip
+        label="相机"/>
+      <!--层名-->
+      <el-table-column
+        v-if="zone == 1"
+        prop="layerName"
+        label="层名"
+        sortable
+        show-overflow-tooltip
+        width="164"/>
+      <!--下载情况-->
+      <el-table-column
+        v-if="false"
+        label="下载情况"
+        show-overflow-tooltip
+        :filters="table.downloadStatusList"
+        column-key="download"
+        width="116">
+        <template slot-scope="scope">
             <span v-if="scope.row.downloadStatus == '待下载'" style="color: #F90023">
               {{ scope.row.downloadStatus }}
             </span>
-            <span v-if="scope.row.downloadStatus == '已下载'" style="color: rgba(0, 97, 255, 1)">
+          <span v-if="scope.row.downloadStatus == '已下载'" style="color: rgba(0, 97, 255, 1)">
               {{ scope.row.downloadStatus }}
             </span>
-            <span v-if="scope.row.downloadStatus == '部分下载'" style="color: #E5C78A">
+          <span v-if="scope.row.downloadStatus == '部分下载'" style="color: #E5C78A">
               {{ scope.row.downloadStatus }}
             </span>
-          </template>
-        </el-table-column>
-        <!--渲染开始时间-->
-        <el-table-column
-          prop="renderingStartTime"
-          label="渲染开始时间"
-          sortable
-          show-overflow-tooltip
-          width="174"/>
-        <!--渲染结束时间-->
-        <el-table-column
-          prop="renderingEndTime"
-          label="渲染结束时间"
-          sortable
-          show-overflow-tooltip
-          width="174"/>
-        <!--创建人-->
-        <el-table-column
-          prop="founder"
-          label="创建人"
-          show-overflow-tooltip
-          column-key="founder"
-          :filters="table.usersList"
-          width="100"/>
-        <!--创建时间-->
-        <el-table-column
-          prop="creationTime"
-          label="创建时间"
-          sortable
-          show-overflow-tooltip
-          width="174"/>
+        </template>
+      </el-table-column>
+      <!--渲染开始时间-->
+      <el-table-column
+        prop="renderingStartTime"
+        label="渲染开始时间"
+        sortable
+        show-overflow-tooltip
+        width="174"/>
+      <!--渲染结束时间-->
+      <el-table-column
+        prop="renderingEndTime"
+        label="渲染结束时间"
+        sortable
+        show-overflow-tooltip
+        width="174"/>
+      <!--创建人-->
+      <el-table-column
+        prop="founder"
+        label="创建人"
+        show-overflow-tooltip
+        column-key="founder"
+        :filters="table.usersList"
+        width="100"/>
+      <!--创建时间-->
+      <el-table-column
+        prop="creationTime"
+        label="创建时间"
+        sortable
+        show-overflow-tooltip
+        width="174"/>
 
-      </el-table>
-    </div>
+    </el-table>
     <!--暂无数据-->
     <div class="nullTableData" v-if="!table.RenderDownloadData.length">
-      <img src="@/icons/tableDataNull.png" alt="">
+      <img src="@/icons/tableDataNull.png">
       <span>
         暂无数据
       </span>
@@ -230,6 +228,11 @@
       </el-pagination>
       <div class="farm-primary-form-btn btn" @click="getList(null, true)">
         <span>{{ refresh }}</span>
+      </div>
+      <div class="gz" @click="openPlugin">
+        <img src="@/icons/gz-black.png" class="d">
+        <img src="@/icons/gz-blue.png" class="h">
+        <span>{{ $t('transportBtn') }}</span>
       </div>
     </div>
     <!--详情抽屉-->
@@ -303,8 +306,10 @@
     messageFun,
     itemDownloadStatus,
     UuidFun,
-    exportDownloadFun
-  } from '@/assets/common.js'
+    exportDownloadFun,
+    updateBalance,
+    createThrowInfo
+  } from '@/assets/common'
 
   export default {
     name: 'download-table',
@@ -406,6 +411,11 @@
       }
     },
     methods: {
+      // 打开【传输列表】
+      openPlugin() {
+        if (this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_SEND', 'open')
+        else this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.$store.commit('WEBSOCKET_PLUGIN_SEND', 'open'))
+      },
       // 获取项目列表 暂时关闭
       async getTaskItemListFun() {
         let data = await getTaskItemList()
@@ -607,6 +617,12 @@
       // 获取列表
       async getList(obj, reset) {
         if (reset) this.closeDrawer()
+        const loading = this.$loading({
+          lock: true,
+          text: 'Loading',
+          spinner: 'el-icon-loading',
+          background: 'rgba(0, 0, 0, 0.49)'
+        })
         // {
         //   zoneUuid: '',            // 分区ID
         //   keyword: '',             // 关键字
@@ -856,13 +872,30 @@
             secretChild: children.length == 1 ? children : null,   // 伪child列表
           }
         })
-        this.table.usersList = [...usersList].map(curr => { return {'text': curr, 'value': curr}})  // 创建人列表
+        this.table.usersList = [...usersList].map(curr => {
+          return {'text': curr, 'value': curr}
+        })  // 创建人列表
         if (obj && obj.taskUuid) this.$nextTick(() => {
           this.$refs.renderTableImportant.toggleRowSelection(this.table.RenderDownloadData.find(item => item['taskUuid'] == obj['taskUuid']), true)
         })
+        loading.close()
+      },
+      // 操作 - 【开始】前预判
+      startFun() {
+        // 判断余额是否充足
+        updateBalance('开始')
+          .then(data => {
+            if (data) this.startFunReal()
+          })
+          .catch(() => createThrowInfo({
+            type:'error',
+            title:'获取余额情况失败',
+            info:'在主任务【开始】操作前判断',
+            site:'components/task/download-table:877'
+          }))
       },
       // 操作 - 开始
-      startFun() {
+      startFunReal() {
         if (!this.table.renderSelectionList.length) return false
         this.$confirm('选中项将开始渲染, 是否继续?', '提示信息', {
           confirmButtonText: '确定',
@@ -873,7 +906,6 @@
             async () => {
               let dataList = []
               this.table.renderSelectionList.forEach(curr => {
-                console.log(curr)
                 if (('selfIndex' in curr) && !curr['secretChild']) return false
                 let dataListIndex = dataList.findIndex(item => item.taskUuid == curr.FatherTaskUuId)
                 if (dataListIndex == -1) {
@@ -898,9 +930,12 @@
             () => messageFun('info', '已取消操作')
           )
           .catch(error => {
-            messageFun('error', '报错，操作失败')
-            console.log('---------【开始】报错-----------')
-            console.log(error)
+            createThrowInfo({
+              type:'error',
+              title:'报错，操作失败',
+              info:`主任务【开始】操作请求报错, ${error}`,
+              site:'components/task/download-table:877'
+            })
           })
       },
       // 操作 - 归档
@@ -930,13 +965,29 @@
             () => messageFun('info', '已取消归档')
           )
           .catch(error => {
-            messageFun('error', '报错，操作失败')
-            console.log('---------【归档】报错-----------')
-            console.log(error)
+            createThrowInfo({
+              type:'error',
+              title:'报错，操作失败',
+              info:`主任务【归档】操作请求报错, ${error}`,
+              site:'components/task/download-table:919'})
           })
       },
-      // 操作 - 全部渲染
+      // 操作 - 【全部渲染】前预判
       renderAllFun() {
+        // 判断余额是否充足
+        updateBalance('全部渲染')
+          .then(data => {
+            if (data) this.renderAllFunReal()
+          })
+          .catch(() => createThrowInfo({
+            type:'error',
+            title:'获取余额情况失败',
+            info:'在主任务【全部渲染】操作前判断',
+            site:'components/task/download-table:951'
+          }))
+      },
+      // 操作 - 全部渲染
+      renderAllFunReal() {
         if (!this.table.renderSelectionList.length) return false
         this.$confirm('确认进行全部渲染吗？建议您在确认优先渲染的测试帧无误后再进行', '提示信息', {
           confirmButtonText: '确定',
@@ -970,9 +1021,12 @@
             () => messageFun('info', '已取消操作')
           )
           .catch(error => {
-            messageFun('error', '报错，操作失败')
-            console.log('---------【全部渲染】报错-----------')
-            console.log(error)
+            createThrowInfo({
+              type:'error',
+              title:'报错，操作失败',
+              info:`主任务【全部渲染】操作请求报错, ${error}`,
+              site:'components/task/download-table:960'
+            })
           })
       },
       // 操作 - 删除
@@ -1020,9 +1074,12 @@
             () => messageFun('info', '已取消删除')
           )
           .catch(error => {
-            messageFun('error', '报错，操作失败')
-            console.log('---------【删除】报错-----------')
-            console.log(error)
+            createThrowInfo({
+              type:'error',
+              title:'报错，操作失败',
+              info:`主任务【删除】操作请求报错, ${error}`,
+              site:'components/task/download-table:991'
+            })
           })
       },
       // 操作 - 暂停
@@ -1061,27 +1118,49 @@
             () => messageFun('info', '已取消暂停')
           )
           .catch(error => {
-            messageFun('error', '报错，操作失败')
-            console.log('---------【暂停】报错-----------')
-            console.log(error)
+            createThrowInfo({
+              type:'error',
+              title:'报错，操作失败',
+              info:`主任务【暂停】操作请求报错, ${error}`,
+              site:'components/task/download-table:1041'
+            })
           })
       },
       // 操作 - 重新渲染
       renderAgainFun() {
-        this.dialogTableVisible = true
+        // 判断余额是否充足
+        updateBalance('重新渲染')
+          .then(data => {
+            if (data) this.dialogTableVisible = true
+          })
+          .catch(() => createThrowInfo({
+            type:'error',
+            title:'获取余额情况失败',
+            info:'在主任务【重新渲染】操作前判断，获取余额情况请求报错',
+            site:'components/task/download-table:1082'
+          }))
       },
-      // 操作 - 下载完成帧 - 前期预判
+      // 操作 - 【下载完成帧】前预判
       downloadFils() {
         if (!this.table.renderSelectionList.length) return false
-        if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.downloadingFile())
-        else this.downloadingFile()
-        // let r = await seeBalance()
-        // if (r.data.code == 1001) {
-        //   messageFun('info', `当前账户余额为${r.data.data}，请先进行充值！`);
-        //   return false
-        // }
+        if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => next())
+        else next()
+
+        function next() {
+          // 判断余额是否充足
+          updateBalance('下载完成帧')
+            .then(data => {
+              if (data) this.downloadingFile()
+            })
+            .catch(() => createThrowInfo({
+              type:'error',
+              title:'获取余额情况失败',
+              info:'在主任务【下载完成帧】操作前判断',
+              site:'components/task/download-table:1091'
+            }))
+        }
       },
-      // 操作 - 下载完成帧 - ing
+      // 操作 - 下载完成帧
       async downloadingFile() {
         let list = this.computedResult()
         for (const taskItem of list) {
@@ -1195,7 +1274,7 @@
         },
         deep: true
       },
-      'zoneId': function (val) {
+      'zoneId': function (id) {
         this.getList()
         this.closeDrawer()
       },
@@ -1229,7 +1308,6 @@
 
     span {
       font-size: 14px;
-      font-family: PingFangSC-Semibold, PingFang SC;
       font-weight: 600;
       color: rgba(22, 29, 37, 1);
     }

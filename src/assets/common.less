@@ -22,6 +22,45 @@ div {
   }
 }
 
+.gz {
+  position: absolute;
+  right: 0px;
+  width: 86px;
+  height: 24px;
+  border-radius: 2px;
+  border: 1px solid rgba(22, 29, 37, 0.19);
+  background-color: rgba(255, 255, 255, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  span {
+    font-size: 12px;
+    color: rgba(22, 29, 37, 0.8);
+  }
+
+  .h {
+    display: none;
+  }
+
+  &:hover {
+    border: 1px solid rgba(27, 83, 244, 0.19);
+
+    span {
+      color: rgba(27, 83, 244, 1);
+    }
+
+    .d {
+      display: none;
+    }
+
+    .h {
+      display: inline-block;
+    }
+  }
+}
+
 //充值按钮
 .rechargeBtn {
   display: inline-block;
@@ -95,7 +134,7 @@ div {
   outline: none;
 }
 
-//table
+// table
 .el-table {
   background-color: transparent;
   overflow: initial;
@@ -126,35 +165,34 @@ div {
     z-index: 1;
     background-color: rgba(250, 252, 255, 1);
     border-radius: 8px;
-    box-shadow: 0px 0px 1px 1px rgba(241, 244, 249, 1);
+    box-shadow: 0px 0px 1px 1px rgba(241, 244, 249, 1) inset;
+    overflow: hidden;
 
     &:hover {
       td {
-        background-color: rgba(255, 255, 255, 1) !important;
+        background-color: rgba(233, 241, 254, 1) !important;
 
         .cell {
           color: rgba(22, 29, 37, 1);
         }
       }
-
-      //&::after {
-      //  position: absolute;
-      //  left: 0;
-      //  z-index: 1;
-      //  height: 47px;
-      //  content: '';
-      //  box-shadow: inset 0px 1px 1px 1px rgba(27, 83, 244, 1);
-      //  border-radius: 8px !important;
-      //  //border: 1px solid rgba(0, 97, 255, 1) !important;
-      //  pointer-events: none;
-      //}
     }
 
     &.farmTableSelected {
-      box-shadow: 0px 0px 1px 1px rgba(27, 83, 244, 1);
+      box-shadow: 0px 0px 1px 1px rgba(27, 83, 244, 1) inset;
+
+      &:hover {
+        td {
+          background-color: rgba(255, 255, 255, 0.2) !important;
+
+          .cell {
+            color: #161d25;
+          }
+        }
+      }
 
       td {
-        background-color: rgba(255, 255, 255, 1);
+        background-color: rgba(255, 255, 255, 0.2);
 
         .cell {
           color: rgba(22, 29, 37, 1);
@@ -163,24 +201,6 @@ div {
         &:nth-of-type(1) {
           border-radius: 8px 0px 0px 8px;
         }
-      }
-
-      &:hover {
-        td {
-          //background: rgba(0, 97, 255, 1) !important;
-        }
-
-        //&::after {
-        //  position: absolute;
-        //  left: 0;
-        //  z-index: 2;
-        //  height: 47px;
-        //  content: '';
-        //  box-shadow: none;
-        //  border-radius: 8px !important;
-        //  border: 0px !important;
-        //  pointer-events: none;
-        //}
       }
     }
 
@@ -238,6 +258,7 @@ div {
 
       td:nth-of-type(1) {
         position: relative;
+
         & .cell {
           position: absolute;
           left: 90px;
@@ -246,11 +267,12 @@ div {
 
         //margin-left: 100px;
 
-        &.el-checkbox{
+        &.el-checkbox {
           //display: inline-block;
           //padding-left: 100px;
         }
       }
+
       td:nth-of-type(2) .cell {
         padding-left: 48px;
       }
@@ -282,7 +304,6 @@ div {
     }
 
     .el-table__body-wrapper {
-      max-height: 152px;
       &::-webkit-scrollbar {
         /*滚动条整体样式*/
         width: 8px; /*高宽分别对应横竖滚动条的尺寸*/
@@ -303,7 +324,6 @@ div {
         background-color: rgba(52, 59, 67, 0);
       }
     }
-
   }
 }
 
@@ -321,8 +341,9 @@ div {
 
 .el-table__body-wrapper {
   overflow-x: initial;
-  height: calc(100vh - 314px);
-  overflow-y: auto;
+  height: calc(100% - 314px);
+  overflow-y: scroll;
+
   &::-webkit-scrollbar {
     /*滚动条整体样式*/
     width: 8px; /*高宽分别对应横竖滚动条的尺寸*/
@@ -458,7 +479,7 @@ thead {
   }
 }
 
-//渲染输出
+// 渲染输出
 .o.el-table {
   .el-table__row {
     &:hover {
@@ -469,7 +490,7 @@ thead {
   }
 }
 
-//账单-消费记录
+// 账单-消费记录
 .k.el-table {
   .el-table__row {
     &:hover {
@@ -480,7 +501,7 @@ thead {
   }
 }
 
-//任务-渲染结果
+// 任务-渲染结果
 .v.el-table {
   .el-table__row {
     &:hover {
@@ -491,7 +512,7 @@ thead {
   }
 }
 
-//任务-渲染结果
+// 任务-渲染结果
 .vv.el-table {
   .el-table__row {
     &:hover {
@@ -502,7 +523,7 @@ thead {
   }
 }
 
-//任务-归档记录
+// 任务-归档记录
 .gd.el-table {
   .el-table__row {
     &:hover {
@@ -523,7 +544,7 @@ thead {
   }
 }
 
-//form-btn
+// form-btn
 .farm-primary-form-btn {
   display: inline-flex;
   justify-content: center;
@@ -650,7 +671,7 @@ thead {
   }
 }
 
-//farm-form
+// farm-form
 .farm-form {
   .farm-form-item {
     min-height: 36px;
@@ -700,7 +721,7 @@ thead {
 }
 
 
-//dialog
+// dialog
 .el-dialog {
   background-color: rgba(241, 244, 249, 1);
   box-shadow: 0px 1px 30px 0px rgba(16, 20, 27, 1);
@@ -739,6 +760,7 @@ thead {
 .el-pagination {
   padding-left: 0px;
 }
+
 .el-pagination.is-background {
   color: rgba(0, 97, 255, 1);
 
@@ -848,7 +870,7 @@ td {
   background-color: transparent !important;
 }
 
-//多选框
+// 多选框
 .el-checkbox__input {
   .el-checkbox__inner {
     background-color: transparent;
@@ -864,7 +886,7 @@ td {
   }
 }
 
-//table筛选
+// table筛选
 .el-table {
   .el-icon-arrow-down {
     &::before {
@@ -907,7 +929,7 @@ td {
   }
 }
 
-//table 展开
+// table 展开
 .cell {
   .el-table__indent {
     padding-left: 0px !important;
@@ -925,7 +947,7 @@ td {
   }
 }
 
-//抽屉
+// 抽屉
 .el-drawer {
   background: rgba(33, 41, 51, 1);
   box-shadow: 0px 2px 20px 0px rgba(28, 36, 47, 1);
@@ -936,7 +958,7 @@ td {
   }
 }
 
-//抽屉
+// 抽屉
 .farm-drawer {
   position: fixed;
   display: flex;
@@ -1014,7 +1036,7 @@ td {
   padding: 0px 20px;
 
   .farm-drawer-body-item {
-    box-shadow: 0px 0px 1px 1px rgba(22, 29, 37, 0.3);
+    box-shadow: 0px 0px 1px 1px rgba(22, 29, 37, 0.15);
     border-radius: 4px;
     margin-bottom: 20px;
     padding: 20px 30px;
@@ -1022,19 +1044,6 @@ td {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-
-    &.one {
-      height: 165px;
-    }
-
-    &.two {
-      height: calc(100vh - 360px);
-    }
-
-    &.three {
-      max-height: 240px;
-      overflow: hidden;
-    }
 
     //键值对
     .farm-drawer-item {
@@ -1202,7 +1211,7 @@ td {
   border-color: rgba(0, 0, 0, 0) !important;
 }
 
-//单选
+// 单选
 .el-radio-group {
   .el-radio {
     //圈儿
@@ -1243,8 +1252,7 @@ td {
   }
 }
 
-
-//滑块
+// 滑块
 .el-slider.slider {
   .el-slider__runway {
     height: 4px;
@@ -1264,7 +1272,7 @@ td {
   }
 }
 
-//滑块输入框
+// 滑块输入框
 .sliderVal {
   width: 33px;
   height: 27px;
@@ -1277,7 +1285,7 @@ td {
   margin-left: 20px;
 }
 
-//tooltip
+// tooltip
 .el-tooltip__popper.t {
   width: 300px;
   background-color: rgba(22, 29, 37, 0.81);
@@ -1369,7 +1377,7 @@ td {
   }
 }
 
-//提示信息
+// 提示信息
 .el-message {
   width: 438px;
   height: 40px;
@@ -1398,7 +1406,7 @@ td {
   }
 }
 
-//带有操作的提示信息
+// 带有操作的提示信息
 .el-message-box {
   width: 360px;
   height: 210px;
@@ -1414,7 +1422,6 @@ td {
 
   .el-message-box__title {
     font-size: 14px;
-    font-family: PingFangSC-Semibold, PingFang SC;
     font-weight: 600;
     color: rgba(22, 29, 37, 1);
     line-height: 36px;
@@ -1512,7 +1519,6 @@ td {
   }
 }
 
-
 .el-icon-loading {
   font-size: 20px;
 }
@@ -1540,8 +1546,7 @@ td {
   }
 }
 
-
-//下拉框
+// 下拉框
 .el-select-dropdown {
   border-radius: 5px;
   border: 1px solid rgba(240, 240, 240, 1);
@@ -1581,35 +1586,34 @@ td {
   }
 }
 
-//@media screen and (orientation: portrait) {
-//  .task-table-seeMore {
-//    .el-table__body-wrapper {
-//      height: calc(100vw - 328px);
-//    }
-//  }
-//
-//  .el-table__body-wrapper {
-//    height: calc(100vw - 346px);
-//  }
-//
-//  //抽屉
-//  .farm-drawer {
-//    right: -100vh;
-//    width: 42vh;
-//    height: calc(100vw - 120px);
-//
-//    .farm-drawer-body {
-//      .farm-drawer-body-item.two {
-//        height: calc(100vw - 360px);
-//      }
-//    }
-//  }
-//
-//  //提示信息
-//  .el-message {
-//    top: 10vw !important;
-//  }
-//}
+.dl_header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 36px;
+  background-color: rgba(241, 244, 249, 1);
+  box-shadow: 0px 1px 6px 0px rgba(27, 83, 244, 0.3);
+  border-radius: 8px 8px 0px 0px;
+  padding: 0px 20px 0px 30px;
+
+  .title {
+    user-select: none;
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(22, 29, 37, 1);
+  }
+
+  .closeIcon {
+    cursor: pointer;
+  }
+}
+
+.dl-wrapper {
+  position: relative;
+  padding: 8px;
+  background-color: rgba(255, 255, 255, 1);
+  border-radius: 0px 0px 8px 8px;
+}
 
 // 弹窗
 .farm-dialog {
@@ -1657,7 +1661,6 @@ td {
 
       span {
         font-size: 14px;
-        font-family: PingFangSC-Semibold, PingFang SC;
         font-weight: 600;
         color: rgba(22, 29, 37, 1);
       }

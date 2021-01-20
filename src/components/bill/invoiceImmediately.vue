@@ -566,8 +566,12 @@
   .invoiceImmediately {
     width: 100%;
 
+    .tableGroup {
+      height: calc(100% - 20px);
+    }
+
     .t {
-      height: calc(100vh - 142px);
+      height: calc(100% - 46px);
       overflow-y: auto;
       padding: 46px 30px;
       box-sizing: border-box;
@@ -594,7 +598,6 @@
       .typeV {
         line-height: 24px;
         font-size: 14px;
-        font-family: PingFangSC-Semibold, PingFang SC;
       }
 
       .valTable {
@@ -668,7 +671,6 @@
         width: 114px;
         height: 20px;
         font-size: 14px;
-        font-family: PingFangSC-Regular, PingFang SC;
         color: rgba(22, 29, 37, 0.8);
         line-height: 36px;
         text-align: right;
@@ -713,7 +715,6 @@
 
       span {
         font-size: 14px;
-        font-family: PingFangSC-Medium, PingFang SC;
         font-weight: 500;
         color: rgba(255, 255, 255, 1);
       }
@@ -763,7 +764,6 @@
         margin-left: 30px;
         line-height: 36px;
         font-size: 14px;
-        font-family: PingFangSC-Semibold, PingFang SC;
         font-weight: 600;
         color: rgba(22, 29, 37, 1);
       }
@@ -789,7 +789,6 @@
       .s {
         display: inline-block;
         font-size: 14px;
-        font-family: PingFangSC-Regular, PingFang SC;
         color: rgba(22, 29, 37, 1);
         opacity: 0.6;
         line-height: 20px;
