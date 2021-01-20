@@ -385,7 +385,7 @@
       // 获取归档记录长度
       getArchiveNum(val) {
         this.btnGroup.archiveRecordsNum = val
-        this.$refs.archiveTable.getList(null)
+        // this.$refs.archiveTable.getList(null)
       },
       uploadTableTotalItem(val) {
         this.table.navList[0]['num'] = val
@@ -495,7 +495,7 @@
       // 站内信跳转
       'taskState': {
         handler: function (obj) {
-          if (!obj.taskUuid) return false
+          if (!obj || !obj.taskUuid) return false
           // idnex  页码
           // taskUuid
           // type: 0没查到，2分析列表，3渲染列表，4归档列表
