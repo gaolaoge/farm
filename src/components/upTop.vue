@@ -111,7 +111,7 @@
 <!--                  {{ form.f }}<span class="v">{{ item.RAM }}</span>{{ form.dir3 }}-->
                   <span style="display: block" class="v">全新硬件</span>
                   <span style="display: block" class="v">发烧级性能</span>
-                  <span style="display: block" class="v">限时<span style="color: #000">5折</span>巨惠</span>
+<!--                  <span style="display: block" class="v">限时<span style="color: #000">5折</span>巨惠</span>-->
                 </p>
               </div>
             </div>
