@@ -104,3 +104,12 @@ export function editPhonePS(data) {
     data
   })
 }
+
+// 修改头像
+export function editAvatar(data) {
+  return businessServer({
+    url: `/professional/file/uploadPictureFile`,
+    method: 'POST',
+    data
+  })
+}
