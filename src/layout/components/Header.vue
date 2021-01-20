@@ -360,10 +360,11 @@
         immediate: true
       },
       zoneId: {
-        handler: function (val) {
+        handler: function (id) {
+          if(!id) return false
           this.getBulletinF()   // 获取公告
-          putNewZoneID({"zoneUuid": val})   // 传达切换分区事件
-          this.workBenchVal = val
+          putNewZoneID({"zoneUuid": id})   // 传达切换分区事件
+          this.workBenchVal = id
           this.changeIsGpu()
         },
       },

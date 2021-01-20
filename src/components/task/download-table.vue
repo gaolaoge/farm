@@ -226,7 +226,7 @@
         :current-page.sync="table.current"
         :total="table.renderTableTotal">
       </el-pagination>
-      <div class="farm-primary-form-btn btn" @click="getList(null, true)">
+      <div class="farm-primary-form-btn btn" @click="refreshF()">
         <span>{{ refresh }}</span>
       </div>
       <div class="gz" @click="openPlugin">
@@ -425,7 +425,7 @@
             text: curr.projectName
           }
         })
-        if (!this.specialJump) this.getList()
+        if (!this.specialJump) await this.getList()
         else this.specialJump = false
       },
       // 清除筛选条件
@@ -920,12 +920,15 @@
                   })
                 } else dataList[dataListIndex]['layerUuidList'].push(curr.taskUuid)
               })
-              let data = await itemStart({
+              let {data} = await itemStart({
                 "instructType": 1,
                 "instructTaskList": dataList
               })
-              if (data.data.code == 1001) messageFun('info', '您已欠费')
-              else if (data.data.code == 200) messageFun('success', '操作成功')
+              if (data.code == 1001) messageFun('info', '您已欠费')
+              else if (data.code == 200) {
+                messageFun('success', '操作成功')
+                this.refreshF()
+              }
             },
             () => messageFun('info', '已取消操作')
           )
@@ -958,8 +961,8 @@
                 taskUuids: taskUuidList
               })
               if (data.data.code == 200) {
-                this.getList();
                 messageFun('success', '操作成功')
+                this.refreshF()
               }
             },
             () => messageFun('info', '已取消归档')
@@ -1016,7 +1019,10 @@
                 "instructType": 111,
                 "instructTaskList": dataList
               })
-              if (data.data.code == 200) messageFun('success', '操作成功')
+              if (data.data.code == 200) {
+                messageFun('success', '操作成功')
+                this.refreshF()
+              }
             },
             () => messageFun('info', '已取消操作')
           )
@@ -1068,7 +1074,7 @@
               })
               if (data.data.code == 204) {
                 messageFun('success', '操作成功')
-                this.getList()
+                this.refreshF()
               } else messageFun('error', '操作报错')
             },
             () => messageFun('info', '已取消删除')
@@ -1112,7 +1118,10 @@
                 "instructType": 2,
                 "instructTaskList": dataList
               })
-              if (data.data.code == 200) messageFun('success', '操作成功')
+              if (data.data.code == 200) {
+                messageFun('success', '操作成功')
+                this.refreshF()
+              }
               else if (data.data.code == 1000) messageFun('info', '报错，操作失败')
             },
             () => messageFun('info', '已取消暂停')
@@ -1126,7 +1135,7 @@
             })
           })
       },
-      // 操作 - 重新渲染
+      // 操作 - 重新渲染 【弹窗事件】
       renderAgainFun() {
         // 判断余额是否充足
         updateBalance('重新渲染')
@@ -1180,7 +1189,7 @@
         let item = this.table.renderSelectionList.find((item, index) => item.children || item.secretChild)
         let data = await getCopySetData(item.taskUuid)
         this.drawerTaskData = item
-        this.$refs.drawer.getItemList()
+        await this.$refs.drawer.getItemList()
         this.$refs.drawer.setParameterNext(data.data)
         this.$refs.drawer.isCopy = true
         this.showDrawer = true
@@ -1232,7 +1241,10 @@
           messageFun('info', '您已欠费');
           return false
         }
-        if (data.data.code == 200) messageFun('success', '操作成功')
+        if (data.data.code == 200) {
+          messageFun('success', '操作成功')
+          this.refreshF()
+        }
       },
       // 获取选中的主任务和单独层任务
       computedResult() {
@@ -1247,6 +1259,11 @@
           } else if (!fatId.some(item => item == curr.FatherId)) sonItem.push(curr)
         })
         return [...fatItem, ...sonItem]
+      },
+      // 刷新
+      refreshF() {
+        this.getList(null)
+        this.table.renderSelectionList = []
       }
     },
     components: {
@@ -1272,7 +1289,8 @@
           })
           this.$emit('j', {val: [...r], canBeCopy: task.size == 1 && mainTask.size == 1})
         },
-        deep: true
+        deep: true,
+        immediate: true
       },
       'zoneId': function (id) {
         this.getList()
