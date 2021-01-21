@@ -94,7 +94,7 @@
           width="280"/>
       </el-table>
       <!--暂无数据-->
-      <div class="unData" v-show="table.tableData.length == 0">
+      <div class="nullTableData" v-show="table.tableData.length == 0">
         <img src="@/icons/tableDataNull.png">
         <span>暂无数据</span>
       </div>
@@ -643,22 +643,6 @@
 
   .a-icon {
     vertical-align: middle;
-  }
-
-  .unData {
-    position: absolute;
-    top: calc(47px + 42px);
-    width: 100%;
-    height: calc(100% - 47px - 42px - 52px);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    user-select: none;
-
-    span {
-      font-size: 14px;
-    }
   }
 
   .bread {
