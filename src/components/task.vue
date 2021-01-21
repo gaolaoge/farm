@@ -599,6 +599,12 @@
         height: calc(100% - 47px - 52px);
       }
     }
+
+    .nullTableData {
+      span {
+        font-size: 14px;
+      }
+    }
   }
 </style>
 

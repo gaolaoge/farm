@@ -92,7 +92,6 @@
           sortable="custom"
           show-overflow-tooltip
           width="280"/>
-
       </el-table>
       <!--暂无数据-->
       <div class="unData" v-show="table.tableData.length == 0">

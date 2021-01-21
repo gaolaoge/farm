@@ -96,10 +96,8 @@
     </el-table>
     <!--暂无数据-->
     <div class="nullTableData" v-if="table.UploadAnalysisData.length == 0">
-      <img src="@/icons/tableDataNull.png" alt="">
-      <span>
-        暂无数据
-      </span>
+      <img src="@/icons/tableDataNull.png">
+      <span>暂无数据</span>
     </div>
     <!--分页-->
     <div class="page">

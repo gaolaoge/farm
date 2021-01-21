@@ -162,26 +162,16 @@
       },
       // 上传裁剪好的头像
       async uploadAvatar(src) {
-        // let data = await editBasicInfo({
-        //   "nickname": null,
-        //   "headImg": src,
-        //   "sex": null,
-        //   "birthday": null,
-        // })
-        // if (data.data.code == 200) {
-        //   this.$store.commit('changeAvatar', src)
-        //   messageFun('success', this.$t('message.editSuc'))
-        // } else if (data.data.code == 999) messageFun('warning', this.$t('message.noTimes'))
-        // let {data} = await editAvatar({
-        //   file: src,
-        //   type: 1,
-        //   taskProjectUuid: ''
-        // })
+        console.log(src)
         let formData = new FormData()
         formData.append('file', src)
         formData.append('type', 1)
         formData.append('taskProjectUuid', '')
         let {data} = await editAvatar(formData)
+        if (data.code == 200) {
+          this.$store.commit('changeAvatar', src)
+          messageFun('success', this.$t('message.editSuc'))
+        } else if (data.code == 999) messageFun('warning', this.$t('message.noTimes'))
         this.showCutter = false
       },
       // 编辑头像

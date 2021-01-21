@@ -1432,13 +1432,13 @@
               }
             }
           }),
+          projectName: thi.other.viewList.find(curr => curr.value == thi.other.view).label,
+          projectUuid: thi.other.viewList.find(curr => curr.value == thi.other.view).id,
           commitTaskDTO: this.taskType == 'profession' ? null : {
             layer: this.zone == '1' ? Number(thi.other.stratifyVal) : Number(thi.other.bCVal),          // 是否开启分层渲染。1开启，0关闭 : 开启分相机
             renderPattern: thi.mode.modeList.find(curr => curr.val == thi.mode.mode).id,                // 渲染模式编号
             taskType: this.zone,                         // 任务类型 看分区
             otherSettings: {                             // 其它设置
-              projectName: thi.other.viewList.find(curr => curr.value == thi.other.view).label,
-              projectUuid: thi.other.viewList.find(curr => curr.value == thi.other.view).id,
               frameTimeoutWarn: thi.other.remindVal,
               frameTimeoutStop: thi.other.stopVal
             },

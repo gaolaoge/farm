@@ -213,9 +213,7 @@
     <!--暂无数据-->
     <div class="nullTableData" v-if="!table.RenderDownloadData.length">
       <img src="@/icons/tableDataNull.png">
-      <span>
-        暂无数据
-      </span>
+      <span>暂无数据</span>
     </div>
     <!--分页-->
     <div class="page">
