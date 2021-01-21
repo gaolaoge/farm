@@ -6,5 +6,5 @@ module.exports = {
   DOWNLOAD_PLUGIN_PATH: '"http://www.chinamoviecloud.cn:8085/CloudTransfer.exe"',     // 生产
   PLUGIN_WS_API: '"ws://localhost:17002"',
   MOCKJS: false,
-  VERSION: 202101061603,
+  VERSION: 202101211632,
 }
