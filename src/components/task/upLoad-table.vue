@@ -195,7 +195,7 @@
         drawerTaskData: null,
         searchInput: '',
         refresh: '刷新',
-        specialJump: false,       // 特定跳转 请求带有指定参数 不再触发默认【获取列表】
+        specialJump: false       // 特定跳转 请求带有指定参数 不再触发默认【获取列表】
       }
     },
     methods: {
@@ -315,10 +315,11 @@
         if (reset) this.closeDrawer()
         const loading = this.$loading({
           lock: true,
-          text: 'Loading',
+          text: '拼命加载中...',
           spinner: 'el-icon-loading',
           background: 'rgba(0, 0, 0, 0.49)'
         })
+
         // {
         //   zoneUuid: this.zoneId,             //分区UUID
         //   keyword: this.searchInput,         //查询关键字

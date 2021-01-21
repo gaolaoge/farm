@@ -405,7 +405,7 @@
         renderAgainBoxTit: '确认重新渲染以下帧么？',
         renderAgainBoxBtnList: ['取消', '确定'],
         refresh: '刷新',
-        specialJump: false,       // 特定跳转 请求带有指定参数 不再触发默认【获取列表】
+        specialJump: false       // 特定跳转 请求带有指定参数 不再触发默认【获取列表】
       }
     },
     methods: {
@@ -617,7 +617,7 @@
         if (reset) this.closeDrawer()
         const loading = this.$loading({
           lock: true,
-          text: 'Loading',
+          text: '拼命加载中...',
           spinner: 'el-icon-loading',
           background: 'rgba(0, 0, 0, 0.49)'
         })

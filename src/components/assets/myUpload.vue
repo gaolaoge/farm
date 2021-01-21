@@ -23,6 +23,10 @@
         @sort-change="sortChange"
         :border=true
         class="o"
+        v-loading="loading"
+        element-loading-background="rgba(0, 0, 0, 0.49)"
+        element-loading-spinner="el-icon-loading"
+        element-loading-text="拼命加载中..."
         style="width: 100%">
 
         <el-table-column
@@ -236,6 +240,7 @@
         newNameErr: false,       // 新建文件夹
         btnCancel: '取消',
         btnSave: '确定',
+        loading: false
       }
     },
     props: {
@@ -280,6 +285,7 @@
                 index_
               })
             })
+            this.loading = false
           } else if (data.msg == '601' && this.dialogVisible) {
             // 网盘tree
             let x = data.data.map(item => {
@@ -343,7 +349,6 @@
         if(!order) table.sortBy = 'fileName'
         else table.sortBy = prop
         table.pageIndex = 1
-        console.log(table)
         this.getAssetsCatalog(path, searchInputVal)
       },
       // 打开【传输列表】
@@ -567,12 +572,12 @@
             }),
             () => messageFun('info', '已取消删除')
           )
-
       },
       // 获取网盘各级目录
       getAssetsCatalog(filePath, keyword) {
         if (!this.socket_backs_status) setTimeout(() => this.getAssetsCatalog(filePath, keyword), 1000)
         else {
+          this.loading = true
           let {pageIndex, pageSize, sortBy, sortType} = this.table
           this.$store.commit('WEBSOCKET_BACKS_SEND', {
             'code': 601,

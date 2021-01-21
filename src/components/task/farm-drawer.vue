@@ -919,15 +919,10 @@
           </div>
           <div class="happen">
             <div class="happen-item" v-for="(item,index) in result.happen" :key="index">
-              <span class="label">
-                {{ item.text }}：
-              </span>
-              <span class="val">
-                {{ item.num }}
-              </span>
+              <span class="label">{{ item.text }}：</span>
+              <span class="val">{{ item.num }}</span>
             </div>
           </div>
-
         </div>
       </div>
     </div>
