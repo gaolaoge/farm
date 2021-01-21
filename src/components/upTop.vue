@@ -36,10 +36,10 @@
                     <span class="unit">￥</span>
                     <span class="num">{{ item.ChineseYuan }}</span>
                   </div>
-                  <div class="t">
-                    <p class="remark">{{ item.remark1 }}</p>
-                    <p class="remark">{{ item.remark2 }}</p>
-                  </div>
+<!--                  <div class="t">-->
+<!--                    <p class="remark">{{ item.remark1 }}</p>-->
+<!--                    <p class="remark">{{ item.remark2 }}</p>-->
+<!--                  </div>-->
                   <div class="selected" :style="{backgroundImage: 'url(' + require('../icons/x.png') + ')'}">
                     <span>{{ item.ChineseYuan }}</span>
                     <img src="@/icons/check-circle.png">
@@ -273,25 +273,25 @@
               ChineseYuan: '100',
               remark1: '充值100元送60金币',
               remark2: '实际到账160金币',
-              gold: 160
+              gold: 100
             },
             {
               ChineseYuan: '500',
               remark1: '充值500元送400金币',
               remark2: '实际到账900金币',
-              gold: 900
+              gold: 500
             },
             {
               ChineseYuan: '2000',
               remark1: '充值2000元送1800金币',
               remark2: '实际到账3800金币',
-              gold: 3800
+              gold: 2000
             },
             {
               ChineseYuan: '5000',
               remark1: '充值5000元送5000金币',
               remark2: '实际到账10000金币',
-              gold: 10000
+              gold: 5000
             }
           ],
           placeholder: '输入其他金额',
@@ -417,11 +417,12 @@
           num = this.form.ChineseYuan
         if (!num) this.form.ChineseYuanVerif = null
         else this.form.ChineseYuanVerif = reg.test(num)
-        if (val == 100) this.form.realVal = '160.000'
-        else if (val == 500) this.form.realVal = '900.000'
-        else if (val == 2000) this.form.realVal = '3800.000'
-        else if (val == 5000) this.form.realVal = '10000.000'
-        else this.computeFun()
+        // if (val == 100) this.form.realVal = '160.000'
+        // else if (val == 500) this.form.realVal = '900.000'
+        // else if (val == 2000) this.form.realVal = '3800.000'
+        // else if (val == 5000) this.form.realVal = '10000.000'
+        // else this.computeFun()
+        this.computeFun()
       },
     },
     methods: {
@@ -483,7 +484,7 @@
         .up-top-item {
           position: relative;
           width: 260px;
-          height: 174px;
+          height: 140px;
           background-color: rgba(27, 83, 244, 0.05);
           border: 1px solid rgba(27, 83, 244, 1);
           border-radius: 8px;
@@ -494,25 +495,34 @@
 
           .gold {
             width: 260px;
-            height: 100px;
+            /*height: 100px;*/
+            height: 100%;
             border-bottom: 1px solid rgba(27, 83, 244, 1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
 
             .unit {
-              display: inline-block;
-              font-size: 16px;
+              /*display: inline-block;*/
+              /*font-size: 16px;*/
               font-weight: 600;
               color: rgba(255, 187, 0, 1);
-              margin-left: 20px;
-              margin-right: 5px;
+              /*margin-left: 20px;*/
+              /*margin-right: 5px;*/
+              vertical-align: bottom;
+              margin-top: 30px;
+              font-size: 20px;
             }
 
             .num {
-              display: inline-block;
-              margin-top: 11px;
-              font-size: 60px;
+              /*display: inline-block;*/
+              /*margin-top: 11px;*/
+              /*font-size: 60px;*/
               font-weight: 600;
               line-height: 84px;
               color: rgba(255, 187, 0, 1);
+              font-size: 68px;
+              font-family: MontserratAlternates-BlackItalic, MontserratAlternates;
             }
           }
 
@@ -542,6 +552,7 @@
               display: flex;
               flex-direction: column;
               align-items: center;
+              justify-content: center;
 
               span {
                 font-size: 60px;
@@ -549,7 +560,8 @@
                 font-weight: normal;
                 color: rgba(255, 255, 255, 1);
                 line-height: 73px;
-                margin: 18px 0px 15px;
+                /*margin: 18px 0px 15px;*/
+                /*margin: 4px 0px 0px;*/
               }
             }
           }
