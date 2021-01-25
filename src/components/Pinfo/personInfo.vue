@@ -162,12 +162,11 @@
       },
       // 上传裁剪好的头像
       async uploadAvatar(src) {
-        console.log(src)
-        let formData = new FormData()
-        formData.append('file', src)
-        formData.append('type', 1)
-        formData.append('taskProjectUuid', '')
-        let {data} = await editAvatar(formData)
+        let {data} = await editAvatar({
+          'file': src,
+          'type': 1,
+          'taskProjectUuid': ''
+        })
         if (data.code == 200) {
           this.$store.commit('changeAvatar', src)
           messageFun('success', this.$t('message.editSuc'))

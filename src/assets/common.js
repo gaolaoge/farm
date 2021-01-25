@@ -50,8 +50,9 @@ const createCalendar = function (date) {
 
 // 获得日期时间
 const createDateFun = function (date, mini, inADay, miniInDay) {
-  if ((date.getFullYear() == '1970' && !inADay)) return '-'
-  let {year, month, day, hour, minutes, seconds} = createCalendar(date)
+  let realDate = date instanceof Date ? date : new Date(date)
+  if ((realDate.getFullYear() == '1970' && !inADay)) return '-'
+  let {year, month, day, hour, minutes, seconds} = createCalendar(realDate)
   if (mini) return `${year}-${month}-${day}`
   else if (inADay) return `${hour}:${minutes}:${seconds}`
   else if (miniInDay) return `${hour}:${minutes}`
