@@ -1,13 +1,14 @@
 <template>
   <div class="upload-table" ref="uploadTable">
     <el-table
-      :data="table.UploadAnalysisData"
+      :data="table.tableData"
       @selection-change="handleSelectionChange"
       @filter-change="filterChangeF"
       @row-click="showDetails"
+      @sort-change="sortChangeHandle"
       :row-class-name="tableRowStyle"
-      class="u"
       :border=true
+      class="u"
       ref="uploadTableImportant"
       style="width: 100%">
 
@@ -19,12 +20,12 @@
         width="58"/>
 
       <el-table-column
-        prop="id"
+        prop="taskNo"
         label="任务ID"
-        sortable
+        sortable="custom"
         show-overflow-tooltip
         width="100"/>
-
+      <!--场景名-->
       <el-table-column
         prop="scenesName"
         label="场景名"
@@ -65,16 +66,16 @@
       <!--width="200" />-->
       <!--分析开始时间-->
       <el-table-column
-        prop="startingTime"
+        prop="analyseStartTime"
         label="分析开始时间"
-        sortable
+        sortable="custom"
         show-overflow-tooltip
         width="180"/>
-
+      <!--分析结束时间-->
       <el-table-column
-        prop="endTime"
+        prop="analyseEndTime"
         label="分析结束时间"
-        sortable
+        sortable="custom"
         show-overflow-tooltip
         width="180"/>
       <!--创建人-->
@@ -85,17 +86,17 @@
         show-overflow-tooltip
         :filters="table.usersList"
         width="100"/>
-
+      <!--创建时间-->
       <el-table-column
-        prop="creationTime"
+        prop="createTime"
         label="创建时间"
-        sortable
+        sortable="custom"
         show-overflow-tooltip
         width="180"/>
 
     </el-table>
     <!--暂无数据-->
-    <div class="nullTableData" v-if="table.UploadAnalysisData.length == 0">
+    <div class="nullTableData" v-if="table.tableData.length == 0">
       <img src="@/icons/tableDataNull.png">
       <span>暂无数据</span>
     </div>
@@ -103,7 +104,7 @@
     <div class="page">
       <el-pagination
         background
-        :current-page.sync="table.current"
+        :current-page.sync="table.pageIndex"
         @current-change="handleCurrentChange"
         layout="prev, pager, next, jumper"
         :total="table.uploadTableTotal">
@@ -152,25 +153,12 @@
     data() {
       return {
         table: {
-          // tableList
-          UploadAnalysisData: [
-            // {
-            //   id: '',               //任务ID
-            //   scenesName: '',       //场景名
-            //   status: '',           //状态
-            //   project: '',          //所属项目
-            //   startingTime: '',     //分析开始时间
-            //   endTime: '',          //分析结果时间
-            //   founder: '',          //创建人
-            //   creationTime: '',     //创建时间
-            //   source: '',           //来源
-            //   taskMode: '',         //任务模式
-            //   wayOfAdding: ''       //添加方式
-            // },
-          ],
+          tableData: [],
           uploadTableTotal: 0,
           pageSize: 10,
-          current: 1,                   // 当前页码
+          pageIndex: 1,                   // 当前页码
+          sortBy: '',
+          sortType: 0,                  // 排序方向 0递减 1递增
           selectionList: [],            // table 选中项
           uploadStatus: [],             // 上传状态数组
           analyseStatus: [],            // 分析状态数组
@@ -193,7 +181,7 @@
         showDrawer: false,
         itemName: 'upload-table',
         drawerTaskData: null,
-        searchInput: '',
+        keyword: '',
         refresh: '刷新',
         specialJump: false       // 特定跳转 请求带有指定参数 不再触发默认【获取列表】
       }
@@ -251,7 +239,7 @@
       },
       // 翻页
       handleCurrentChange(val) {
-        this.table.current = val
+        this.table.pageIndex = val
         this.getList()
       },
       // table 行样式
@@ -288,7 +276,7 @@
         this.drawerTaskData = row
         let tableDomList = this.$refs.uploadTable.getElementsByClassName('el-table__row'),
           d = this.$refs.uploadTable.getElementsByClassName('farmTableSelected')[0],
-          index_ = this.table.UploadAnalysisData.findIndex(curr_ => curr_.id == row.id)
+          index_ = this.table.tableData.findIndex(curr_ => curr_.id == row.id)
         if (d) d.classList.remove('farmTableSelected')
         tableDomList[index_].classList.add('farmTableSelected')
       },
@@ -319,20 +307,10 @@
           spinner: 'el-icon-loading',
           background: 'rgba(0, 0, 0, 0.49)'
         })
-
-        // {
-        //   zoneUuid: this.zoneId,             //分区UUID
-        //   keyword: this.searchInput,         //查询关键字
-        //   pageIndex: this.table.current,     //当前页码
-        //   pageSize: this.table.pageSize,     //页大小
-        //   uploadStatus: this.table.uploadStatus,               //上传状态数组
-        //   analyseStatus: this.table.analyseStatus,             //分析状态数组
-        //   projectUuid: this.projectUuidList                    //项目UUID数组
-        // }
         let projectUuid = (obj && obj.projectUuid) ? [obj.projectUuid] : '',
-          {table, searchInput, zoneId} = this
-        if(obj && obj.setParameters) table.setParameters = true
-        if (obj && obj.pageIndex) table.current = obj.pageIndex
+          {table, keyword, zoneId} = this
+        if (obj && obj.setParameters) table.setParameters = true
+        if (obj && obj.pageIndex) table.pageIndex = obj.pageIndex
         if (obj && obj.type) switch (obj.type) {
           case 'waitSetUpParam':       // 待设置参数
             table.setParameters = true
@@ -347,79 +325,79 @@
             table.analyseStatus = [4]
             break
         }
-        let data = await getTaskTableList({
+        let {sortBy, sortType, pageIndex, pageSize, uploadStatus, analyseStatus, setParameters, tableData} = table,
+          data = await getTaskTableList({
             zoneUuid: zoneId,
-            keyword: searchInput,
-            pageIndex: table.current,
-            pageSize: table.pageSize,
-            uploadStatus: table.uploadStatus,
-            analyseStatus: table.analyseStatus,
+            keyword,
+            pageIndex,
+            pageSize,
+            uploadStatus,
+            analyseStatus,
+            sortBy,
+            sortType,
             projectUuid,
-            setParameters: table.setParameters          // 1待设置参数 0非待设置参数
+            setParameters          // 1待设置参数 0非待设置参数
           }),
           usersList = new Set(),
           statusList = new Set()
 
         // ----------------------------------------------------------
 
-        this.table.UploadAnalysisData = []
+        tableData.length = 0
         let list = data.data.data,
           len = list.length
         for (let i = 0; i < len; i++) {
           let statusData = ''
           // 状态转换
-          if (list[i]['taskStage'] == 2) {
-            switch (list[i]['analyseStatus']) {
-              case 1:
-              case 2:
-              case 9:
-                statusData = '分析中...'
-                break
-              case 3:
-                statusData = '待设置参数'
-                break
-              case 4:
-                statusData = '分析警告'
-                break
-              case 5:
-                statusData = '分析失败'
-                break
-              case 6:
-                statusData = '已放弃'
-                break
-            }
-          } else if (list[i]['taskStage'] == 1) {
-            switch (list[i]['uploadStatus']) {
-              case 1:
-              case 2:
-                statusData = '上传中...'
-                break
-              case 3:
-                statusData = '上传成功'
-                break
-              case 4:
-                statusData = '上传暂停'
-                break
-              case 5:
-                statusData = '上传失败'
-                break
-              case 6:
-                statusData = '上传失败'
-                break
-            }
+          if (list[i]['taskStage'] == 2) switch (list[i]['analyseStatus']) {
+            case 1:
+            case 2:
+            case 9:
+              statusData = '分析中...'
+              break
+            case 3:
+              statusData = '待设置参数'
+              break
+            case 4:
+              statusData = '分析警告'
+              break
+            case 5:
+              statusData = '分析失败'
+              break
+            case 6:
+              statusData = '已放弃'
+              break
+          }
+          else if (list[i]['taskStage'] == 1) switch (list[i]['uploadStatus']) {
+            case 1:
+            case 2:
+              statusData = '上传中...'
+              break
+            case 3:
+              statusData = '上传成功'
+              break
+            case 4:
+              statusData = '上传暂停'
+              break
+            case 5:
+              statusData = '上传失败'
+              break
+            case 6:
+              statusData = '上传失败'
+              break
           }
           usersList.add(list[i]['account'])
           statusList.add(statusData)
-          this.table.UploadAnalysisData.push({
+          tableData.push({
             taskUuid: list[i]['taskUuid'],
-            id: list[i]['taskNo'],                                                // 任务ID
+            taskNo: list[i]['taskNo'],                                            // 任务ID
             scenesName: list[i]['fileName'],                                      // 场景名
-            status: statusData,                                                // 状态
+            status: statusData,                                                   // 状态
             project: list[i]['projectName'],                                      // 所属项目
-            startingTime: createDateFun(new Date(list[i]['analyseStartTime'])),   // 分析开始时间
-            endTime: createDateFun(new Date(list[i]['analyseEndTime'])),          // 分析结果时间
+            analyseStartTime: createDateFun(list[i]['analyseStartTime']),         // 分析开始时间
+            analyseEndTime: createDateFun(list[i]['analyseEndTime']),             // 分析结果时间
             founder: list[i]['account'],                                          // 创建人
-            creationTime: createDateFun(new Date(list[i]['createTime'])),         // 创建时间
+            createTime: createDateFun(list[i]['createTime'])                      // 创建时间
             //   source: '',           //来源
             //   taskMode: '',         //任务模式
             //   wayOfAdding: ''       //添加方式
@@ -428,20 +406,27 @@
 
         // ----------------------------------------------------------
 
-        this.table.usersList = [...usersList].map(curr => {
-          return {'text': curr, 'value': curr}
-        })
-        // this.table.statusList = [...statusList].map(curr => { return {'text': curr, 'value':curr }})
-        this.table.uploadTableTotal = data.data.total
+        table.usersList = [...usersList].map(curr => ({'text': curr, 'value': curr}))
+        table.uploadTableTotal = data.data.total
         this.$emit('uploadTableTotalItem', data.data.total)
+        // 跳转 - 预选中
         if (obj && obj.taskUuid) this.$nextTick(() => {
-          this.$refs.uploadTableImportant.toggleRowSelection(this.table.UploadAnalysisData.find(item => item['taskUuid'] == obj['taskUuid']), true)
+          this.$refs.uploadTableImportant.toggleRowSelection(table.tableData.find(item => item['taskUuid'] == obj['taskUuid']), true)
         })
         loading.close()
       },
+      // 排序
+      sortChangeHandle({column, prop, order}) {
+        let {table} = this
+        if (order == 'ascending') table.sortType = 1
+        else table.sortType = 0
+        if (!order) table.sortBy = 'taskNo'
+        else table.sortBy = prop
+        this.getList(null)
+      },
       // 关键字检索
       searchFun(val) {
-        this.searchInput = val
+        this.keyword = val
         this.getList()
       },
       // 操作 - 删除

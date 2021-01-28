@@ -5,13 +5,13 @@
       <!--面包屑-->
       <div class="bread">
         <span class="h" @click="navClickF(null, navF)">{{ navF }}</span>
-        <img src="@/icons/enter.png" alt="" class="img">
+        <img src="@/icons/enter.png" class="img">
         <span v-for="(item,index) in nav"
               :key="index"
               @click="navClickF(index)"
               class="h">
           {{ item }}
-          <img src="@/icons/enter.png" alt="" class="img">
+          <img src="@/icons/enter.png" class="img">
         </span>
       </div>
       <!--table-->
@@ -271,8 +271,7 @@
             this.nav = nav
             this.path = data.other == '' ? '/' : data.other
             this.table.total = data.total
-            this.table.tableData = data.data.map((item, index_) => {
-              return Object.assign(item, {
+            this.table.tableData = data.data.map((item, index_) => Object.assign(item, {
                 'updateTime': createDateFun(new Date(item.updateTime)),
                 'completedTime': item.completedTime,
                 'validPeriod': consum(item.validPeriod),
@@ -283,8 +282,7 @@
                 'fileSize': item.fileType == '文件夹' ? '-' : getFileSize(item.size),
                 'rename': false,
                 index_
-              })
-            })
+              }))
             this.loading = false
           } else if (data.msg == '601' && this.dialogVisible) {
             // 网盘tree

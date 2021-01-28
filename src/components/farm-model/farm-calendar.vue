@@ -44,25 +44,26 @@
       <div class="calendarTab">
         <div class="adjust">
           <span class="yearAdjust">
-            <img src="@/icons/enter2.png" alt="" @click="changeYear('previous')">
+            <img src="@/icons/enter2.png" @click="changeYear('previous')">
             <span class="o">
               {{ yearNow }}年
             </span>
-            <img src="@/icons/enter2.png" alt="" @click="changeYear('next')">
+            <img src="@/icons/enter2.png" @click="changeYear('next')">
           </span>
           <span class="monthAdjust">
-            <img src="@/icons/enter2.png" alt="" @click="changeMonth('previous')">
+            <img src="@/icons/enter2.png" @click="changeMonth('previous')">
             <span class="o">
               {{ monthNow }}月
             </span>
-            <img src="@/icons/enter2.png" alt="" @click="changeMonth('next')">
+            <img src="@/icons/enter2.png" @click="changeMonth('next')">
           </span>
         </div>
         <div class="dayList">
           <span v-for="(item,index) in visibeDays"
-                :key="index" class="day"
+                :key="index"
                 @click="!isFuture(item) ? selectSpanDate(item) : false"
                 :class="[
+                  'day',
                   {'n': !isCurrentMonth(item)},
                   {'t': isToday(item)},
                   {'f': isFuture(item)}

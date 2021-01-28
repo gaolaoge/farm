@@ -127,7 +127,7 @@
                           @renderSelectionF="renderSelectionF"
                           @clearInput="clearInput"
                           @showJump="showJump"
-                          :searchInputVal="renderSearchInputVal"/>
+                          :keyword="renderSearchInputVal"/>
         </div>
       </div>
     </div>

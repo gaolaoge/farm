@@ -10,11 +10,9 @@
              v-for="(item,index) in btnGroup"
              @click="uploadOperating(item['text'])"
              :key="index">
-          <img :src="item.initialIcon" alt="" v-if="item.initialIcon" class="btnIcon default">
-          <img :src="item.selectedIcon" alt="" v-if="item.selectedIcon" class="btnIcon hover">
-          <span>
-            {{ item['text'] }}
-          </span>
+          <img :src="item.initialIcon" v-if="item.initialIcon" class="btnIcon default">
+          <img :src="item.selectedIcon" v-if="item.selectedIcon" class="btnIcon hover">
+          <span>{{ item['text'] }}</span>
         </div>
       </div>
       <div class="rightOPerate">
@@ -26,7 +24,6 @@
                  :placeholder="placeholder">
           <!--搜索按钮-->
           <img src="@/icons/global-search-icon.png"
-               alt=""
                class="searchIcon"
                @click="getData">
         </div>
@@ -101,12 +98,11 @@
       <div class="createBase">
         <div class="tit">
           <span>{{ createProject.tit }}</span>
-          <img src="@/icons/shutDialogIcon.png" alt="" @click="createCancelBtnFun">
+          <img src="@/icons/shutDialogIcon.png" @click="createCancelBtnFun">
         </div>
         <div class="con">
           <input type="text"
-                 class="name"
-                 :class="[{'err': newNameErr}]"
+                 :class="['name', {'err': newNameErr}]"
                  @focus="newNameErr = false"
                  @keyup.enter="createSaveBtnFun"
                  v-model="createProject.name"
@@ -116,7 +112,7 @@
             <div class="farm-btn cancel" @click="createCancelBtnFun">
               <span>{{ $t('public_text.cancel') }}</span>
             </div>
-            <div class="farm-btn save" :class="[{'cannotBeGo': verif}]" @click="createSaveBtnFun">
+            <div :class="['farm-btn', 'save', {'cannotBeGo': verif}]" @click="createSaveBtnFun">
               <span>{{ $t('public_text.confirm') }}</span>
             </div>
           </div>
@@ -128,7 +124,7 @@
       <div class="editBase">
         <div class="tit">
           <span>{{ editProject.tit }}</span>
-          <img src="@/icons/shutDialogIcon.png" alt="" @click="editCancelBtnFun">
+          <img src="@/icons/shutDialogIcon.png" @click="editCancelBtnFun">
         </div>
         <div class="con">
           <!--缩略图-->
@@ -149,8 +145,7 @@
           <div class="item">
             <span class="label">{{ editProject.nameL }}：</span>
             <input type="text"
-                   class="name v"
-                   :class="[{'err': editNameErr}]"
+                   :class="['name', 'v', {'err': editNameErr}]"
                    @focus="editNameErr = false"
                    @keyup.enter="editSaveBtnFun"
                    v-model="editProject.nameV">
@@ -171,8 +166,7 @@
             <div class="farm-btn cancel" @click="editCancelBtnFun">
               <span>{{ $t('public_text.cancel') }}</span>
             </div>
-            <div class="farm-btn save"
-                 :class="[{'cannotBeGo': !editWinVerif}]"
+            <div :class="['farm-btn', 'save', {'cannotBeGo': !editWinVerif}]"
                  @click="editSaveBtnFun">
               <span>{{ $t('public_text.confirm') }}</span>
             </div>

@@ -1,31 +1,32 @@
 <template>
   <div class="calendar" v-operating>
     <input type="text" v-model="dateVal" class="filter-item-i filter-item-time inputDate">
-    <img src="@/icons/calendarIcon.png" alt="" class="calendarIcon">
+    <img src="@/icons/calendarIcon.png" class="calendarIcon">
     <div class="operateDate" v-show="operating">
       <!--日历-->
       <div class="calendarTab">
         <div class="adjust">
           <span class="yearAdjust">
-            <img src="@/icons/enter.png" alt="" @click="changeYear('previous')">
+            <img src="@/icons/enter.png" @click="changeYear('previous')">
             <span class="o">
               {{ yearNow }}年
             </span>
-            <img src="@/icons/enter.png" alt="" @click="changeYear('next')">
+            <img src="@/icons/enter.png" @click="changeYear('next')">
           </span>
           <span class="monthAdjust">
-            <img src="@/icons/enter.png" alt="" @click="changeMonth('previous')">
+            <img src="@/icons/enter.png" @click="changeMonth('previous')">
             <span class="o">
               {{ monthNow }}月
             </span>
-            <img src="@/icons/enter.png" alt="" @click="changeMonth('next')">
+            <img src="@/icons/enter.png" @click="changeMonth('next')">
           </span>
         </div>
         <div class="dayList">
-          <span v-for="item,index in visibeDays"
-                :key="index" class="day"
+          <span v-for="(item,index) in visibeDays"
+                :key="index"
                 @click="selectSpanDate(item)"
                 :class="[
+                  'day',
                   {'n': !isCurrentMonth(item)},
                   {'t': isToday(item)}
                 ]">

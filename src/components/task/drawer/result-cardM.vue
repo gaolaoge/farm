@@ -199,14 +199,12 @@
                  @click="operateFun(item.text)"
                  v-for="(item,index) in result.operateBtnList"
                  :key="index">
-              <img :src="item.imgUrlR" alt="" v-if="item.imgUrlR" class="r">
-              <img :src="item.imgUrlH" alt="" v-if="item.imgUrlH" class="h">
-              <span class="text">
-                {{ item.text }}
-              </span>
+              <img :src="item.imgUrlR" v-if="item.imgUrlR" class="r">
+              <img :src="item.imgUrlH" v-if="item.imgUrlH" class="h">
+              <span class="text">{{ item.text }}</span>
             </div>
             <div class="searchBase">
-              <img src="@/icons/global-search-icon.png" alt="" class="i" @click="getRenderItemMoreTableF">
+              <img src="@/icons/global-search-icon.png" class="i" @click="getRenderItemMoreTableF">
               <input type="text"
                      v-model="result.searchInpVal"
                      class="search"
@@ -221,13 +219,10 @@
                  v-for="(item,index) in result.operateMoreBtnList"
                  :key="index">
               <img :src="item.imgUrl" v-if="item.imgUrl">
-              <span class="text">
-                {{ item.text }}
-              </span>
+              <span class="text">{{ item.text }}</span>
             </div>
             <div class="searchBase">
               <img src="@/icons/global-search-icon.png"
-                   alt=""
                    class="i"
                    @click="">
               <input type="text"
@@ -241,12 +236,12 @@
             <!--v-el-table-infinite-scroll="mainTableAddMoreItem" 无限滚动 -->
             <el-table
               :data="result.tableData"
+              :border=true
               @selection-change="handleSelectionChange"
               @filter-change="filterHandler"
               @row-click="showMiniImg"
               ref="mainTable"
               class="vv"
-              :border=true
               height="auto"
               style="width: 100%">
 

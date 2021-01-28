@@ -1,16 +1,17 @@
 <template>
   <div class="download-table" ref="downLoadTable">
     <el-table
-      :data="table.tableData"
       @select="tableSelect"
       @filter-change="filterChangeF"
       @select-all="selectAll"
       @row-click="showDetails"
-      :row-class-name="tableRowStyle"
-      class="r"
+      @sort-change="sortChangeHandle"
+      :data="table.tableData"
       :border=true
-      row-key="rowId"
+      :row-class-name="tableRowStyle"
       :tree-props="{children: 'children'}"
+      class="r"
+      row-key="rowId"
       ref="renderTableImportant"
       style="width: 100%">
 
@@ -20,9 +21,9 @@
         width="92"/>
       <!--任务ID-->
       <el-table-column
-        prop="id"
+        prop="taskNo"
         label="任务ID"
-        sortable
+        sortable="custom"
         show-overflow-tooltip
         width="146"/>
       <!--场景名-->
@@ -110,14 +111,14 @@
       <el-table-column
         prop="useTime"
         label="渲染时长"
-        sortable
+        sortable="custom"
         show-overflow-tooltip
         width="170"/>
       <!--渲染费用（金币）-->
       <el-table-column
         prop="renderingCost"
         label="渲染费用（金币）"
-        sortable
+        sortable="custom"
         show-overflow-tooltip
         width="150"/>
       <!--帧范围-->
@@ -171,14 +172,14 @@
       <el-table-column
         prop="startTime"
         label="渲染开始时间"
-        sortable
+        sortable="custom"
         show-overflow-tooltip
         width="174"/>
       <!--渲染结束时间-->
       <el-table-column
         prop="endTime"
         label="渲染结束时间"
-        sortable
+        sortable="custom"
         show-overflow-tooltip
         width="174"/>
       <!--创建人-->
@@ -193,7 +194,7 @@
       <el-table-column
         prop="createTime"
         label="创建时间"
-        sortable
+        sortable="custom"
         show-overflow-tooltip
         width="174"/>
 
@@ -308,7 +309,7 @@
           renderTableTotal: 0,          // 总数
           pageIndex: 1,                 // 当前页数
           pageSize: 10,
-          sortBy: '',
+          sortBy: 'taskNo',
           sortType: 0,                  // 排序方向 0递减 1递增
           unfoldList: [],               // 展开项
           downloadStatusList: [         // 筛选 - 下载情况
@@ -612,7 +613,7 @@
             let status = itemDownloadStatus(item.layerTaskStatus)
             if (status == '渲染暂停' && item.result == 5) status = '待全部渲染'
             return {
-              id: item.layerNo,                                      // 任务ID
+              taskNo: item.layerNo,                                  // 任务ID
               sceneName: curr.fileName + '-' + item.layerName,       // 场景名
               FatherSceneName: curr.fileName,                        // 主任务场景名
               status,                                                // 状态
@@ -654,7 +655,7 @@
           usersList.add(curr['account'])
           return {
             taskUuid: curr.taskUuid,
-            id: curr.taskNo,                                       // 任务ID
+            taskNo: curr.taskNo,                                   // 任务ID
             sceneName: curr.isExpire == 1 ? '(过期)' + curr.fileName : curr.fileName,        // 场景名
             status: itemDownloadStatus(curr.renderStatus),         // 状态
             renderingProgress: curr.frameCount.done + '/' + curr.frameCount.total,          //渲染进度
@@ -695,7 +696,7 @@
               status = itemDownloadStatus(item.layerTaskStatus)
             // if(status == '渲染暂停' && item.result == 5) status = '待全部渲染'
             return {
-              id: item.layerNo,                                      // 任务ID
+              taskNo: item.layerNo,                                  // 任务ID
               FatherSceneName: curr.fileName,                        // 主任务场景名
               sceneName: item.fileName,                              // 场景名
               status,                                                // 状态
@@ -734,7 +735,7 @@
           }))
           return {
             taskUuid: curr.taskUuid,
-            id: curr.taskNo,                                       // 任务ID
+            taskNo: curr.taskNo,                                   // 任务ID
             sceneName: curr.fileName,                              // 场景名
             status: itemDownloadStatus(curr.renderStatus),         // 状态
             renderingProgress: (curr.win + curr.lose) + '/' + framesTotal,          //渲染进度
@@ -764,13 +765,20 @@
             secretChild: children.length == 1 ? children : null,   // 伪child列表
           }
         })
-        table.usersList = [...usersList].map(curr => {
-          return {'text': curr, 'value': curr}
-        })  // 创建人列表
+        table.usersList = [...usersList].map(curr => ({'text': curr, 'value': curr}))  // 创建人列表
         if (obj && obj.taskUuid) this.$nextTick(() => {
           this.$refs.renderTableImportant.toggleRowSelection(table.tableData.find(item => item['taskUuid'] == obj['taskUuid']), true)
         })
         loading.close()
+      },
+      // 排序
+      sortChangeHandle({column, prop, order}) {
+        let {table} = this
+        if(order == 'ascending') table.sortType = 1
+        else table.sortType = 0
+        if(!order) table.sortBy = 'taskNo'
+        else table.sortBy = prop
+        this.getList(null)
       },
       // 操作 - 【开始】前预判
       startFun() {

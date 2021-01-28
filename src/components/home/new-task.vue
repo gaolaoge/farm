@@ -58,12 +58,12 @@
                   <div :class="['netCatalogue', {'active': stepOneBase.showMe}]">
                     <el-tree
                       :data="stepOneBase.netdisc.catalogData"
-                      node-key="id"
                       :load="catalogDataGetChildNode"
-                      lazy
+                      :props="stepOneBase.netdisc.defaultProps"
+                      node-key="id"
                       class="setScollBarStyle"
                       v-if="stepOneBase.showMe"
-                      :props="stepOneBase.netdisc.defaultProps">
+                      lazy>
                       <span class="custom-tree-node" slot-scope="{ node, data }">
                         <img src="@/icons/folder-icon.png" class="shut_icon">
                         <img src="@/icons/folder-open-icon.png" class="open_icon">
@@ -82,8 +82,7 @@
                 <!--场景文件-->
                 <div class="farm-form-item">
                   <div class="farm-form-item-label">{{ stepOneBase.netdisc.fileLabel }}：</div>
-                  <div class="farm-form-item-input b"
-                       :class="[{'null': !stepOneBase.netdisc.treeData.length}]">
+                  <div :class="['b', 'farm-form-item-input', {'null': !stepOneBase.netdisc.treeData.length}]">
                     <!--面包屑-->
                     <div class="pathList">
                       <span class="base"
@@ -949,7 +948,7 @@
       },
       'zoneId': {
         handler: async function (id) {
-          if(!id) return false
+          if (!id) return false
           let data = await getRenderMode(id)
           this.stepThreeBase.mode.modeList = data.data.data.map(item => {
             return {
@@ -1270,18 +1269,19 @@
       },
       // 2.设置渲染模板 - 软件下拉框选中
       async changeSoftware(val, defaultEvent) {
-        let data = await createTaskSetPlugin(val[1])
-        this.dialogAdd.pluginList = data.data.data.map(curr => {
+        let {dialogAdd} = this,
+          {data} = await createTaskSetPlugin(val[1])
+        dialogAdd.pluginList = data.data.map(curr => {
           return {
             label: curr.pluginName,
             val: curr.pluginName,
             list: curr.pluginList
           }
         })
-        this.dialogAdd.oList = []
+        dialogAdd.oList = []
         if (defaultEvent) {
-          this.dialogAdd.form.valPlugin = this.dialogAdd.pluginList[0]['label']
-          this.changePlugin(this.dialogAdd.pluginList[0]['label'])
+          dialogAdd.form.valPlugin = dialogAdd.pluginList[0]['label']
+          this.changePlugin(dialogAdd.pluginList[0]['label'])
         }
       },
       // 2.设置渲染模板 - 插件下拉框选中
@@ -1295,35 +1295,19 @@
             status: r == -1 ? false : true
           }
         })
-        // {
-        //   id: '0001',
-        //   software: 'mloa',
-        //   plugin: 'mloa 4.0.2',
-        //   status: false
-        // }
-        // t.list.map(curr => {
-        // id: 2
-        // pluginName: "Arnold"
-        // version: "2.233"
-        // publisher: "4K"
-        // pluginUuid: "457"
-        // createTime: "2020-03-31"
-        // createBy: "1"
-        // updateTime: "2020-03-31"
-        // updateBy: "1"
-        // dataStatus: 1
-        // })
       },
       // 2.设置渲染模板 - 关闭【新建/编辑渲染模板窗口】
       closeAddTemplateDialog() {
         // 窗口数据初始化
-        this.dialogAdd.form.valName = ''
-        this.dialogAdd.form.valSoftware = ''
-        this.dialogAdd.form.softwareList = []
-        this.dialogAdd.form.valPlugin = ''
-        this.dialogAdd.pluginList = []
-        this.dialogAdd.oList = []
-        this.dialogAdd.nList = []
+        let {dialogAdd} = this,
+          {form} = dialogAdd
+        form.valName = ''
+        form.valSoftware = ''
+        form.softwareList.length = 0
+        form.valPlugin = ''
+        dialogAdd.pluginList.length = 0
+        dialogAdd.oList.length = 0
+        dialogAdd.nList.length = 0
       },
       // 2.设置渲染模板 - 添加or修改
       async taskDefine() {
@@ -1333,18 +1317,19 @@
         switch (this.dialogAdd.editOrAdd) {
           // 新建模板
           case 'addMore':
-            let data = await createTaskSetNewPlugin({
-              templateName: this.dialogAdd.form.valName,        //模板名称
-              softUuid: this.dialogAdd.form.valSoftware[1],     //软件uuid
-              pluginUuids: this.dialogAdd.nList.map(curr => {
-                return curr.pluginUuid
+            let {form, nList} = this.dialogAdd,
+              {data} = await createTaskSetNewPlugin({
+                templateName: form.valName,        //模板名称
+                softUuid: form.valSoftware[1],     //软件uuid
+                pluginUuids: nList.map(curr => {
+                  return curr.pluginUuid
+                })
               })
-            })
-            if (data.data.code == 201) {
+            if (data.code == 201) {
               messageFun('success', '创建模板成功')
               this.innerVisible = false
-              this.getList()
-            } else if (data.data.code == 101) messageFun('info', '模板名已存在，创建失败')
+              await this.getList()
+            } else if (data.code == 101) messageFun('info', '模板名已存在，创建失败')
             //创建失败
             break
           // 编辑模板
@@ -1360,7 +1345,7 @@
             if (data2.data.code == 200) {
               messageFun('success', '编辑成功')
               this.innerVisible = false
-              this.getList()
+              await this.getList()
             } else if (data2.data.code == 101) messageFun('info', '模板名已存在，编辑失败')
             break
         }
@@ -1412,69 +1397,63 @@
       async confirmFun() {
         if (!this.confirmLock || this.stepTwoBase.renderListActive == -1) return
         this.confirmLock = false
-        let fir = this.stepOneBase,
-          sec = this.stepTwoBase,
-          thi = this.stepThreeBase
-        let data = await newTaskProfession({
-          zoneUuid: this.zoneId,                             // 分区uuid
-          templateUuid: sec.renderList[sec.renderListActive]['renderTemplate']['templateUuid'],    //选中模板uuid
-          taskCount: fir.index == 0 ? this.stepOneBase.netdisc.sceneFileSelection.length : fir.local.filelist.length,                            // 要创建任务的数量
-          pattern: this.taskType == 'easy' ? 1 : 2,          // 渲染模式
-          patternNorm: fir.index == 0 ? 2 : 1,               // 提交模式
-          source: 1,                                         // 任务来源
-          filePathList: fir.index == 1 ? null : this.stepOneBase.netdisc.sceneFileSelection.map(item => {
-            let task = this.stepOneBase.netdisc.treeData.find(curr => curr.id == item)
-            return {
-              filePath: {
-                pathResource: [fir.netdisc.pathV],                        // 工程路径
-                pathScene: fir.netdisc.sceneFilePath.join('/') + '/',     // 场景文件路径
-                fileName: task.label,                                     // 场景文件名
+        let {stepOneBase: fir, stepTwoBase: sec, stepThreeBase: thi} = this,
+          {data} = await newTaskProfession({
+            zoneUuid: this.zoneId,                             // 分区uuid
+            templateUuid: sec.renderList[sec.renderListActive]['renderTemplate']['templateUuid'],    //选中模板uuid
+            taskCount: fir.index == 0 ? this.stepOneBase.netdisc.sceneFileSelection.length : fir.local.filelist.length,                            // 要创建任务的数量
+            pattern: this.taskType == 'easy' ? 1 : 2,          // 渲染模式
+            patternNorm: fir.index == 0 ? 2 : 1,               // 提交模式
+            source: 1,                                         // 任务来源
+            filePathList: fir.index == 1 ? null : this.stepOneBase.netdisc.sceneFileSelection.map(item => {
+              let task = this.stepOneBase.netdisc.treeData.find(curr => curr.id == item)
+              return {
+                filePath: {
+                  pathResource: [fir.netdisc.pathV],                        // 工程路径
+                  pathScene: fir.netdisc.sceneFilePath.join('/') + '/',     // 场景文件路径
+                  fileName: task.label,                                     // 场景文件名
+                }
               }
+            }),
+            projectName: thi.other.viewList.find(curr => curr.value == thi.other.view)['label'],
+            projectUuid: thi.other.viewList.find(curr => curr.value == thi.other.view)['id'],
+            commitTaskDTO: this.taskType == 'profession' ? null : {
+              layer: this.zone == '1' ? Number(thi.other.stratifyVal) : Number(thi.other.bCVal),          // 是否开启分层渲染。1开启，0关闭 : 开启分相机
+              renderPattern: thi.mode.modeList.find(curr => curr.val == thi.mode.mode)['id'],             // 渲染模式编号
+              taskType: this.zone,                         // 任务类型 看分区
+              otherSettings: {                             // 其它设置
+                frameTimeoutWarn: thi.other.remindVal,
+                frameTimeoutStop: thi.other.stopVal
+              },
+              testRender: this.zone == '1' ? {
+                testRendering: thi.priority.topVal == '1' || thi.priority.middleVal == '1' || thi.priority.bottomVal == '1' ? 1 : 0,              // 是否开启测试渲染
+                frameFirst: Number(thi.priority.topVal),                // 首帧
+                frameMiddle: Number(thi.priority.middleVal),            // 末帧
+                frameFinally: Number(thi.priority.bottomVal)            // 中间帧
+              } : null, // 优先渲染
+              aoChannel: 0,
+              // colorChannel: this.zone == '1' ? null : thi.other.cCVal,                                   // 颜色通道
+              colorChannel: 0,
             }
-          }),
-          projectName: thi.other.viewList.find(curr => curr.value == thi.other.view).label,
-          projectUuid: thi.other.viewList.find(curr => curr.value == thi.other.view).id,
-          commitTaskDTO: this.taskType == 'profession' ? null : {
-            layer: this.zone == '1' ? Number(thi.other.stratifyVal) : Number(thi.other.bCVal),          // 是否开启分层渲染。1开启，0关闭 : 开启分相机
-            renderPattern: thi.mode.modeList.find(curr => curr.val == thi.mode.mode).id,                // 渲染模式编号
-            taskType: this.zone,                         // 任务类型 看分区
-            otherSettings: {                             // 其它设置
-              frameTimeoutWarn: thi.other.remindVal,
-              frameTimeoutStop: thi.other.stopVal
-            },
-            testRender: this.zone == '1' ? {
-              testRendering: thi.priority.topVal == '1' || thi.priority.middleVal == '1' || thi.priority.bottomVal == '1' ? 1 : 0,              // 是否开启测试渲染
-              frameFirst: Number(thi.priority.topVal),                // 首帧
-              frameMiddle: Number(thi.priority.middleVal),            // 末帧
-              frameFinally: Number(thi.priority.bottomVal)            // 中间帧
-            } : null, // 优先渲染
-            aoChannel: 0,
-            // colorChannel: this.zone == '1' ? null : thi.other.cCVal,                                   // 颜色通道
-            colorChannel: 0,
-          }
-        })
-        if (data.data.code == 200) {
+          })
+        if (data.code == 200) {
           if (fir.index == 0) this.createSuc()
           else {
             this.$store.commit('WEBSOCKET_PLUGIN_SEND', {
               'transferType': 5,
               'userID': this.user.id,
-              'taskList': fir.local.filelist.map((curr, index) => {
-                return {
-                  'sceneFile': curr.absolutePath,            // 场景文件
-                  'path': [curr.address],                    // 工程路径
-                  'taskID': data.data.data[index]['taskUuid'],
-                  'taskNo': data.data.data[index]['taskNo']
-                }
-              })
+              'taskList': fir.local.filelist.map((curr, index) => ({
+                'sceneFile': curr.absolutePath,            // 场景文件
+                'path': [curr.address],                    // 工程路径
+                'taskID': data.data[index]['taskUuid'],
+                'taskNo': data.data[index]['taskNo']
+              }))
             })
             pushTaskID({
-              'pathList': fir.local.filelist.map((curr, index) => {
-                return {
-                  'fileName': curr.absolutePath,            // 场景文件
-                  'taskUuid': data.data.data[index]
-                }
-              })
+              'pathList': fir.local.filelist.map((curr, index) => ({
+                'fileName': curr.absolutePath,            // 场景文件
+                'taskUuid': data.data[index]
+              }))
             })
           }
         }
@@ -1551,42 +1530,44 @@
             () => Promise.reject()
           )
           .then(
-            data => {
-              if (data.data.code == '201') {
+            ({data}) => {
+              if (data.code == '201') {
                 messageFun('success', '创建项目成功')
                 this.getItemList(newItemName)
-              } else if (data.data.code == '101') messageFun('error', '创建失败，项目名已存在')
+              } else if (data.code == '101') messageFun('error', '创建失败，项目名已存在')
             }
           )
           .catch(() => null)
       },
       // 3.设置渲染参数 - 其它设置 - 项目列表
       async getItemList(name) {
-        let data = await getConsumptionSelectList()
-        this.stepThreeBase.other.viewList = data.data.data.map(curr => {
-          return {
-            value: curr.taskProjectUuid + '-/-' + curr.projectName,
-            label: curr.projectName,
-            id: curr.taskProjectUuid
-          }
-        })
-        if (!name) this.stepThreeBase.other.view = this.stepThreeBase.other.viewList.find(item => item.isDefault == 1)['value']
+        let {other} = this.stepThreeBase,
+          {data} = await getConsumptionSelectList()
+        other.viewList = data.data.map(curr => ({
+          'value': curr.taskProjectUuid + '-/-' + curr.projectName,
+          'label': curr.projectName,
+          'id': curr.taskProjectUuid,
+          'isDefault': curr.isDefault
+        }))
+        if (!name) other.view = other.viewList.find(item => item.isDefault == 1)['value']
         else {
-          let obj = this.stepThreeBase.other.viewList.find(curr => curr.label == name)
+          let obj = other.viewList.find(curr => curr.label == name)
           this.setting.other.view = obj['value']
         }
       },
       // 3.设置渲染参数 - 其它设置 - 超时提醒改变
-      changeSliderVal(e) {
-        let n = Number(e.target.value)
-        if (n >= 1 && 72 >= n) this.stepThreeBase.other.remindVal = n
-        else this.stepThreeBase.other.remindVal = 12
+      changeSliderVal({target}) {
+        let {other} = this.stepThreeBase,
+          n = Number(target.value)
+        if (n >= 1 && 72 >= n) other.remindVal = n
+        else other.remindVal = 12
       },
       // 3.设置渲染参数 - 其它设置 - 超时停止改变
-      changeStopVal(e) {
-        let n = Number(e.target.value)
-        if (n >= 1 && 72 >= n) this.stepThreeBase.other.stopVal = n
-        else this.stepThreeBase.other.stopVal = 24
+      changeStopVal({target}) {
+        let {other} = this.stepThreeBase,
+          n = Number(target.value)
+        if (n >= 1 && 72 >= n) other.stopVal = n
+        else other.stopVal = 24
       },
       // 1.设置渲染文件 - 下一步
       goToMode(dire) {
@@ -1604,17 +1585,18 @@
       // 0.预备事件
       async readyToWork() {
         // 向后台获取网盘目录 场景路径
-        let data = await getHistoryPath(`account=${this.user.account}`)
-        if (data.data.code == 208) {
+        let {netdisc} = this.stepOneBase,
+          {data} = await getHistoryPath(`account=${this.user.account}`)
+        if (data.code == 208) {
           // scenePath 场景文件导航Path / resourcePath 工程路径Path
-          let path_ = data.data.data.scenePath.split('/')
+          let path_ = data.data.scenePath.split('/')
           path_.pop()   // 删除最后一位空元素
-          this.stepOneBase.netdisc.sceneFilePath = path_
-          this.stepOneBase.netdisc.pathV = data.data.data.resourcePath
+          netdisc.sceneFilePath = path_
+          netdisc.pathV = data.data.resourcePath
           this.$store.commit('WEBSOCKET_BACKS_SEND', {
             'code': 602,
             'customerUuid': this.user.id,
-            'path': data.data.data.scenePath === '/' ? '' : data.data.data.scenePath
+            'path': data.data.scenePath === '/' ? '' : data.data.scenePath
           })
         }
       }
@@ -1840,6 +1822,7 @@
                       color: rgba(22, 29, 37, 0.6);
                       font-size: 14px;
                       cursor: pointer;
+                      flex-shrink: 0;
 
                       &:hover {
                         color: rgba(22, 29, 37, 0.8);
@@ -1854,10 +1837,14 @@
                       border-bottom: 1px solid rgba(22, 29, 37, 0.19);
                       display: flex;
                       align-items: center;
+                      text-overflow: ellipsis;
+                      overflow: hidden;
+                      white-space: nowrap;
 
                       .filePathLi {
                         display: flex;
                         align-items: center;
+                        flex-shrink: 0;
 
                         &:nth-last-of-type(1) {
                           .im {
@@ -1869,9 +1856,15 @@
                           color: rgba(22, 29, 37, 0.6);
                           font-size: 14px;
                           cursor: pointer;
+                          flex-shrink: 0;
 
                           &:hover {
                             color: rgba(22, 29, 37, 0.8);
+                          }
+
+                          & > img {
+                            flex-shrink: 0;
+                            width: 17px;
                           }
                         }
                       }
@@ -2077,7 +2070,7 @@
               border-radius: 6px;
               border: 1px solid rgba(22, 29, 37, 0.3);
 
-              /deep/.el-input__inner {
+              /deep/ .el-input__inner {
                 border: 0px;
                 height: 38px;
               }

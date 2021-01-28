@@ -4,11 +4,11 @@
     <div class="container g-popup-box">
       <p class="title">
         <span>{{ title }}</span>
-        <img src="@/icons/shutDialogIcon.png" alt="" class="shutImg" @click="onCancel">
+        <img src="@/icons/shutDialogIcon.png" class="shutImg" @click="onCancel">
       </p>
       <div class="content">
         <!--左侧-->
-        <div class="c-left" :class="{'c-left--doing':imgURL}">
+        <div :class="['c-left', {'c-left--doing':imgURL}]">
           <div class="container-box" :style="{
             width:`${containerBoxData.width}px`,
             height:`${containerBoxData.height}px`,

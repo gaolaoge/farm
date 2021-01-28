@@ -6,7 +6,10 @@ import {
   getCurrentBalance
 } from '@/api/base'
 
-//
+// get请求参数obj转字符串&
+const pFConversion = function (obj) {
+  return Object.keys(obj).map(key => `${key}=${obj[key]}`).join('&')
+}
 
 // 更新余额
 const updateBalance = function (action) {
@@ -15,7 +18,7 @@ const updateBalance = function (action) {
       if (data.code != 200) reject()
       else {
         store.commit('changeUserBalance', data.data.toFixed(3))
-        if(data.data > 0) resolve(true)
+        if (data.data > 0) resolve(true)
         else if (data.data == 0) {
           store.commit('theBalanceIsZero', {bool: true, action})
           resolve(false)
@@ -229,16 +232,16 @@ const itemDownloadStatus = function (num) {
 
 // Uuid
 const UuidFun = function () {
-  var s = []
-  var hexDigits = "0123456789abcdef"
-  for (var i = 0; i < 36; i++) {
+  let s = []
+  let hexDigits = "0123456789abcdef"
+  for (let i = 0; i < 36; i++) {
     s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1)
   }
   s[14] = "4"                                                        // bits 12-15 of the time_hi_and_version field to 0010
-  s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1)      // bits 6-7 of the clock_seq_hi_and_reserved to 01
+  s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1)       // bits 6-7 of the clock_seq_hi_and_reserved to 01
   s[8] = s[13] = s[18] = s[23] = "-"
 
-  var uuid = s.join("")
+  let uuid = s.join("")
   return uuid
 }
 
@@ -274,32 +277,22 @@ const setInfo = function (data) {
 
 // 判断是否为IE等版本
 const IEVersion = function () {
-  var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
-  var isIE = userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1; //判断是否IE<11浏览器
-  var isEdge = userAgent.indexOf("Edge") > -1 && !isIE; //判断是否IE的Edge浏览器
-  var isIE11 = userAgent.indexOf('Trident') > -1 && userAgent.indexOf("rv:11.0") > -1;
+  let userAgent = navigator.userAgent,                                             // 取得浏览器的userAgent字符串
+    isIE = userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1, // 判断是否IE<11浏览器
+    isEdge = userAgent.indexOf("Edge") > -1 && !isIE,                              // 判断是否IE的Edge浏览器
+    isIE11 = userAgent.indexOf('Trident') > -1 && userAgent.indexOf("rv:11.0") > -1
   if (isIE) {
-    var reIE = new RegExp("MSIE (\\d+\\.\\d+);");
+    let reIE = new RegExp("MSIE (\\d+\\.\\d+);")
     reIE.test(userAgent);
-    var fIEVersion = parseFloat(RegExp["$1"]);
-    if (fIEVersion == 7) {
-      return 7;
-    } else if (fIEVersion == 8) {
-      return 8;
-    } else if (fIEVersion == 9) {
-      return 9;
-    } else if (fIEVersion == 10) {
-      return 10;
-    } else {
-      return 6;//IE版本<=7
-    }
-  } else if (isEdge) {
-    return 'edge';//edge
-  } else if (isIE11) {
-    return 11; //IE11
-  } else {
-    return -1;//不是ie浏览器
-  }
+    let fIEVersion = parseFloat(RegExp["$1"])
+    if (fIEVersion == 7) return 7
+    else if (fIEVersion == 8) return 8
+    else if (fIEVersion == 9) return 9
+    else if (fIEVersion == 10) return 10
+    else return 6                       //IE版本<=7
+  } else if (isEdge) return 'edge'      //edge
+  else if (isIE11) return 11            //IE11
+  else return -1                        //不是ie浏览器
 }
 
 const clearUserCookie = function (phone, account, token) {
@@ -374,7 +367,8 @@ export {
   sortF,
   sortDateF,
   updateBalance,
-  createThrowInfo
+  createThrowInfo,
+  pFConversion
 }
 
 
