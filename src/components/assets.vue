@@ -194,7 +194,7 @@
           moreBtnList: this.$t('assets.moreBtnList'),    // ['移动到', '复制到', '解压']
           showMoreBtnList: false,
           howToCreateBtn: this.$t('assets.howToCreateBtn'),  // ['手动创建资产目录', '自动创建资产目录']
-          howToCreateIindex: '0'
+          howToCreateIindex: '1'
         },
         info: this.$t('assets.info'),
         table: {

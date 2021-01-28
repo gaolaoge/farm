@@ -96,7 +96,7 @@
           width="140"/>
         <!--下载次数 -->
         <el-table-column
-          prop="downLoadTime"
+          prop="downloadCount"
           label="下载次数"
           sortable="custom"
           show-overflow-tooltip
@@ -335,7 +335,7 @@
             project: objectName,                // 所属项目
             fileSize: curr.fileSize,            // 文件大小
             fileType: '文件夹',                  // 文件类型
-            downLoadTime: '-',                  // 下载次数
+            downloadCount: '-',                 // 下载次数
             date: '',                           // 剩余有效期（天）
             updateTime: createDateFun(curr.updateTime),     // 更新时间
             itemUuid: curr.layerTaskUuid,       // 层任务Uuid
@@ -370,7 +370,7 @@
             project: objectName,                            // 所属项目
             fileSize: getFileSize(curr.fileSize),           // 文件大小
             fileType: fileType[fileType.length - 1],        // 文件类型
-            downLoadTime: curr.downloadCount,               // 下载次数
+            downloadCount: curr.downloadCount,              // 下载次数
             date: curr.indate == 0 ? '-' : consum(curr.indate - new Date().getTime()), // 剩余有效期（天）
             updateTime: createDateFun(new Date(curr.updateTime)),                      // 更新时间
             itemUuid: curr.taskUuid,
