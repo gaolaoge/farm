@@ -54,7 +54,7 @@
       </div>
     </div>
     <div class="recharge">
-      <img src="@/assets/recharge-home-icon.png" alt="" class="l">
+      <img src="@/assets/recharge-home-icon.png" class="l">
       <p class="p">{{ recharge.p1 }}</p>
       <p class="p">{{ recharge.p2 }}</p>
       <div class="btn" @click="$router.push('/upTop')">{{ recharge.btn }}</div>
@@ -68,7 +68,7 @@
   import {
     messageFun,
     clearUserCookie
-  } from "../../assets/common"
+  } from '../../assets/common'
 
   export default {
     name: 'iv',

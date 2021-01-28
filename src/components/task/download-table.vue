@@ -1,16 +1,17 @@
 <template>
   <div class="download-table" ref="downLoadTable">
     <el-table
-      :data="table.RenderDownloadData"
       @select="tableSelect"
       @filter-change="filterChangeF"
       @select-all="selectAll"
       @row-click="showDetails"
-      :row-class-name="tableRowStyle"
-      class="r"
+      @sort-change="sortChangeHandle"
+      :data="table.tableData"
       :border=true
-      row-key="rowId"
+      :row-class-name="tableRowStyle"
       :tree-props="{children: 'children'}"
+      class="r"
+      row-key="rowId"
       ref="renderTableImportant"
       style="width: 100%">
 
@@ -20,9 +21,9 @@
         width="92"/>
       <!--任务ID-->
       <el-table-column
-        prop="id"
+        prop="taskNo"
         label="任务ID"
-        sortable
+        sortable="custom"
         show-overflow-tooltip
         width="146"/>
       <!--场景名-->
@@ -59,21 +60,18 @@
       <!--渲染进度-->
       <el-table-column
         label="渲染进度"
-        sortable
         show-overflow-tooltip
         width="170">
         <template slot-scope="scope">
           <el-progress :percentage="isNaN(scope.row.percent) ? 0 : scope.row.percent"
                        :show-text="false"
                        class="progressL"/>
-          <span clas="progressS">
-              {{ scope.row.renderingProgress }}
-            </span>
+          <span clas="progressS">{{ scope.row.renderingProgress }}</span>
         </template>
       </el-table-column>
       <!--所属项目-->
       <el-table-column
-        prop="viewProject"
+        prop="projectName"
         label="所属项目"
         show-overflow-tooltip
         column-key="task"
@@ -82,28 +80,24 @@
       <!--渲染中-->
       <el-table-column
         prop="rendering"
-        sortable
         width="86"
         show-overflow-tooltip
         label="渲染中"/>
       <!--等待-->
       <el-table-column
         prop="wait"
-        sortable
         width="86"
         show-overflow-tooltip
         label="等待"/>
       <!--暂停-->
       <el-table-column
         prop="timeOut"
-        sortable
         width="86"
         show-overflow-tooltip
         label="暂停"/>
       <!--完成-->
       <el-table-column
         prop="carryOut"
-        sortable
         width="86"
         show-overflow-tooltip
         label="完成"/>
@@ -112,20 +106,19 @@
         prop="failure"
         label="失败"
         width="86"
-        show-overflow-tooltip
-        sortable/>
+        show-overflow-tooltip/>
       <!--渲染时长-->
       <el-table-column
-        prop="renderingTime"
+        prop="useTime"
         label="渲染时长"
-        sortable
+        sortable="custom"
         show-overflow-tooltip
         width="170"/>
       <!--渲染费用（金币）-->
       <el-table-column
         prop="renderingCost"
         label="渲染费用（金币）"
-        sortable
+        sortable="custom"
         show-overflow-tooltip
         width="150"/>
       <!--帧范围-->
@@ -133,7 +126,6 @@
         v-if="zone == 1"
         prop="frameRange"
         label="帧范围"
-        sortable
         show-overflow-tooltip
         width="110"/>
       <!--间隔帧-->
@@ -141,14 +133,12 @@
         v-if="zone == 1"
         prop="intervalFrame"
         label="间隔帧"
-        sortable
         show-overflow-tooltip
         width="86"/>
       <!--相机-->
       <el-table-column
         prop="camera"
         width="142"
-        sortable
         show-overflow-tooltip
         label="相机"/>
       <!--层名-->
@@ -156,7 +146,6 @@
         v-if="zone == 1"
         prop="layerName"
         label="层名"
-        sortable
         show-overflow-tooltip
         width="164"/>
       <!--下载情况-->
@@ -181,16 +170,16 @@
       </el-table-column>
       <!--渲染开始时间-->
       <el-table-column
-        prop="renderingStartTime"
+        prop="startTime"
         label="渲染开始时间"
-        sortable
+        sortable="custom"
         show-overflow-tooltip
         width="174"/>
       <!--渲染结束时间-->
       <el-table-column
-        prop="renderingEndTime"
+        prop="endTime"
         label="渲染结束时间"
-        sortable
+        sortable="custom"
         show-overflow-tooltip
         width="174"/>
       <!--创建人-->
@@ -203,19 +192,17 @@
         width="100"/>
       <!--创建时间-->
       <el-table-column
-        prop="creationTime"
+        prop="createTime"
         label="创建时间"
-        sortable
+        sortable="custom"
         show-overflow-tooltip
         width="174"/>
 
     </el-table>
     <!--暂无数据-->
-    <div class="nullTableData" v-if="!table.RenderDownloadData.length">
+    <div class="nullTableData" v-if="!table.tableData.length">
       <img src="@/icons/tableDataNull.png">
-      <span>
-        暂无数据
-      </span>
+      <span>暂无数据</span>
     </div>
     <!--分页-->
     <div class="page">
@@ -223,7 +210,7 @@
         background
         layout="prev, pager, next, jumper"
         @current-change="handleCurrentChange"
-        :current-page.sync="table.current"
+        :current-page.sync="table.pageIndex"
         :total="table.renderTableTotal">
       </el-pagination>
       <div class="farm-primary-form-btn btn" @click="refreshF()">
@@ -317,60 +304,13 @@
       return {
         s: ['4'],
         table: {
-          RenderDownloadData: [
-            // {
-            //   id: '',                   //任务ID
-            //   sceneName: '',           //场景名
-            //   status: '',               //状态
-            //   renderingProgress: '',    //渲染进度
-            //   viewProject: '',          //所属项目
-            //   rendering: '',            //渲染中
-            //   wait: '',                 //等待
-            //   timeOut: '',              //暂停
-            //   carryOut: '',             //完成
-            //   failure: '',              //失败
-            //   renderingTime: '',        //渲染时长
-            //   renderingCost: '',        //渲染费用（金币）
-            //   frameRange: '',           //帧范围
-            //   intervalFrame: '',        //间隔帧
-            //   camera: '',               //相机
-            //   layerName: '',            //层名
-            //   downloadStatus: '',       //下载情况
-            //   renderingStartTime: '',   //渲染开始时间
-            //   renderingEndTime: '',     //渲染结束时间
-            //   founder: '',              //创建人
-            //   creationTime: ''          //创建时间
-            //   children: [
-            //   {
-            //     id: '56232233',
-            //     sceneName: '场景.ma',
-            //     status: '渲染中',
-            //     renderingProgress: '276/1286',
-            //     viewProject: '少年的你项目组',
-            //     rendering: '1',
-            //     wait: '1',
-            //     timeOut: '1',
-            //     carryOut: '1',
-            //     failure: '1',
-            //     renderingTime: '2小时23分34秒',
-            //     renderingCost: '239.25',
-            //     frameRange: '1-24',
-            //     intervalFrame: '1',
-            //     camera: '摄像机一',
-            //     layerName: '第一层',
-            //     downloadStatus: '待下载',
-            //     renderingStartTime: '2020-03-02 00:23:46',
-            //     renderingEndTime: '2020-03-02 00:59:41',
-            //     founder: '管理员',
-            //     creationTime: '2020-01-01 00:01:56'
-            //   },
-            //   ]
-            // },
-          ],
-          renderSelectionList: [],      // 渲染下载选中项
+          tableData: [],
+          selectionList: [],            // 渲染下载选中项
           renderTableTotal: 0,          // 总数
-          current: 1,                   // 当前页数
+          pageIndex: 1,                 // 当前页数
           pageSize: 10,
+          sortBy: 'taskNo',
+          sortType: 0,                  // 排序方向 0递减 1递增
           unfoldList: [],               // 展开项
           downloadStatusList: [         // 筛选 - 下载情况
             {text: '全部', value: '全部'},
@@ -382,32 +322,29 @@
           renderStatus: [],             // 筛选 - 状态
           usersList: [],                // 筛选 - 创建人
           itemList: [],                 // 筛选 - 所属项目
-          statusList: [                 // 筛选 - 状态label
-            // {text: '全部', value: '全部'},
+          statusList: [
             {text: '待全部渲染', value: '待全部渲染'},
             {text: '渲染中', value: '渲染中'},
             {text: '渲染暂停', value: '渲染暂停'},
             {text: '渲染完成', value: '渲染完成'}
-          ],
-          statusList2: [                 // 筛选 - 状态label
-            // {text: '全部', value: '全部'},
-            // {text: '待全部渲染', value: '待全部渲染'},
+          ],            // 筛选 - 状态label
+          statusList2: [
             {text: '渲染中', value: '渲染中'},
             {text: '渲染暂停', value: '渲染暂停'},
             {text: '渲染完成', value: '渲染完成'}
-          ],
+          ],           // 筛选 - 状态label
         },
         showDrawer: false,
         itemName: 'result',
         drawerTaskData: null,
-        searchInput: '',
+        keyword: '',
         dialogTableVisible: false,
         renderAgainBoxcheckbox: ['失败帧', '完成帧'],
         renderAgainBoxSupplement: '（完成帧重新渲染会重复扣除费用）',
         renderAgainBoxTit: '确认重新渲染以下帧么？',
         renderAgainBoxBtnList: ['取消', '确定'],
         refresh: '刷新',
-        specialJump: false,       // 特定跳转 请求带有指定参数 不再触发默认【获取列表】
+        specialJump: false       // 特定跳转 请求带有指定参数 不再触发默认【获取列表】
       }
     },
     methods: {
@@ -464,22 +401,22 @@
       },
       // 关键字检索
       searchFun(val) {
-        this.searchInput = val
+        this.keyword = val
         this.getList()
       },
       // 翻页
       handleCurrentChange(val) {
-        this.table.current = val
+        this.table.pageIndex = val
         this.getList()
       },
       // 【非业务逻辑】手动勾选数据行 Checkbox 时触发
       tableSelect(selection, row) {
         // selection 为现选中结果 row 为此次事件的触发行
         let result = selection.some(curr => curr.rowId == row.rowId),     // 【选中事件】or【取消事件】
-          tableData = this.table.RenderDownloadData,
+          {tableData} = this.table,
           allSonSelected = false,
           fatherSelected = false,
-          selectionList = this.table.renderSelectionList,
+          {selectionList} = this.table,
           table = this.$refs.renderTableImportant
 
         // 事件触发在子项
@@ -576,21 +513,22 @@
       },
       // 【非业务逻辑】全选
       selectAll(selection) {
+        let {table} =this
         // 取消全选
         if (!('children' in selection[0])) {
-          this.table.renderSelectionList = []
-          this.table.RenderDownloadData.forEach(curr => curr.children && curr.children.forEach(item => this.$refs.renderTableImportant.toggleRowSelection(item, false)))
+          table.selectionList = []
+          table.tableData.forEach(curr => curr.children && curr.children.forEach(item => this.$refs.renderTableImportant.toggleRowSelection(item, false)))
         } else {
           // 全选
           let data = []
-          this.table.RenderDownloadData.forEach(curr => {
+          table.tableData.forEach(curr => {
             data.push(curr)
             curr.children && curr.children.forEach(item => {
               data.push(item)
               this.$refs.renderTableImportant.toggleRowSelection(item, true)
             })
           })
-          this.table.renderSelectionList = data
+          table.selectionList = data
         }
       },
       // 渲染下载详情查看
@@ -619,103 +557,85 @@
         if (reset) this.closeDrawer()
         const loading = this.$loading({
           lock: true,
-          text: 'Loading',
+          text: '拼命加载中...',
           spinner: 'el-icon-loading',
           background: 'rgba(0, 0, 0, 0.49)'
         })
-        // {
-        //   zoneUuid: '',            // 分区ID
-        //   keyword: '',             // 关键字
-        //   pageIndex: '',           // 当前页码
-        //   pageSize: '',            // 页大小
-        //   uploadStatus '',         // 渲染状态
-        //   renderStatus: ''         // 工程ID
-        // }
-        if (obj && obj.renderStatus) this.table.renderStatus = [obj.renderStatus]
-        if (obj && obj.projectUuid) this.table.projectUuid = [obj.projectUuid]
+        let {table, zoneId, zone, keyword} = this,
+          {pageSize, pageIndex, sortType, sortBy} = table
+        if (obj && obj.renderStatus) table.renderStatus = [obj.renderStatus]
+        if (obj && obj.projectUuid) table.projectUuid = [obj.projectUuid]
         if (obj && obj.renderStatusFormHome) switch (obj.renderStatusFormHome) {
           case 'rendering':           // 渲染中
-            this.table.renderStatus = [2]
+            table.renderStatus = [2]
             break
           case 'waitAllRender':       // 待全部渲染
-            this.table.renderStatus = [5]
+            table.renderStatus = [5]
             break
           case 'renderPause':         // 渲染暂停
-            this.table.renderStatus = [3]
+            table.renderStatus = [3]
             break
           case 'finishRender':        // 渲染完成
-            this.table.renderStatus = [3]
+            table.renderStatus = [3]
             break
         }
-        let data = this.zone == 1 ? await getRenderTableList({
-            zoneUuid: this.zoneId,
-            keyword: this.searchInput,
-            pageIndex: this.table.current,
-            pageSize: this.table.pageSize,
-            renderStatus: this.table.renderStatus,
-            projectUuid: this.table.projectUuidList
+        let {data} = zone == 1 ? await getRenderTableList({
+            'zoneUuid': zoneId,
+            pageIndex,
+            pageSize,
+            'renderStatus': table.renderStatus,
+            'projectUuid': table.projectUuidList,
+            sortBy,
+            sortType,
+            keyword
           }) : await uploadTabGetList({
-            "zoneUuid": this.zoneId,
-            "pageIndex": 1,
-            "pageSize": 10,
-            "projectUuid": this.table.projectUuidList,
-            "status": this.table.renderStatus,
-            "keyword": this.searchInput,
+            'zoneUuid': zoneId,
+            pageIndex,
+            pageSize,
+            'projectUuid': table.projectUuidList,
+            'status': table.renderStatus,
+            sortBy,
+            sortType,
+            keyword
           }),
           usersList = new Set()
-        this.table.renderTableTotal = data.data.total              // 【渲染下载】翻页长度
-        this.$emit('renderTableTotalItem', data.data.total)  // 【渲染下载】标签后显示长度
-        this.$emit('archiveNum', data.data.other)             // 【归档记录】长度
-        this.table.RenderDownloadData = this.zone == 1 ? data.data.data.map((curr, fatherIndex) => {
+        table.renderTableTotal = data.total                    // 【渲染下载】翻页长度
+        this.$emit('renderTableTotalItem', data.total)   // 【渲染下载】标签后显示长度
+        this.$emit('archiveNum', data.other)             // 【归档记录】长度
+        table.tableData = zone == 1 ? data.data.map((curr, fatherIndex) => {
           let children = [],
             downloadStatusS = [],
             downloadStatus = '部分下载'
           // 兼容数据结构错误 生产时删除判断
           curr.renderLayerTaskDTOList[0] && (children = curr.renderLayerTaskDTOList.map((item, sonIndex) => {
-            // let status
-            // switch(item.layerTaskStatus){
-            //   case 1:
-            //   case 2:
-            //     status = '渲染中'
-            //     break
-            //   case 3:
-            //     status = '渲染完成'
-            //     break
-            //   case 4:
-            //     status = '渲染暂停'
-            //     break
-            //   case 6:
-            //     status = '渲染放弃'
-            //     break
-            // }
             let downloadStatus = !Boolean(item.downloadFrameCount) ? '待下载' : (item.downloadFrameCount == item.allFrameCount ? '已下载' : '部分下载')
             downloadStatusS.push(downloadStatus)
             let status = itemDownloadStatus(item.layerTaskStatus)
             if (status == '渲染暂停' && item.result == 5) status = '待全部渲染'
             return {
-              id: item.layerNo,                                                // 任务ID
-              sceneName: curr.fileName + '-' + item.layerName,        // 场景名
+              taskNo: item.layerNo,                                  // 任务ID
+              sceneName: curr.fileName + '-' + item.layerName,       // 场景名
               FatherSceneName: curr.fileName,                        // 主任务场景名
-              status,                           // 状态
+              status,                                                // 状态
               renderingProgress: item.frameCount.done + '/' + item.frameCount.total,    //渲染进度
               percent: curr.frameCount.total == null ? 0 : Math.floor(item.frameCount.done / item.frameCount.total * 100),
-              viewProject: curr.projectName,                         // 所属项目
+              projectName: curr.projectName,                         // 所属项目
               rendering: item.frameCount.running,                    // 渲染中
               wait: item.frameCount.wait,                            // 等待
               timeOut: item.frameCount.pause,                        // 暂停
               carryOut: item.frameCount.done,                        // 完成
               failure: item.frameCount.fail,                         // 失败
-              renderingTime: consum(item.useTime),                   // 渲染时长
+              useTime: consum(item.useTime),                         // 渲染时长
               renderingCost: item.cost,                              // 渲染费用（金币）
               frameRange: item.frameRange,                           // 帧范围
               intervalFrame: item.frameInterval,                     // 间隔帧
               camera: item.camera,                                   // 相机
               layerName: item.layerName,                             // 层名
               downloadStatus,                                        // 下载情况
-              renderingStartTime: createDateFun(new Date(item.startTime)),                    // 渲染开始时间
-              renderingEndTime: createDateFun(new Date(item.endTime)),                        // 渲染结束时间
+              startTime: createDateFun(item.startTime),              // 渲染开始时间
+              endTime: createDateFun(item.endTime),                  // 渲染结束时间
               founder: curr.account,                                 // 创建人
-              creationTime: createDateFun(new Date(curr.createTime)),                         // 创建时间
+              createTime: createDateFun(curr.createTime),            // 创建时间
               rowId: curr.taskNo + '-' + sonIndex,                   // 唯一值
               resolutionVal: item.width + '*' + item.height,         // 分辨率
               formatName: item.formatName,                           // 输出格式
@@ -735,28 +655,28 @@
           usersList.add(curr['account'])
           return {
             taskUuid: curr.taskUuid,
-            id: curr.taskNo,                                       // 任务ID
+            taskNo: curr.taskNo,                                   // 任务ID
             sceneName: curr.isExpire == 1 ? '(过期)' + curr.fileName : curr.fileName,        // 场景名
             status: itemDownloadStatus(curr.renderStatus),         // 状态
             renderingProgress: curr.frameCount.done + '/' + curr.frameCount.total,          //渲染进度
             percent: curr.frameCount.total == null ? 0 : Math.floor(curr.frameCount.done / curr.frameCount.total * 100),
-            viewProject: curr.projectName,                         // 所属项目
+            projectName: curr.projectName,                         // 所属项目
             rendering: curr.frameCount.running,                    // 渲染中
             wait: curr.frameCount.wait,                            // 等待
             timeOut: curr.frameCount.pause,                        // 暂停
             carryOut: curr.frameCount.done,                        // 完成
             failure: curr.frameCount.fail,                         // 失败
-            renderingTime: consum(curr.useTime),                   // 渲染时长
+            useTime: consum(curr.useTime),                         // 渲染时长
             renderingCost: curr.cost,                              // 渲染费用（金币）
             frameRange: children.length == 1 ? children[0]['frameRange'] : '-',             // 帧范围
             intervalFrame: children.length == 1 ? children[0]['intervalFrame'] : '-',       // 间隔帧
             camera: children.length == 1 ? children[0]['camera'] : '-',                     // 相机
             layerName: children.length == 1 ? children[0]['layerName'] : '-',               // 层名
             downloadStatus,                                                                 // 下载情况
-            renderingStartTime: createDateFun(new Date(curr.startTime)),                    // 渲染开始时间
-            renderingEndTime: children.length == 1 ? children[0]['renderingEndTime'] : createDateFun(new Date(curr.endTime)),                        // 渲染结束时间
+            startTime: createDateFun(curr.startTime),                                       // 渲染开始时间
+            endTime: children.length == 1 ? children[0]['endTime'] : createDateFun(curr.endTime),                        // 渲染结束时间
             founder: curr.account,                                 // 创建人
-            creationTime: createDateFun(new Date(curr.createTime)),// 创建时间
+            createTime: createDateFun(curr.createTime),// 创建时间
             children: children.length == 1 ? null : children,
             rowId: curr.taskNo,                                    // 唯一值
             selfIndex: fatherIndex,
@@ -764,34 +684,7 @@
             inFilePath: curr.inFilePath,
             secretChild: children.length == 1 ? children : null,   // 伪child列表
           }
-        }) : data.data.data.map((curr, fatherIndex) => {
-          // account: "gaoge1834"         // 任务创建人
-          // allFrameCount: 1             // 所有帧
-          // await: 0                     // 等待中任务数
-          // camera: null
-          // cost: 0                      // 已用金额
-          // createBy: "1"                // 任务创建人编号
-          // createTime:                  // 创建时间
-          // designTaskDTOList: []        // 子任务组
-          // downloadFrameCount: 0        // 下载情况
-          // endTime: null                // 结束时间。可能为null
-          // fileName: ""                 // 文件名称
-          // layerNo: null                // 主任务作业号
-          // layerTaskStatus: null
-          // layerTaskUuid: null
-          // lose: 0                      // 失败任务数
-          // pageIndex: null
-          // pageSize: null
-          // projectName: ""              // 项目名称
-          // renderStatus: 3              // 渲染各个阶段的状态。1，等待；2，渲染中，3，渲染完成；4，渲染暂停；5，待全部渲染； 6，渲染放弃
-          // rendering: 0                 // 渲染中任务数
-          // startTime: null              // 开始时间。可能为null
-          // stopped: 0                   // 停止中任务数
-          // taskNo: "SWT-413"
-          // taskUuid: ""                 // 任务uuid
-          // useTime: 37860               // 已用时间
-          // win: 1                       // 成功任务数
-          // zoneUuid: null
+        }) : data.data.map((curr, fatherIndex) => {
           let downloadStatus,
             framesTotal = curr.win + curr.lose + curr.rendering + curr.await + curr.stopped,   // 总帧数
             children = []
@@ -803,29 +696,29 @@
               status = itemDownloadStatus(item.layerTaskStatus)
             // if(status == '渲染暂停' && item.result == 5) status = '待全部渲染'
             return {
-              id: item.layerNo,                                      // 任务ID
+              taskNo: item.layerNo,                                  // 任务ID
               FatherSceneName: curr.fileName,                        // 主任务场景名
               sceneName: item.fileName,                              // 场景名
               status,                                                // 状态
               renderingProgress: item.win + '/' + itemTotal,         //渲染进度
               percent: itemTotal == null ? 0 : Math.floor(item.win / itemTotal * 100),
-              viewProject: curr.projectName,                         // 所属项目
+              projectName: curr.projectName,                         // 所属项目
               rendering: item.rendering,                             // 渲染中
               wait: item.await,                                      // 等待
               timeOut: item.stopped,                                 // 暂停
               carryOut: item.win,                                    // 完成
               failure: item.lose,                                    // 失败
-              renderingTime: consum(item.useTime),                   // 渲染时长
+              useTime: consum(item.useTime),                         // 渲染时长
               renderingCost: item.cost,                              // 渲染费用（金币）
               frameRange: 1,                                         // 帧范围
               intervalFrame: '-',                                    // 间隔帧
               camera: item.camera,                                   // 相机
               layerName: item.camera,                                // 层名
               downloadStatus,                                        // 下载情况
-              renderingStartTime: createDateFun(new Date(item.startTime)),                    // 渲染开始时间
-              renderingEndTime: createDateFun(new Date(item.endTime)),                        // 渲染结束时间
+              startTime: createDateFun(item.startTime),              // 渲染开始时间
+              endTime: createDateFun(item.endTime),                  // 渲染结束时间
               founder: curr.account,                                 // 创建人
-              creationTime: createDateFun(new Date(curr.createTime)),                         // 创建时间
+              createTime: createDateFun(curr.createTime),            // 创建时间
               rowId: curr.taskNo + '-' + sonIndex,                   // 唯一值
               // resolutionVal: item.width + '*' + item.height,         // 分辨率
               // formatName: item.formatName,                           // 输出格式
@@ -842,28 +735,28 @@
           }))
           return {
             taskUuid: curr.taskUuid,
-            id: curr.taskNo,                                       // 任务ID
+            taskNo: curr.taskNo,                                   // 任务ID
             sceneName: curr.fileName,                              // 场景名
             status: itemDownloadStatus(curr.renderStatus),         // 状态
             renderingProgress: (curr.win + curr.lose) + '/' + framesTotal,          //渲染进度
             percent: curr.win + curr.lose == 0 ? 0 : Math.floor((curr.win + curr.lose) / framesTotal * 100),
-            viewProject: curr.projectName,                         // 所属项目
+            projectName: curr.projectName,                         // 所属项目
             rendering: curr.rendering,                             // 渲染中
             wait: curr.await,                                      // 等待
             timeOut: curr.stopped,                                 // 暂停
             carryOut: curr.win,                                    // 完成
             failure: curr.lose,                                    // 失败
-            renderingTime: consum(curr.useTime),                   // 渲染时长
+            useTime: consum(curr.useTime),                         // 渲染时长
             renderingCost: curr.cost,                              // 渲染费用（金币）
             frameRange: '-',                                       // 帧范围
             intervalFrame: '-',                                    // 间隔帧
             camera: '-',                                           // 相机
             layerName: '-',                                        // 层名
             downloadStatus,                                        // 下载情况
-            renderingStartTime: createDateFun(new Date(curr.startTime)),                    // 渲染开始时间
-            renderingEndTime: createDateFun(new Date(curr.endTime)),                        // 渲染结束时间
+            startTime: createDateFun(curr.startTime),              // 渲染开始时间
+            endTime: createDateFun(curr.endTime),                  // 渲染结束时间
             founder: curr.account,                                 // 创建人
-            creationTime: createDateFun(new Date(curr.createTime)),// 创建时间
+            createTime: createDateFun(curr.createTime),            // 创建时间
             children: children.length == 1 ? null : children,
             rowId: curr.taskNo,                                    // 唯一值
             selfIndex: fatherIndex,
@@ -872,13 +765,20 @@
             secretChild: children.length == 1 ? children : null,   // 伪child列表
           }
         })
-        this.table.usersList = [...usersList].map(curr => {
-          return {'text': curr, 'value': curr}
-        })  // 创建人列表
+        table.usersList = [...usersList].map(curr => ({'text': curr, 'value': curr}))  // 创建人列表
         if (obj && obj.taskUuid) this.$nextTick(() => {
-          this.$refs.renderTableImportant.toggleRowSelection(this.table.RenderDownloadData.find(item => item['taskUuid'] == obj['taskUuid']), true)
+          this.$refs.renderTableImportant.toggleRowSelection(table.tableData.find(item => item['taskUuid'] == obj['taskUuid']), true)
         })
         loading.close()
+      },
+      // 排序
+      sortChangeHandle({column, prop, order}) {
+        let {table} = this
+        if(order == 'ascending') table.sortType = 1
+        else table.sortType = 0
+        if(!order) table.sortBy = 'taskNo'
+        else table.sortBy = prop
+        this.getList(null)
       },
       // 操作 - 【开始】前预判
       startFun() {
@@ -896,7 +796,7 @@
       },
       // 操作 - 开始
       startFunReal() {
-        if (!this.table.renderSelectionList.length) return false
+        if (!this.table.selectionList.length) return false
         this.$confirm('选中项将开始渲染, 是否继续?', '提示信息', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -905,7 +805,7 @@
           .then(
             async () => {
               let dataList = []
-              this.table.renderSelectionList.forEach(curr => {
+              this.table.selectionList.forEach(curr => {
                 if (('selfIndex' in curr) && !curr['secretChild']) return false
                 let dataListIndex = dataList.findIndex(item => item.taskUuid == curr.FatherTaskUuId)
                 if (dataListIndex == -1) {
@@ -943,7 +843,7 @@
       },
       // 操作 - 归档
       archiveFun() {
-        if (!this.table.renderSelectionList.length) return false
+        if (!this.table.selectionList.length) return false
         this.$confirm('确认归档选中项目?', '提示信息', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -952,7 +852,7 @@
           .then(
             async () => {
               let taskUuidList = []
-              this.table.renderSelectionList.forEach(curr => {
+              this.table.selectionList.forEach(curr => {
                 if ('FatherIndex' in curr) return false
                 taskUuidList.push(curr.taskUuid)
               })
@@ -991,7 +891,7 @@
       },
       // 操作 - 全部渲染
       renderAllFunReal() {
-        if (!this.table.renderSelectionList.length) return false
+        if (!this.table.selectionList.length) return false
         this.$confirm('确认进行全部渲染吗？建议您在确认优先渲染的测试帧无误后再进行', '提示信息', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -1000,7 +900,7 @@
           .then(
             async () => {
               let dataList = []
-              this.table.renderSelectionList.forEach(curr => {
+              this.table.selectionList.forEach(curr => {
                 if (('selfIndex' in curr) && !(curr['secretChild'])) return false
                 let dataListIndex = dataList.findIndex(item => item.taskUuid == curr.FatherTaskUuId)
                 if (dataListIndex == -1) {
@@ -1037,7 +937,7 @@
       },
       // 操作 - 删除
       deleteFun() {
-        if (!this.table.renderSelectionList.length) return false
+        if (!this.table.selectionList.length) return false
         this.$confirm('将删除选中选, 是否继续?', '提示信息', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -1047,7 +947,7 @@
             async () => {
               let dataList = [],
                 fat = []
-              this.table.renderSelectionList.forEach(curr => {
+              this.table.selectionList.forEach(curr => {
                 if (('selfIndex' in curr) && !curr['secretChild']) fat.push(curr['taskUuid'])
                 else if (('selfIndex' in curr) && curr['secretChild']) {
                   fat.push(curr.secretChild[0]['FatherTaskUuId'])
@@ -1090,7 +990,7 @@
       },
       // 操作 - 暂停
       pauseFun() {
-        if (!this.table.renderSelectionList.length) return false
+        if (!this.table.selectionList.length) return false
         this.$confirm('将暂停选中选, 是否继续?', '提示信息', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -1099,7 +999,7 @@
           .then(
             async () => {
               let dataList = []
-              this.table.renderSelectionList.forEach(curr => {
+              this.table.selectionList.forEach(curr => {
                 if (('selfIndex' in curr) && !curr['secretChild']) return false
                 let dataListIndex = dataList.findIndex(item => item.taskUuid == curr.FatherTaskUuId)
                 if (dataListIndex == -1) {
@@ -1151,22 +1051,24 @@
       },
       // 操作 - 【下载完成帧】前预判
       downloadFils() {
-        if (!this.table.renderSelectionList.length) return false
-        if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => next())
-        else next()
+        if (!this.table.selectionList.length) return false
+        if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.next())
+        else this.next()
 
-        function next() {
+        this.next = function () {
           // 判断余额是否充足
           updateBalance('下载完成帧')
             .then(data => {
               if (data) this.downloadingFile()
             })
-            .catch(() => createThrowInfo({
-              type:'error',
-              title:'获取余额情况失败',
-              info:'在主任务【下载完成帧】操作前判断',
-              site:'components/task/download-table:1091'
-            }))
+            .catch((err) => {
+              createThrowInfo({
+                type:'error',
+                title:'获取余额情况失败',
+                info:'在主任务【下载完成帧】操作前判断',
+                site:'components/task/download-table:1053'
+              })
+            })
         }
       },
       // 操作 - 下载完成帧
@@ -1186,7 +1088,7 @@
       },
       // 操作 - 拷贝
       async copyFun() {
-        let item = this.table.renderSelectionList.find((item, index) => item.children || item.secretChild)
+        let item = this.table.selectionList.find((item, index) => item.children || item.secretChild)
         let data = await getCopySetData(item.taskUuid)
         this.drawerTaskData = item
         await this.$refs.drawer.getItemList()
@@ -1216,7 +1118,7 @@
         this.dialogTableVisible = false
         if (!this.s.length) return false
         let dataList = []
-        this.table.renderSelectionList.forEach(curr => {
+        this.table.selectionList.forEach(curr => {
           if (('selfIndex' in curr) && !curr['secretChild']) return false
           let dataListIndex = dataList.findIndex(item => item.taskUuid == curr.FatherTaskUuId)
           if (dataListIndex == -1) {
@@ -1252,7 +1154,7 @@
           fatItem = [],
           sonItem = []
         // 因为指定主任务顺序肯定在其层任务前 所以无需先识别全部主任务
-        this.table.renderSelectionList.forEach(curr => {
+        this.table.selectionList.forEach(curr => {
           if ('selfIndex' in curr) {
             fatId.push(curr['id'])
             fatItem.push(curr)
@@ -1263,7 +1165,7 @@
       // 刷新
       refreshF() {
         this.getList(null)
-        this.table.renderSelectionList = []
+        this.table.selectionList = []
       }
     },
     components: {
@@ -1276,7 +1178,7 @@
       ...mapState(['zoneId', 'zone', 'user', 'socket_plugin']),
     },
     watch: {
-      'table.renderSelectionList': {
+      'table.selectionList': {
         handler: function (val) {
           let r = new Set(),       // 任务状态集合
             task = new Set(),      // 选中项所属任务的长度

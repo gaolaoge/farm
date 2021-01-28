@@ -465,7 +465,7 @@
           .catch(error => console.log(`工作台下拉框获取报错，${error}`))
       },
       changeIsGpu() {
-        this.$store.commit('changeIsGpu', this.workBenchList.find(curr => curr.val == this.workBenchVal)['isGpu'])
+        this.$store.commit('changeIsGpu', this.workBenchList.find(curr => curr.val == this.workBenchVal)['isGpu'] || null)
       },
       async getUserInfo() {
         let data = await getInfo(),

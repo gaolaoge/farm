@@ -919,15 +919,10 @@
           </div>
           <div class="happen">
             <div class="happen-item" v-for="(item,index) in result.happen" :key="index">
-              <span class="label">
-                {{ item.text }}：
-              </span>
-              <span class="val">
-                {{ item.num }}
-              </span>
+              <span class="label">{{ item.text }}：</span>
+              <span class="val">{{ item.num }}</span>
             </div>
           </div>
-
         </div>
       </div>
     </div>
@@ -1881,10 +1876,10 @@
       // 渲染结果 - 主 - 操作 - 【下载完成帧】前预判
       async operateDownloadFrame() {
         if (!this.result.selectionResult.length || this.result.operateBtnList[2]['classState']) return false
-        else if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => next())
-        else next()
+        else if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.next())
+        else this.next()
 
-        function next() {
+        this.next = function () {
           // 判断余额是否充足
           updateBalance('下载完成帧')
             .then(data => {

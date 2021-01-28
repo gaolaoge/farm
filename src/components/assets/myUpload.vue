@@ -5,13 +5,13 @@
       <!--面包屑-->
       <div class="bread">
         <span class="h" @click="navClickF(null, navF)">{{ navF }}</span>
-        <img src="@/icons/enter.png" alt="" class="img">
+        <img src="@/icons/enter.png" class="img">
         <span v-for="(item,index) in nav"
               :key="index"
               @click="navClickF(index)"
               class="h">
           {{ item }}
-          <img src="@/icons/enter.png" alt="" class="img">
+          <img src="@/icons/enter.png" class="img">
         </span>
       </div>
       <!--table-->
@@ -23,6 +23,10 @@
         @sort-change="sortChange"
         :border=true
         class="o"
+        v-loading="loading"
+        element-loading-background="rgba(0, 0, 0, 0.49)"
+        element-loading-spinner="el-icon-loading"
+        element-loading-text="拼命加载中..."
         style="width: 100%">
 
         <el-table-column
@@ -61,7 +65,7 @@
                      @blur="confirmToRename(scope.row)">
               <span :class="['name', {'rename': scope.row.rename}]">{{ scope.row.fileName }}</span>
             </div>
-            <span v-show="scope.row.ing">.cloudtransfer.uploading</span>
+            <span v-show="scope.row.ing && scope.row.fileType !== '文件夹'">.cloudtransfer.uploading</span>
           </template>
         </el-table-column>
         <!--文件大小-->
@@ -92,10 +96,9 @@
           sortable="custom"
           show-overflow-tooltip
           width="280"/>
-
       </el-table>
       <!--暂无数据-->
-      <div class="unData" v-show="table.tableData.length == 0">
+      <div class="nullTableData" v-show="table.tableData.length == 0">
         <img src="@/icons/tableDataNull.png">
         <span>暂无数据</span>
       </div>
@@ -237,6 +240,7 @@
         newNameErr: false,       // 新建文件夹
         btnCancel: '取消',
         btnSave: '确定',
+        loading: false
       }
     },
     props: {
@@ -267,8 +271,7 @@
             this.nav = nav
             this.path = data.other == '' ? '/' : data.other
             this.table.total = data.total
-            this.table.tableData = data.data.map((item, index_) => {
-              return Object.assign(item, {
+            this.table.tableData = data.data.map((item, index_) => Object.assign(item, {
                 'updateTime': createDateFun(new Date(item.updateTime)),
                 'completedTime': item.completedTime,
                 'validPeriod': consum(item.validPeriod),
@@ -279,8 +282,8 @@
                 'fileSize': item.fileType == '文件夹' ? '-' : getFileSize(item.size),
                 'rename': false,
                 index_
-              })
-            })
+              }))
+            this.loading = false
           } else if (data.msg == '601' && this.dialogVisible) {
             // 网盘tree
             let x = data.data.map(item => {
@@ -305,6 +308,7 @@
             messageFun('info', data.data)
             this.getAssetsCatalog(this.path, this.searchInputVal)
           } else if (data.msg == '6051' || data.msg == '6061' || data.msg == '6081') {
+            this.message && this.message.close()
             messageFun('success', '操作成功')
             this.shutDialog()
             this.getAssetsCatalog(this.path, this.searchInputVal)
@@ -313,8 +317,10 @@
             this.getAssetsCatalog(this.path, this.searchInputVal)
           } else if (data.msg == '6052' || data.msg == '6062' || data.msg == '6032') messageFun('info', '选定目标内已存在相同名称文件或文件夹，操作失败')
           else if (data.msg == '6081') messageFun('info', '解压失败')
-          else if (data.msg == '6053' || data.msg == '6063' || data.msg == '6073' || data.msg == '6082') messageFun('error', '报错，操作失败')
-          else if (data.msg == '6083') {
+          else if (data.msg == '6053' || data.msg == '6063' || data.msg == '6073' || data.msg == '6082') {
+            this.message && this.message.close()
+            messageFun('error', '报错，操作失败')
+          } else if (data.msg == '6083') {
             this.sendPassword()
             messageFun('error', data.other)
           }
@@ -344,7 +350,6 @@
         if(!order) table.sortBy = 'fileName'
         else table.sortBy = prop
         table.pageIndex = 1
-        console.log(table)
         this.getAssetsCatalog(path, searchInputVal)
       },
       // 打开【传输列表】
@@ -546,6 +551,11 @@
         else this.unzipAction(this.table.selectionList[0]['position'], password)
       },
       unzipAction(unzipFilePath, password) {
+        this.message = this.$message({
+          showClose: true,
+          message: '解压中，请稍候...',
+          type: 'warning'
+        })
         this.$store.commit('WEBSOCKET_BACKS_SEND', {
           'code': 608,
           'customerUuid': this.user.id,
@@ -568,12 +578,12 @@
             }),
             () => messageFun('info', '已取消删除')
           )
-
       },
       // 获取网盘各级目录
       getAssetsCatalog(filePath, keyword) {
         if (!this.socket_backs_status) setTimeout(() => this.getAssetsCatalog(filePath, keyword), 1000)
         else {
+          this.loading = true
           let {pageIndex, pageSize, sortBy, sortType} = this.table
           this.$store.commit('WEBSOCKET_BACKS_SEND', {
             'code': 601,
@@ -644,22 +654,6 @@
 
   .a-icon {
     vertical-align: middle;
-  }
-
-  .unData {
-    position: absolute;
-    top: calc(47px + 42px);
-    width: 100%;
-    height: calc(100% - 47px - 42px - 52px);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    user-select: none;
-
-    span {
-      font-size: 14px;
-    }
   }
 
   .bread {

@@ -199,14 +199,12 @@
                  @click="operateFun(item.text)"
                  v-for="(item,index) in result.operateBtnList"
                  :key="index">
-              <img :src="item.imgUrlR" alt="" v-if="item.imgUrlR" class="r">
-              <img :src="item.imgUrlH" alt="" v-if="item.imgUrlH" class="h">
-              <span class="text">
-                {{ item.text }}
-              </span>
+              <img :src="item.imgUrlR" v-if="item.imgUrlR" class="r">
+              <img :src="item.imgUrlH" v-if="item.imgUrlH" class="h">
+              <span class="text">{{ item.text }}</span>
             </div>
             <div class="searchBase">
-              <img src="@/icons/global-search-icon.png" alt="" class="i" @click="getRenderItemMoreTableF">
+              <img src="@/icons/global-search-icon.png" class="i" @click="getRenderItemMoreTableF">
               <input type="text"
                      v-model="result.searchInpVal"
                      class="search"
@@ -221,13 +219,10 @@
                  v-for="(item,index) in result.operateMoreBtnList"
                  :key="index">
               <img :src="item.imgUrl" v-if="item.imgUrl">
-              <span class="text">
-                {{ item.text }}
-              </span>
+              <span class="text">{{ item.text }}</span>
             </div>
             <div class="searchBase">
               <img src="@/icons/global-search-icon.png"
-                   alt=""
                    class="i"
                    @click="">
               <input type="text"
@@ -241,12 +236,12 @@
             <!--v-el-table-infinite-scroll="mainTableAddMoreItem" 无限滚动 -->
             <el-table
               :data="result.tableData"
+              :border=true
               @selection-change="handleSelectionChange"
               @filter-change="filterHandler"
               @row-click="showMiniImg"
               ref="mainTable"
               class="vv"
-              :border=true
               height="auto"
               style="width: 100%">
 
@@ -859,9 +854,9 @@
       operateDownloadFrame() {
         if (this.result.operateBtnList[2]['classState']) return false
         if (!this.result.selectionResult.length) return false
-        if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => next())
-        else next()
-        function next() {
+        if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.next())
+        else this.next()
+        this.next = function () {
           // 判断余额是否充足
           updateBalance('下载完成帧')
             .then(data => {

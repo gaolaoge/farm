@@ -85,7 +85,8 @@
     mapState
   } from 'vuex'
   import {
-    editBasicInfo
+    editBasicInfo,
+    editAvatar
   } from '@/api/editInfo-api'
   import {
     getInfo
@@ -161,16 +162,15 @@
       },
       // 上传裁剪好的头像
       async uploadAvatar(src) {
-        let data = await editBasicInfo({
-          "nickname": null,
-          "headImg": src,
-          "sex": null,
-          "birthday": null,
+        let {data} = await editAvatar({
+          'file': src,
+          'type': 1,
+          'taskProjectUuid': ''
         })
-        if (data.data.code == 200) {
+        if (data.code == 200) {
           this.$store.commit('changeAvatar', src)
           messageFun('success', this.$t('message.editSuc'))
-        } else if (data.data.code == 999) messageFun('warning', this.$t('message.noTimes'))
+        } else if (data.code == 999) messageFun('warning', this.$t('message.noTimes'))
         this.showCutter = false
       },
       // 编辑头像

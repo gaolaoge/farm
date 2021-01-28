@@ -127,7 +127,7 @@
                           @renderSelectionF="renderSelectionF"
                           @clearInput="clearInput"
                           @showJump="showJump"
-                          :searchInputVal="renderSearchInputVal"/>
+                          :keyword="renderSearchInputVal"/>
         </div>
       </div>
     </div>
@@ -194,7 +194,7 @@
           moreBtnList: this.$t('assets.moreBtnList'),    // ['移动到', '复制到', '解压']
           showMoreBtnList: false,
           howToCreateBtn: this.$t('assets.howToCreateBtn'),  // ['手动创建资产目录', '自动创建资产目录']
-          howToCreateIindex: '0'
+          howToCreateIindex: '1'
         },
         info: this.$t('assets.info'),
         table: {
@@ -297,7 +297,7 @@
       },
       // 根据关键字进行筛选
       searchFun(type) {
-        if (type == 'render') this.$refs.outPutTable.refreshF(true)
+        if (type == 'render') this.$refs.outPutTable.refreshF(false)
         else this.$refs.myUploadTable.refreshF(true)
       },
       // 清空关键字筛选输入框
@@ -602,6 +602,7 @@
 
 <style lang="less">
   .outPut-table {
+    position: relative;
     overflow: hidden;
 
     .bread {

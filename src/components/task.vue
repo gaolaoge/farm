@@ -699,6 +699,7 @@
         align-items: center;
 
         .tableFilterList {
+          margin-left: 20px;
           display: inline-flex;
 
           .statusS,
