@@ -1052,21 +1052,23 @@
       // 操作 - 【下载完成帧】前预判
       downloadFils() {
         if (!this.table.selectionList.length) return false
-        if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => next())
-        else next()
+        if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.next())
+        else this.next()
 
-        function next() {
+        this.next = function () {
           // 判断余额是否充足
           updateBalance('下载完成帧')
             .then(data => {
               if (data) this.downloadingFile()
             })
-            .catch(() => createThrowInfo({
-              type:'error',
-              title:'获取余额情况失败',
-              info:'在主任务【下载完成帧】操作前判断',
-              site:'components/task/download-table:1091'
-            }))
+            .catch((err) => {
+              createThrowInfo({
+                type:'error',
+                title:'获取余额情况失败',
+                info:'在主任务【下载完成帧】操作前判断',
+                site:'components/task/download-table:1053'
+              })
+            })
         }
       },
       // 操作 - 下载完成帧

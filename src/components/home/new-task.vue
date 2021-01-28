@@ -520,9 +520,7 @@
           </div>
           <!--渲染插件-->
           <div class="farm-form-item">
-            <label class="farm-form-item-label">
-              {{ dialogAdd.form.labelPlugin }}：
-            </label>
+            <label class="farm-form-item-label">{{ dialogAdd.form.labelPlugin }}：</label>
             <el-select v-model="dialogAdd.form.valPlugin"
                        class="i"
                        @change="changePlugin">
@@ -700,18 +698,11 @@
                 text: '删除',
                 initialIcon: require('@/icons/deleteIcon-blue.png'),
                 selectedIcon: require('@/icons/deleteIcon-white.png')
-              },
+              }
             ],
-            filelist: [
-              // {
-              //   sceneFile: '',      // 场景名
-              //   address: '',        // 工程路径
-              //   absolutePath: '',   // 绝对路径
-              //   id: ''
-              // }，
-            ],      // 渲染文件
-            selectionR: [],       // 多选渲染文件值
-          },
+            filelist: [],         // 渲染文件
+            selectionR: []        // 多选渲染文件值
+          }
         },
         stepTwoBase: {
           addMoreText: '添加模板',
@@ -774,14 +765,7 @@
             miniTitT: '）',
             rule: '计费规则说明',
             mode: null,
-            modeList: [
-              // {
-              //   val: '2002',
-              //   label: '16核32G',
-              //   supplement: '【标准模式1】',
-              //   id: '224'
-              // },
-            ]
+            modeList: []
           },
           // 其它设置
           other: {
@@ -792,12 +776,7 @@
             title: '其他设置',
             btn: '新建项目',
             viewLabel: '所属项目',
-            viewList: [
-              // {
-              //   value: '选项1',
-              //   label: '黄金糕'
-              // }
-            ],
+            viewList: [],
             view: null,
             unit: '(h)',
             remindLabel: '单帧超时提醒',
@@ -827,52 +806,19 @@
             valPlugin: ''
           },
           // 渲染软件
-          softwareList: [
-            // {
-            //   softName: 'Maya 2020',
-            //   softList: [],
-            //   children
-            // }
-          ],
+          softwareList: [],
           // 渲染插件下拉框
-          pluginList: [
-            // {
-            //   label: 'mloa',
-            //   val: 'mloa'
-            // }
-          ],
+          pluginList: [],
           o: '选择插件版本',
           n: '已选插件版本',
           // 插件版本
-          oList: [
-            // {
-            //    id: 2
-            //    pluginName: "Arnold"
-            //    version: "2.233"
-            //    publisher: "4K"
-            //    pluginUuid: "457"
-            //    createTime: "2020-03-31"
-            //    createBy: "1"
-            //    updateTime: "2020-03-31"
-            //    updateBy: "1"
-            //    dataStatus: 1
-            //    status: false
-            // }
-          ],
+          oList: [],
           // 已选结果
-          nList: [
-            // {
-            //   pluginUuid: '10011',
-            //   pluginName: 'mloa',
-            //   version: 'mloa 4.0.2',
-            //   status: false
-            // }
-          ],
+          nList: [],
           cancel: '取消',
           save: '保存',
-          // 【确定】标记编辑or新建
-          editOrAdd: '',
-          index: null      //编辑已存在模板时模板的索引
+          editOrAdd: '',            // 【确定】标记编辑or新建
+          index: null               // 编辑已存在模板时模板的索引
         },
         infoMessageShow: false,     // 选择渲染文件 - 我的电脑 - 工程路径 - 问号
         renderFileTypeList: [],     // 可用的场景文件格式
@@ -886,8 +832,8 @@
       ...mapState(['zone', 'zoneId', 'user', 'socket_backS', 'socket_backS_msg', 'socket_plugin', 'socket_plugin_msg', 'taskType']),
       // 验证表格是否填写完整
       disableSelf() {
-        let a = this.dialogAdd
-        if (a.form.valName.trim() && a.form.valSoftware) return true
+        let {form} = this.dialogAdd
+        if (form.valName.trim() && form.valSoftware) return true
         else return false
       }
     },
@@ -949,14 +895,12 @@
       'zoneId': {
         handler: async function (id) {
           if (!id) return false
-          let data = await getRenderMode(id)
-          this.stepThreeBase.mode.modeList = data.data.data.map(item => {
-            return {
-              val: item.patternCode,
-              label: item.patternName,
-              id: item.patternUuid
-            }
-          })
+          let {data} = await getRenderMode(id)
+          this.stepThreeBase.mode.modeList = data.data.map(item => ({
+            val: item.patternCode,
+            label: item.patternName,
+            id: item.patternUuid
+          }))
           this.stepThreeBase.mode.mode = this.stepThreeBase.mode.modeList[0]['val']
         },
         immediate: true
@@ -1061,11 +1005,9 @@
       },
       // 0.获取可用场景文件格式
       async getRenderFileType() {
-        let data = await getFileType(),
+        let {data} = await getFileType(),
           t = []
-        data.data.data.split(',').forEach(item => {
-          t = t.concat(item.match(/\w+/g))
-        })
+        data.data.split(',').forEach(item => t = t.concat(item.match(/\w+/g)))
         this.renderFileTypeList = t
       },
       // 1.选择渲染文件 - 切换选择场景文件方式
@@ -1125,109 +1067,44 @@
             //当前插件是否有其它版本已被选中
             // 当前插件curr.pluginName
             // 当前版本curr.version
-            let r = this.dialogAdd.nList.findIndex(c => {
-              return c.pluginName == curr.pluginName
-            })
-            if (r != -1) {
-              this.dialogAdd.nList.splice(r, 1)
-            }
+            let r = this.dialogAdd.nList.findIndex(c => c.pluginName == curr.pluginName)
+            if (r != -1) this.dialogAdd.nList.splice(r, 1)
             // 若还未选中
             if (!curr.status) {
               // 判断此项是否已在选中项中
-              let d = this.dialogAdd.nList.findIndex(c => {
-                return c.pluginUuid == curr.pluginUuid
-              })
-              if (d == -1) {
-                this.dialogAdd.nList.push(curr)
-              }
+              let d = this.dialogAdd.nList.findIndex(c => c.pluginUuid == curr.pluginUuid)
+              if (d == -1) this.dialogAdd.nList.push(curr)
               curr.status = true
-            } else {
-              curr.status = false
-            }
-          } else {
-            // 其它项
-            curr.status = false
-          }
+            } else curr.status = false
+          } else curr.status = false   // 其它项
         })
       },
       // 2.设置渲染模板 - 删除已选择插件结果
       deleteSeletedOption(item, index) {
         this.dialogAdd.oList.findIndex(curr => {
-          if (item.pluginUuid == curr.pluginUuid)
-            curr.status = false
+          if (item.pluginUuid == curr.pluginUuid) curr.status = false
           return item.pluginUuid == curr.pluginUuid
         })
         this.dialogAdd.nList.splice(index, 1)
       },
       // 2.设置渲染模板 - 获取渲染模板列表
       async getList() {
-        let data = await createTaskSet()
-        this.stepTwoBase.renderList = data.data.data
-        this.stepTwoBase.renderListActive = data.data.data.findIndex(curr => curr.renderTemplate.isDefault == 1)
-        // [
-        //   {
-        //     renderTemplate: {                       //模板
-        //       id: 16
-        //       createTime: 1586308643471
-        //       createBy: "user42cd-82bb-44e7-9bc4-d6d046b5dff2"
-        //       updateTime: 1586397047167
-        //       updateBy: "user42cd-82bb-44e7-9bc4-d6d046b5dff2"
-        //       templateUuid: "84168a1b-b32e-490c-854b-1590f756c28b"
-        //       dataStatus: 1
-        //       updateParamAfterAnalyse: null
-        //       templateName: "用户4测试模板3"          //模板名称
-        //       isDefault: 0                          //默认选中 0为非
-        //       softName: "3dmax"                     //软件名
-        //       softVer: "2021"                       //版本
-        //       softNameVer: "3dmax2021"              //
-        //       softUuid: "127"                       //软件编号
-        //       customerUuid: "user42cd-82bb-44e7-9bc4-d6d046b5dff2"
-        //     },
-        //     xxlPlugins: [           模板插件
-        //       {
-        //         id: 1
-        //         pluginName: "V-ray"              //插件名
-        //         version: "1.233"                 //插件版本
-        //         publisher: "2K"                  //插件发行商
-        //         pluginUuid: "456"                //编号 唯一标识
-        //         createTime: "2020-03-31"
-        //         createBy: "1"
-        //         updateTime: "2020-03-31"
-        //         updateBy: "1"
-        //         dataStatus: 1
-        //       }
-        //     ]
-        //   }
-        // ]
+        let {data} = await createTaskSet()
+        this.stepTwoBase.renderList = data.data
+        this.stepTwoBase.renderListActive = data.data.findIndex(curr => curr.renderTemplate.isDefault == 1)
       },
       // 2.设置渲染模板 - 打开【新建模板】
       async addTemplate(s, index) {
         // 获取软件列表
-        let data = await createTaskSetSoftware()
-        this.dialogAdd.softwareList = data.data.data.map(curr => {   //options
-          return {
-            value: curr.softName,      //软件名
-            label: curr.softName,
-            children: curr.softList.map(curr_ => {
-              return {
-                label: curr_.softName + '-' + curr_.version,
-                value: curr_.softUuid
-              }
-            })
-            // children: [
-            //   {
-            //     value: 'shejiyuanze',
-            //     label: '设计原则',
-            //     children: [
-            //       {
-            //         value: 'yizhi',
-            //         label: '一致'
-            //       }
-            //     ]
-            //   }
-            // ]       //软件版本
-          }
-        })
+        let {data} = await createTaskSetSoftware()
+        this.dialogAdd.softwareList = data.data.map(curr => ({
+          value: curr.softName,      //软件名
+          label: curr.softName,
+          children: curr.softList.map(curr_ => ({
+            label: curr_.softName + '-' + curr_.version,
+            value: curr_.softUuid
+          }))
+        }))
         // 打开弹窗
         this.innerVisible = true
         this.$nextTick(() => this.$refs.templateName.focus())
@@ -1236,7 +1113,7 @@
         if (s == 'addMore') {
           // 新建模板
           v.form.valSoftware = [v['softwareList'][0]['label'], v['softwareList'][0]['children'][0]['value']]
-          this.changeSoftware([null, v['softwareList'][0]['children'][0]['value']], true)
+          await this.changeSoftware([null, v['softwareList'][0]['children'][0]['value']])
         } else if (s == 'editOne') {
           // 编辑模板
           this.dialogAdd.index = index
@@ -1248,7 +1125,7 @@
           v.form.valName = t['renderTemplate']['templateName']                  // 编辑窗口内模板名
           if (!b) return false
           v.form.valSoftware = [t['renderTemplate']['softName'], b.value]       // 编辑窗口内渲染软件
-          this.changeSoftware([t['renderTemplate']['softName'], b.value])   // 获取对应插件下拉框List
+          await this.changeSoftware([t['renderTemplate']['softName'], b.value])   // 获取对应插件下拉框List
         }
       },
       // 2.设置渲染模板 - 删除模板
@@ -1268,7 +1145,7 @@
           .catch(() => messageFun('info', '已取消删除'))
       },
       // 2.设置渲染模板 - 软件下拉框选中
-      async changeSoftware(val, defaultEvent) {
+      async changeSoftware(val) {
         let {dialogAdd} = this,
           {data} = await createTaskSetPlugin(val[1])
         dialogAdd.pluginList = data.data.map(curr => {
@@ -1279,13 +1156,12 @@
           }
         })
         dialogAdd.oList = []
-        if (defaultEvent) {
-          dialogAdd.form.valPlugin = dialogAdd.pluginList[0]['label']
-          this.changePlugin(dialogAdd.pluginList[0]['label'])
-        }
+        dialogAdd.form.valPlugin = dialogAdd.pluginList[0]['label']
+        this.changePlugin(dialogAdd.pluginList[0]['label'])
       },
       // 2.设置渲染模板 - 插件下拉框选中
       changePlugin(val) {
+        console.log(val)
         //匹配项
         let t = this.dialogAdd.pluginList.find(curr => curr.val == val)
         this.dialogAdd.oList = t.list.map(curr => {
@@ -1465,7 +1341,6 @@
         this.closeDialogFun()
         sessionStorage.setItem('taskListActive', '0')
         this.$router.push('/task')
-
       },
       // 0.选择渲染文件 - 我的资产 - 创建网盘目录
       createCatalog(data) {
@@ -1573,13 +1448,11 @@
       goToMode(dire) {
         if (dire == 'previous') this.stepBtnActive = 2
         else {
-          if (this.stepOneBase.index == 0 && (this.stepOneBase.netdisc.sceneFileSelection.length == 0 || !this.stepOneBase.netdisc.pathV || this.stepOneBase.netdisc.pathV == '选择工程路径')) {
-            // 我的资产
-            messageFun('error', '尚未选择场景文件')
-          } else if (this.stepOneBase.index == 1 && this.stepOneBase.local.filelist.length == 0) {
-            // 我的电脑
-            messageFun('error', '尚未选择场景文件')
-          } else this.stepBtnActive = 2
+          let {stepOneBase} = this,
+            {netdisc, local, index} = stepOneBase
+          if (index == 0 && (netdisc.sceneFileSelection.length == 0 || !netdisc.pathV || netdisc.pathV == '选择工程路径')) messageFun('error', '尚未选择场景文件')  // 我的资产
+          else if (index == 1 && local.filelist.length == 0) messageFun('error', '尚未选择场景文件')  // 我的电脑
+          else this.stepBtnActive = 2
         }
       },
       // 0.预备事件
@@ -2033,7 +1906,6 @@
                   span {
                     font-size: 14px;
                   }
-
                 }
 
                 .se {
@@ -2712,5 +2584,4 @@
       }
     }
   }
-
 </style>

@@ -34,11 +34,28 @@
           width="58"/>
         <!--文件名-->
         <el-table-column
-          prop="taskNo"
+          prop="fileName"
           label="文件名"
           sortable="custom"
           show-overflow-tooltip
-          min-width="180"/>
+          min-width="180">
+          <template slot-scope="scope">
+            <img src="@/icons/folder-a-icon.png" v-if="['文件夹'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/mp3-a-icon.png" v-else-if="['aiff', 'cd', 'MP3', 'wav', 'wma', 'vqf'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/mp4-a-icon.png" v-else-if="['mp4', '3pg', 'avi', 'asf', 'flv', 'mpeg', 'mov', 'rm', 'wmv'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/ppt-a-icon.png" v-else-if="['ppt'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/word-a-icon.png" v-else-if="['doc', 'docx'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/exe-a-icon.png" v-else-if="['zip', '7z', 'rar', 'rar4', 'tar.gz', 'tar.xz', 'tar.bz2', 'tar.z'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/txt-a-icon.png" v-else-if="['txt'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/html-a-icon.png" v-else-if="['html'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/img-a-icon.png" v-else-if="['ai', 'als', 'avif', 'bmp', 'bit', 'cdr', 'cin', 'cth', 'ct', 'dds', 'dxf', 'exr', 'exif', 'eps', 'fpx', 'gif', 'hdr', 'iff', 'jpg', 'mt', 'nt', 'pcx', 'pcd', 'pic', 'picture','png','psd', 'ppm', 'ps', 'raw', 'rla', 'rgb', 'svg', 'sgi', 'st', 'tga', 'tif', 'tiff', 'tim', 'tt', 'ufo', 'WMF', 'webp', 'xpm', 'yuv', 'zt'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/pdf-a-icon.png" v-else-if="['pdf'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/maya-a-icon.png" v-else-if="['ma', 'mb'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/max-a-icon.png" v-else-if="['max'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/file-a-icon.png" v-else class="a-icon">
+            <span class="fileName">{{ scope.row.fileName }}</span>
+          </template>
+        </el-table-column>
         <!--所属项目-->
         <el-table-column
           label="所属项目"
@@ -141,7 +158,8 @@
     consum,
     createDateFun,
     messageFun,
-    pFConversion
+    pFConversion,
+    getFileSize
   } from '@/assets/common.js'
   import {
     mapState
@@ -157,7 +175,7 @@
           outPutTableTotal: 0,
           pageIndex: 1,
           pageSize: 10,
-          sortBy: 'taskNo',
+          sortBy: 'fileName',
           sortType: 0,                  // 排序方向 0递减 1递增
           selectionList: [],            // 渲染输出选中项
           rowUuid: null,                // 选中行Uuid
@@ -190,10 +208,11 @@
     methods: {
       // 排序
       sortChangeHandle({column, prop, order}) {
+        console.log(prop)
         let {table} = this
         if (order == 'ascending') table.sortType = 1
         else table.sortType = 0
-        if (!order) table.sortBy = 'taskNo'
+        if (!order) table.sortBy = 'fileName'
         else table.sortBy = prop
         this.refreshF(false)
       },
@@ -209,7 +228,6 @@
         if (step == 'layer') this.getList()
         else if (step == 'frame') this.getLayerList()
         else this.getFrameList()
-        if (!refresh) this.$emit('clearInput', 'render')
       },
       // 翻页
       handleCurrentChange(val) {
@@ -240,7 +258,7 @@
           table.objectName = row.project
           table.layerObj = row
           bread.list.push({
-            text: row.taskNo,
+            text: row.fileName,
             name: 'layer'
           })
         }
@@ -248,7 +266,7 @@
           this.getFrameList()
           table.frameObj = row
           bread.list.push({
-            text: row.taskNo,
+            text: row.fileName,
             name: 'frame'
           })
         }
@@ -274,7 +292,7 @@
           projectList.add(curr.projectName)
           return {
             id: curr.taskNo,                                    // 任务ID
-            taskNo: curr.taskNo + ' _ ' + curr.fileName,        // 文件名
+            fileName: curr.taskNo + ' _ ' + curr.fileName,      // 文件名
             taskSceneName: curr.fileName,                       // 场景名
             taskUuid: curr.taskUuid,                            // Uuid
             project: curr.projectName,                          // 所属项目
@@ -313,7 +331,7 @@
         table.outPutData = data.data.map(curr => {
           return {
             id: curr.layerNo,                   // 任务ID
-            taskNo: curr.layerName,             // 文件名
+            fileName: curr.layerName,           // 文件名
             project: objectName,                // 所属项目
             fileSize: curr.fileSize,            // 文件大小
             fileType: '文件夹',                  // 文件类型
@@ -348,9 +366,9 @@
         table.outPutData = data.data.map(curr => {
           let fileType = curr.fileName.split('.')
           return {
-            taskNo: curr.fileName,                          // 文件名
+            fileName: curr.fileName,                        // 文件名
             project: objectName,                            // 所属项目
-            fileSize: curr.fileSize,                        // 文件大小
+            fileSize: getFileSize(curr.fileSize),           // 文件大小
             fileType: fileType[fileType.length - 1],        // 文件类型
             downLoadTime: curr.downloadCount,               // 下载次数
             date: curr.indate == 0 ? '-' : consum(curr.indate - new Date().getTime()), // 剩余有效期（天）
@@ -482,3 +500,10 @@
     }
   }
 </script>
+
+<style lang="less" scoped>
+  .fileName {
+    padding-left: 1px;
+    vertical-align: text-bottom;
+  }
+</style>

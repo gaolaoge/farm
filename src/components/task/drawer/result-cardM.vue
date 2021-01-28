@@ -854,9 +854,9 @@
       operateDownloadFrame() {
         if (this.result.operateBtnList[2]['classState']) return false
         if (!this.result.selectionResult.length) return false
-        if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => next())
-        else next()
-        function next() {
+        if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.next())
+        else this.next()
+        this.next = function () {
           // 判断余额是否充足
           updateBalance('下载完成帧')
             .then(data => {

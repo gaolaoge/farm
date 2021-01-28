@@ -10,13 +10,11 @@
           <div class="loginMode" v-show="login.mode == 'login'">
             <!--登录方式导航-->
             <div class="loginNav">
-            <span class="phone"
-                  :class="[{'active': login.nav.activeIndex == 1}]"
+            <span :class="['phone', {'active': login.nav.activeIndex == 1}]"
                   @click="login.nav.activeIndex = 1">
               {{ $t('login_page.nav_phoneText') }}
             </span>
-              <span class="account"
-                    :class="[{'active': login.nav.activeIndex == 2}]"
+              <span :class="['account', {'active': login.nav.activeIndex == 2}]"
                     @click="login.nav.activeIndex = 2">
               {{ $t('login_page.nav_accountText') }}
             </span>
@@ -27,16 +25,15 @@
               <div class="b">
                 <input v-model="login.phoneForm.phone"
                        autofocus
-                       :placeholder="$t('login_page.SMS_verif.phone_placeholder')"
+                       ref="phoneForm_phone"
                        @blur="jk"
                        @input="jkC"
                        @focus="login.phoneForm.phoneVerif === false ? login.phoneForm.phoneVerif = null : null"
-                       ref="phoneForm_phone"
-                       class="farm-input"
-                       :class="[{'inputError': login.phoneForm.phoneVerif === false}]"/>
+                       :placeholder="$t('login_page.SMS_verif.phone_placeholder')"
+                       :class="['farm-input', {'inputError': login.phoneForm.phoneVerif === false}]"/>
                 <span class="warnInfo" v-show="login.phoneForm.phoneVerif === false">{{ login.warnInfo.phone }}</span>
                 <img src="@/icons/login-success.png" class="i"
-                     v-show="login.phoneForm.phoneVerif === true">
+                     v-show="login.phoneForm.phoneVerif">
                 <img src="@/icons/login-error .png" class="i canClick"
                      v-show="login.phoneForm.phoneVerif === false"
                      @click="loginDeleteInput('phoneForm','phone')">
@@ -44,18 +41,16 @@
               <!--验证码-->
               <div class="b">
                 <input v-model="login.phoneForm.code"
-                       :placeholder="$t('login_page.SMS_verif.code_placeholder')"
                        ref="phoneForm_code"
                        type="text"
                        @blur="phoneCodeVerif(false)"
                        @input="phoneCodeVerif(true)"
                        @focus="login.phoneForm.codeVerif === false ? login.phoneForm.codeVerif = null : null"
-                       class="farm-input farm-cord-input"
-                       :class="[{'inputError': login.phoneForm.codeVerif === false}]"/>
+                       :placeholder="$t('login_page.SMS_verif.code_placeholder')"
+                       :class="['farm-input', 'farm-cord-input', {'inputError': login.phoneForm.codeVerif === false}]"/>
                 <!--获取验证码-->
                 <div class="verif">
-                  <div class="btn"
-                       :class="[{'suc': login.phoneForm.phoneVerif}]"
+                  <div :class="['btn', {'suc': login.phoneForm.phoneVerif}]"
                        @click="verifPhone"
                        v-show="login.phoneForm.verifShow">
                     {{ login.phoneForm.btnText }}
@@ -64,7 +59,7 @@
                 </div>
                 <span class="warnInfo" v-show="login.phoneForm.codeVerif === false">{{ login.warnInfo.code }}</span>
                 <img src="@/icons/login-success.png" class="i"
-                     v-show="login.phoneForm.codeVerif === true">
+                     v-show="login.phoneForm.codeVerif">
                 <img src="@/icons/login-error .png" class="i canClick"
                      v-show="login.phoneForm.codeVerif === false"
                      @click="loginDeleteInput('phoneForm','code')">
@@ -76,7 +71,7 @@
               <span class="switchLabel">{{ $t('login_page.SMS_verif.auto_login') }}</span>
               <span class="w"><span @click="navActive = 2">{{ $t('login_page.account_verif.register') }}</span></span>
               <!--登录按钮-->
-              <div class="btnLogin" :class="[{'canBeClick': login.phoneForm.phoneVerif && login.phoneForm.codeVerif}]"
+              <div :class="['btnLogin', {'canBeClick': login.phoneForm.phoneVerif && login.phoneForm.codeVerif}]"
                    @click="phoneLoginFun">
                 <span>{{ $t('login_page.loginText') }}</span>
               </div>
@@ -87,13 +82,12 @@
               <!--帐号-->
               <div class="b">
                 <input v-model="login.accountForm.account"
-                       :placeholder="$t('login_page.account_verif.ac_placeholder')"
                        ref="accountForm_account"
                        @blur="accouVerif('login')"
                        @input="accouVerif('login', true)"
                        @focus="login.formStatus.account === false ? login.formStatus.account = null : null"
-                       class="farm-input"
-                       :class="[{'inputError': login.formStatus.account === false}]"/>
+                       :placeholder="$t('login_page.account_verif.ac_placeholder')"
+                       :class="['farm-input', {'inputError': login.formStatus.account === false}]"/>
                 <span class="warnInfo" v-show="login.formStatus.account === false">{{ login.warnInfo.account }}</span>
                 <img src="@/icons/login-success.png" class="i"
                      v-show="login.formStatus.account === true">
@@ -108,8 +102,8 @@
                        :placeholder="$t('login_page.account_verif.ps_placeholder')"
                        @keyup.enter="accountloginFun"
                        @focus="login.formStatus.password === false ? login.formStatus.password = null : null"
-                       @blur="passwVerif('login')"
-                       @input="passwVerif('login', true)"
+                       @blur="loginPassVerif(false)"
+                       @input="loginPassVerif(true)"
                        autocomplete="new-password"
                        type="password"
                        class="farm-input"/>
@@ -740,6 +734,14 @@
           }
         }
       },
+      loginPassVerif(ing) {
+        if(this.login.accountForm.password.length) this.login.formStatus.password = true
+        else if(ing) this.login.formStatus.password = null
+        else {
+          this.login.formStatus.password = false
+          this.login.warnInfo.password = "this.$t('login_page.message.ps_verif_two')"
+        }
+      },
       passwVerif(type, status) {
         // type == 'login' 登录 : 'register' 注册
         // status == true 为input事件
@@ -747,10 +749,8 @@
           s = type == 'register' ? this.registered.status : this.login.formStatus,
           i = type == 'register' ? this.registered.warnInfo : this.login.warnInfo
         s.passwordInit = false
-        if (!t) {
-          // 若密码值为空，不显示校验结果icon提示
-          s.password = null
-        } else if (!this.reg.passwordReg2.test(t)) {
+        if (!t) s.password = null   // 若密码值为空，不显示校验结果icon提示
+        else if (!this.reg.passwordReg2.test(t)) {
           // 验证密码长度
           i.password = this.$t('login_page.message.ps_verif_two')
           status ? s.password = null : s.password = false

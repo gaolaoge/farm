@@ -297,7 +297,7 @@
       },
       // 根据关键字进行筛选
       searchFun(type) {
-        if (type == 'render') this.$refs.outPutTable.refreshF(true)
+        if (type == 'render') this.$refs.outPutTable.refreshF(false)
         else this.$refs.myUploadTable.refreshF(true)
       },
       // 清空关键字筛选输入框

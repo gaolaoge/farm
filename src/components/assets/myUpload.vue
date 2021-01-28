@@ -65,7 +65,7 @@
                      @blur="confirmToRename(scope.row)">
               <span :class="['name', {'rename': scope.row.rename}]">{{ scope.row.fileName }}</span>
             </div>
-            <span v-show="scope.row.ing">.cloudtransfer.uploading</span>
+            <span v-show="scope.row.ing && scope.row.fileType !== '文件夹'">.cloudtransfer.uploading</span>
           </template>
         </el-table-column>
         <!--文件大小-->
