@@ -308,6 +308,7 @@
             messageFun('info', data.data)
             this.getAssetsCatalog(this.path, this.searchInputVal)
           } else if (data.msg == '6051' || data.msg == '6061' || data.msg == '6081') {
+            this.message && this.message.close()
             messageFun('success', '操作成功')
             this.shutDialog()
             this.getAssetsCatalog(this.path, this.searchInputVal)
@@ -316,8 +317,10 @@
             this.getAssetsCatalog(this.path, this.searchInputVal)
           } else if (data.msg == '6052' || data.msg == '6062' || data.msg == '6032') messageFun('info', '选定目标内已存在相同名称文件或文件夹，操作失败')
           else if (data.msg == '6081') messageFun('info', '解压失败')
-          else if (data.msg == '6053' || data.msg == '6063' || data.msg == '6073' || data.msg == '6082') messageFun('error', '报错，操作失败')
-          else if (data.msg == '6083') {
+          else if (data.msg == '6053' || data.msg == '6063' || data.msg == '6073' || data.msg == '6082') {
+            this.message && this.message.close()
+            messageFun('error', '报错，操作失败')
+          } else if (data.msg == '6083') {
             this.sendPassword()
             messageFun('error', data.other)
           }
@@ -548,6 +551,11 @@
         else this.unzipAction(this.table.selectionList[0]['position'], password)
       },
       unzipAction(unzipFilePath, password) {
+        this.message = this.$message({
+          showClose: true,
+          message: '解压中，请稍候...',
+          type: 'warning'
+        })
         this.$store.commit('WEBSOCKET_BACKS_SEND', {
           'code': 608,
           'customerUuid': this.user.id,

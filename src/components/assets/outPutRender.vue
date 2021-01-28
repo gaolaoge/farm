@@ -100,7 +100,7 @@
           label="下载次数"
           sortable="custom"
           show-overflow-tooltip
-          v-if="table.nextTableType != 'layer'"
+          v-if="table.nextTableType != 'layer' && false"
           width="140"/>
         <!--剩余有效期-->
         <el-table-column
