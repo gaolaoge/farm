@@ -44,17 +44,32 @@
           min-width="180">
           <template slot-scope="scope">
             <img src="@/icons/folder-a-icon.png" v-if="['文件夹'].some(type => type == scope.row.fileType)" class="a-icon">
-            <img src="@/icons/mp3-a-icon.png" v-else-if="['aiff', 'cd', 'MP3', 'wav', 'wma', 'vqf'].some(type => type == scope.row.fileType)" class="a-icon">
-            <img src="@/icons/mp4-a-icon.png" v-else-if="['mp4', '3pg', 'avi', 'asf', 'flv', 'mpeg', 'mov', 'rm', 'wmv'].some(type => type == scope.row.fileType)" class="a-icon">
-            <img src="@/icons/ppt-a-icon.png" v-else-if="['ppt'].some(type => type == scope.row.fileType)" class="a-icon">
-            <img src="@/icons/word-a-icon.png" v-else-if="['doc', 'docx'].some(type => type == scope.row.fileType)" class="a-icon">
-            <img src="@/icons/exe-a-icon.png" v-else-if="['zip', '7z', 'rar', 'rar4', 'tar.gz', 'tar.xz', 'tar.bz2', 'tar.z'].some(type => type == scope.row.fileType)" class="a-icon">
-            <img src="@/icons/txt-a-icon.png" v-else-if="['txt'].some(type => type == scope.row.fileType)" class="a-icon">
-            <img src="@/icons/html-a-icon.png" v-else-if="['html'].some(type => type == scope.row.fileType)" class="a-icon">
-            <img src="@/icons/img-a-icon.png" v-else-if="['ai', 'als', 'avif', 'bmp', 'bit', 'cdr', 'cin', 'cth', 'ct', 'dds', 'dxf', 'exr', 'exif', 'eps', 'fpx', 'gif', 'hdr', 'iff', 'jpg', 'mt', 'nt', 'pcx', 'pcd', 'pic', 'picture','png','psd', 'ppm', 'ps', 'raw', 'rla', 'rgb', 'svg', 'sgi', 'st', 'tga', 'tif', 'tiff', 'tim', 'tt', 'ufo', 'WMF', 'webp', 'xpm', 'yuv', 'zt'].some(type => type == scope.row.fileType)" class="a-icon">
-            <img src="@/icons/pdf-a-icon.png" v-else-if="['pdf'].some(type => type == scope.row.fileType)" class="a-icon">
-            <img src="@/icons/maya-a-icon.png" v-else-if="['ma', 'mb'].some(type => type == scope.row.fileType)" class="a-icon">
-            <img src="@/icons/max-a-icon.png" v-else-if="['max'].some(type => type == scope.row.fileType)" class="a-icon">
+            <img src="@/icons/mp3-a-icon.png"
+                 v-else-if="['aiff', 'cd', 'MP3', 'wav', 'wma', 'vqf'].some(type => type == scope.row.fileType)"
+                 class="a-icon">
+            <img src="@/icons/mp4-a-icon.png"
+                 v-else-if="['mp4', '3pg', 'avi', 'asf', 'flv', 'mpeg', 'mov', 'rm', 'wmv'].some(type => type == scope.row.fileType)"
+                 class="a-icon">
+            <img src="@/icons/ppt-a-icon.png" v-else-if="['ppt'].some(type => type == scope.row.fileType)"
+                 class="a-icon">
+            <img src="@/icons/word-a-icon.png" v-else-if="['doc', 'docx'].some(type => type == scope.row.fileType)"
+                 class="a-icon">
+            <img src="@/icons/exe-a-icon.png"
+                 v-else-if="['zip', '7z', 'rar', 'rar4', 'tar.gz', 'tar.xz', 'tar.bz2', 'tar.z'].some(type => type == scope.row.fileType)"
+                 class="a-icon">
+            <img src="@/icons/txt-a-icon.png" v-else-if="['txt'].some(type => type == scope.row.fileType)"
+                 class="a-icon">
+            <img src="@/icons/html-a-icon.png" v-else-if="['html'].some(type => type == scope.row.fileType)"
+                 class="a-icon">
+            <img src="@/icons/img-a-icon.png"
+                 v-else-if="['ai', 'als', 'avif', 'bmp', 'bit', 'cdr', 'cin', 'cth', 'ct', 'dds', 'dxf', 'exr', 'exif', 'eps', 'fpx', 'gif', 'hdr', 'iff', 'jpg', 'mt', 'nt', 'pcx', 'pcd', 'pic', 'picture','png','psd', 'ppm', 'ps', 'raw', 'rla', 'rgb', 'svg', 'sgi', 'st', 'tga', 'tif', 'tiff', 'tim', 'tt', 'ufo', 'WMF', 'webp', 'xpm', 'yuv', 'zt'].some(type => type == scope.row.fileType)"
+                 class="a-icon">
+            <img src="@/icons/pdf-a-icon.png" v-else-if="['pdf'].some(type => type == scope.row.fileType)"
+                 class="a-icon">
+            <img src="@/icons/maya-a-icon.png" v-else-if="['ma', 'mb'].some(type => type == scope.row.fileType)"
+                 class="a-icon">
+            <img src="@/icons/max-a-icon.png" v-else-if="['max'].some(type => type == scope.row.fileType)"
+                 class="a-icon">
             <img src="@/icons/file-a-icon.png" v-else class="a-icon">
             <div class="fileNameBox" :style="{'width': scope.row.fileName.length * 10 + 'px'}">
               <input type="text"
@@ -122,6 +137,7 @@
         <span>{{ $t('transportBtn') }}</span>
       </div>
     </div>
+    <!--移动到-->
     <el-dialog
       :show-close="false"
       :visible.sync="dialogVisible"
@@ -147,9 +163,11 @@
           </el-tree>
         </div>
         <div class="btnGroup">
-          <div class="btn confirm" @click="configF('move')" v-show="dl.dlType == 'move'"><span>{{ dl.btn[0] }}</span>
+          <div class="btn confirm" @click="configF('move')" v-show="dl.dlType == 'move'">
+            <span>{{ dl.btn[0] }}</span>
           </div>
-          <div class="btn confirm" @click="configF('copy')" v-show="dl.dlType == 'copy'"><span>{{ dl.btn[0] }}</span>
+          <div class="btn confirm" @click="configF('copy')" v-show="dl.dlType == 'copy'">
+            <span>{{ dl.btn[0] }}</span>
           </div>
           <div class="btn cancel" @click="shutDialog"><span>{{ dl.btn[1] }}</span></div>
         </div>
@@ -272,17 +290,17 @@
             this.path = data.other == '' ? '/' : data.other
             this.table.total = data.total
             this.table.tableData = data.data.map((item, index_) => Object.assign(item, {
-                'updateTime': createDateFun(new Date(item.updateTime)),
-                'completedTime': item.completedTime,
-                'validPeriod': consum(item.validPeriod),
-                'fileName': item.fileType == '文件夹' ? item.fileName.slice(0, item.fileName.length - 1) : item.fileName,
-                'nameInput': item.fileType == '文件夹' ? item.fileName.slice(0, item.fileName.length - 1) : item.fileName,
-                'position': this.path + item.fileName,
-                'ing': item.completedTime != 0 ? false : true,
-                'fileSize': item.fileType == '文件夹' ? '-' : getFileSize(item.size),
-                'rename': false,
-                index_
-              }))
+              'updateTime': createDateFun(new Date(item.updateTime)),
+              'completedTime': item.completedTime,
+              'validPeriod': consum(item.validPeriod),
+              'fileName': item.fileType == '文件夹' ? item.fileName.slice(0, item.fileName.length - 1) : item.fileName,
+              'nameInput': item.fileType == '文件夹' ? item.fileName.slice(0, item.fileName.length - 1) : item.fileName,
+              'position': this.path + item.fileName,
+              'ing': item.completedTime != 0 ? false : true,
+              'fileSize': item.fileType == '文件夹' ? '-' : getFileSize(item.size),
+              'rename': false,
+              index_
+            }))
             this.loading = false
           } else if (data.msg == '601' && this.dialogVisible) {
             // 网盘tree
@@ -345,9 +363,9 @@
       // 排序
       sortChange({column, prop, order}) {
         let {table, path, searchInputVal} = this
-        if(order == 'ascending') table.sortType = 1
+        if (order == 'ascending') table.sortType = 1
         else table.sortType = 0
-        if(!order) table.sortBy = 'fileName'
+        if (!order) table.sortBy = 'fileName'
         else table.sortBy = prop
         table.pageIndex = 1
         this.getAssetsCatalog(path, searchInputVal)
@@ -391,7 +409,11 @@
           'code': 601,
           'customerUuid': this.user.id,
           'filePath': node.data.position || '/',
-          'keyword': ''
+          'keyword': '',
+          'pageIndex': 1,
+          'pageSize': 9999,
+          'sortBy': 'fileName',
+          'sortType': 0
         })  // 向后台获取网盘目录 工程路径
         this.dl.resolve = resolve
       },
@@ -403,7 +425,7 @@
           this.getAssetsCatalog(this.path, this.searchInputVal)
         } else {
           let path = '/'
-          for (let i = 0; i < index; i++) {
+          for (let i = 0; i <= index; i++) {
             path += (this.nav[i] + '/')
           }
           this.getAssetsCatalog(path, this.searchInputVal)
@@ -681,6 +703,11 @@
   .dl-wrapper {
     height: 540px;
 
+    .tree {
+      height: calc(100% - 50px);
+      overflow-y: scroll;
+    }
+
     .unzipItem {
       .name {
         display: inline-block;
@@ -699,10 +726,6 @@
         border: 1px solid rgba(22, 29, 37, 1);
         padding-left: 12px;
       }
-    }
-
-    .tree {
-      height: 100%;
     }
 
     .btnGroup {
