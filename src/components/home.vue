@@ -34,9 +34,7 @@
       </div>
       <!--数据统计-->
       <div class="statistics">
-        <header class="label">
-          {{ $t('home.statistics.label') }}
-        </header>
+        <header class="label">{{ $t('home.statistics.label') }}</header>
         <section class="s">
           <div class="sw" v-for="(item,index) in statistics.list" :key="index">
             <div class="dd">
@@ -53,64 +51,53 @@
     </div>
     <div class="thiRow">
       <div class="recentProjects">
-        <header class="label">
-          {{ $t('home.recentProjects.label') }}
-        </header>
+        <header class="label">{{ $t('home.recentProjects.label') }}</header>
         <div class="g">
           <ul class="ul" :style="{left: -423 * recentShowIndex + 'px'}">
             <li v-for="(item,index) in recentList"
                 :key="index"
-                class="itemLi"
-                :class="[{'active': recentIndex == index}]"
+                :class="['itemLi', {'active': recentIndex == index}]"
                 @click="recentIndex = index">
               <div class="a">
-                <div class="avatarBox">
+                <div class="avatarBox" @click="redirectToTask(item.projectUuid, item.projectName)">
                   <img :src="item.thumbnail">
                 </div>
-                <div class="t">
+                <div class="t" @click="redirectToTask(item.projectUuid, item.projectName)">
                   <h6>{{ item.projectName || 'null'}}</h6>
                   <span class="date">{{ item.updateTime || 'null-null-null'}}</span>
                 </div>
               </div>
-              <div class="l">
+              <div class="l" @click="redirectToTask(item.projectUuid, item.projectName)">
                 <!--分析中-->
-                <span :class="[{'worthy': item.analyzing > 0}]"
-                      @click="redirectToTask(item.projectUuid, 'analyzing', item.analyzing)">
+                <span :class="[{'worthy': item.analyzing > 0}]">
                   分析中：{{ item.analyzing }}
                 </span>
                 <!--分析失败-->
-                <span :class="[{'worthy': item.analyseFail > 0}]"
-                      @click="redirectToTask(item.projectUuid, 'analyseFail', item.analyseFail)">
+                <span :class="[{'worthy': item.analyseFail > 0}]">
                   分析失败：{{ item.analyseFail }}
                 </span>
                 <!--分析警告-->
-                <span :class="[{'worthy': item.analyseWarn > 0}]"
-                      @click="redirectToTask(item.projectUuid, 'analyseWarn', item.analyseWarn)">
+                <span :class="[{'worthy': item.analyseWarn > 0}]">
                   分析警告：{{ item.analyseWarn }}
                 </span>
                 <!--待设置参数-->
-                <span :class="[{'worthy': item.waitSetUpParam > 0}]"
-                      @click="redirectToTask(item.projectUuid, 'waitSetUpParam', item.waitSetUpParam)">
+                <span :class="[{'worthy': item.waitSetUpParam > 0}]">
                   待设置参数：{{ item.waitSetUpParam }}
                 </span>
                 <!--渲染中-->
-                <span :class="[{'worthy': item.rendering > 0}]"
-                      @click="redirectToTask(item.projectUuid, 'rendering', item.rendering)">
+                <span :class="[{'worthy': item.rendering > 0}]">
                   渲染中：{{ item.rendering }}
                 </span>
                 <!--待全部渲染-->
-                <span :class="[{'worthy': item.waitAllRender > 0}]"
-                      @click="redirectToTask(item.projectUuid, 'waitAllRender', item.waitAllRender)">
+                <span :class="[{'worthy': item.waitAllRender > 0}]">
                   待全部渲染：{{ item.waitAllRender }}
                 </span>
                 <!--渲染失败-->
-                <span :class="[{'worthy': item.renderPause > 0}]"
-                      @click="redirectToTask(item.projectUuid, 'renderPause', item.renderPause)">
+                <span :class="[{'worthy': item.renderPause > 0}]">
                   渲染失败：{{ item.renderPause }}
                 </span>
                 <!--渲染完成-->
-                <span :class="[{'worthy': item.finishRender > 0}]"
-                      @click="redirectToTask(item.projectUuid, 'finishRender', item.finishRender)">
+                <span :class="[{'worthy': item.finishRender > 0}]">
                   渲染完成：{{ item.finishRender }}
                 </span>
               </div>
@@ -124,7 +111,7 @@
               <img src="@/icons/recentLeft.png" v-show="recentShowIndex == 0">
             </div>
             <div class="btnR btn">
-              <img src="@/icons/recentRightA.png" class="c" v-show="recentList.length - 4 > recentShowIndex"
+              <img src="@/icons/recentRightA.png" class="c" v-show="recentList.length - 3 > recentShowIndex"
                    @click="recentShowIndex ++">
               <img src="@/icons/recentRight.png" v-show="recentList.length - 4 == recentShowIndex">
             </div>
@@ -210,7 +197,7 @@
     },
     computed: {
       ...mapState(['zoneId', 'user']),
-      version(){
+      version() {
         return process.env.VERSION
       }
     },
@@ -254,43 +241,20 @@
     },
     methods: {
       // 任务列表跳转到task
-      redirectToTask(projectUuid, type, val) {
-        if (!val) return false
-        let tableIndex
-        if (type == 'analyzing' || type == 'analyzing' || type == 'analyzing' || type == 'analyzing') tableIndex = 0
-        else tableIndex = 1
+      redirectToTask(projectUuid, projectName) {
         this.$router.push({
           name: 'task',
           params: {
-            toHomeTaskList: {
-              projectUuid,
-              type,
-              tableIndex
-            }
+            toHomeTaskList: {projectUuid,projectName},
           }
         })
       },
       async getTaskList() {
-        let data = await getRecentTaskList(`zoneUuid=${this.zoneId}`)
-        this.recentList = data.data.data.map(item => {
-          return Object.assign(item, {
-            updateTime: createDateFun(new Date(item.updateTime), 'mini')
+        let {data} = await getRecentTaskList(`zoneUuid=${this.zoneId}`)
+        this.recentList = data.data.map(item => Object.assign(item, {
+            updateTime: createDateFun(item.updateTime, 'mini')
           })
-        })
-        // {
-        //   analyseFail: 0,       分析失败
-        //   analyseWarn: 0,       分析警告
-        //   analyzing: 0,         分析中
-        //   finishRender: 0,      渲染完成
-        //   projectName: "项目一", 项目名
-        //   projectUuid: "1",     项目Uuid
-        //   renderPause: 0,       渲染失败
-        //   rendering: 0,         渲染中
-        //   updateTime: 1597649061283,   时间
-        //   waitAllRender: 1,     待全部渲染
-        //   waitSetUpParam: 0,    待设置参数
-        //   thumbnail:            图像
-        // }
+        )
       },
       // 关闭
       closeDialogFun() {

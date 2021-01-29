@@ -1273,6 +1273,7 @@
       async confirmFun() {
         if (!this.confirmLock || this.stepTwoBase.renderListActive == -1) return
         this.confirmLock = false
+        console.log(this.stepOneBase.local.filelist)
         let {stepOneBase: fir, stepTwoBase: sec, stepThreeBase: thi} = this,
           {data} = await newTaskProfession({
             zoneUuid: this.zoneId,                             // 分区uuid
@@ -1281,7 +1282,13 @@
             pattern: this.taskType == 'easy' ? 1 : 2,          // 渲染模式
             patternNorm: fir.index == 0 ? 2 : 1,               // 提交模式
             source: 1,                                         // 任务来源
-            filePathList: fir.index == 1 ? null : this.stepOneBase.netdisc.sceneFileSelection.map(item => {
+            filePathList: fir.index == 1 ? fir.local.filelist.map(item => ({
+                filePath: {
+                  pathResource: [],                        // 工程路径
+                  pathScene: '',
+                  fileName: item.sceneFile
+                }
+              })) : this.stepOneBase.netdisc.sceneFileSelection.map(item => {
               let task = this.stepOneBase.netdisc.treeData.find(curr => curr.id == item)
               return {
                 filePath: {
@@ -1309,7 +1316,7 @@
               } : null, // 优先渲染
               aoChannel: 0,
               // colorChannel: this.zone == '1' ? null : thi.other.cCVal,                                   // 颜色通道
-              colorChannel: 0,
+              colorChannel: 0
             }
           })
         if (data.code == 200) {

@@ -3,8 +3,8 @@
     <!--操作-->
     <div class="btnGroup">
       <!--上传分析操作-->
-      <div class="uploadBtnGroup"
-           :class="[
+      <div :class="[
+             'uploadBtnGroup',
             {'cannotDelete': !btnGroup.uploadTableBtnDelete},
             {'cannotAgain': !btnGroup.uploadTableBtnAgain}
            ]"
@@ -104,7 +104,7 @@
           <div class="statusS" v-if="item.task" v-show="item.task.length">
             <span class="label">{{ item.label[2] }}：</span>
             <span class="val">{{ item.task.join('、') }}</span>
-            <img src="@/icons/b.png" @click="cancelFilterTask">
+            <img src="@/icons/b.png" @click="cancelFilterTask(index)">
           </div>
           <!--下载情况-->
           <div class="statusS" v-if="item.download" v-show="item.download.length">
@@ -194,8 +194,9 @@
           filterList: [
             {
               status: [],
+              task: [],
               founder: [],
-              label: ['状态', '创建人']
+              label: ['状态', '创建人', '所属项目']
             },
             {
               status: [],
@@ -306,9 +307,10 @@
         this.table.filterList[1]['download'] = []
       },
       // tab 取消【所属项目】筛选
-      cancelFilterTask() {
-        this.$refs.renderMode.clearFilterF('task')
-        this.table.filterList[1]['task'] = []
+      cancelFilterTask(index) {
+        if (index == 0) this.$refs.uploadMode.clearFilterF('task')
+        else this.$refs.renderMode.clearFilterF('task')
+        this.table.filterList[index]['task'] = []
       },
       // tab 筛选条件改变
       changeTabFilter(data) {
@@ -545,15 +547,16 @@
             }
             // home - 任务列表
             if (val.toHomeTaskList) {
-              this.table.navListActiveIndex = val.toHomeTaskList.tableIndex
-              val.toHomeTaskList.tableIndex == 0 ? this.$refs.uploadMode.getList({
-                uploadStatus: null,
-                type: val.toHomeTaskList.type,
-                projectUuid: val.toHomeTaskList.projectUuid
-              }) : this.$refs.renderMode.getList({
-                renderStatusFormHome: val.toHomeTaskList.type,
+              this.$refs.uploadMode.specialJump = true
+              this.$refs.uploadMode.getList({
                 projectUuid: val.toHomeTaskList.projectUuid
               })
+              this.$refs.renderMode.specialJump = true
+              this.$refs.renderMode.getList({
+                projectUuid: val.toHomeTaskList.projectUuid
+              })
+              this.table.filterList[0]['task'] = [val.toHomeTaskList.projectName]
+              this.table.filterList[1]['task'] = [val.toHomeTaskList.projectName]
             }
             // message - 站内信跳转
             if (val.from == 'stationLetter') this.stationLetter(val)
