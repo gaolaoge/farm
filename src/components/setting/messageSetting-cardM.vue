@@ -24,7 +24,7 @@
                        @change="changeCheckBox(scope.row.noticeSettingUuid, scope.row.customerNoticeSettingUuid, 1, scope.row.isMessage)"/>
           <el-checkbox v-model="scope.row.isEmail" true-label="1" false-label="0" label="邮件"
                        @change="changeCheckBox(scope.row.noticeSettingUuid, scope.row.customerNoticeSettingUuid, 2, scope.row.isEmail)"/>
-          <el-checkbox v-model="scope.row.isNote" true-label="1" false-label="0" label="短信" v-if="false"
+          <el-checkbox v-model="scope.row.isNote" true-label="1" false-label="0" label="短信"
                        @change="changeCheckBox(scope.row.noticeSettingUuid, scope.row.customerNoticeSettingUuid, 3, scope.row.isNote)"/>
         </template>
       </el-table-column>
