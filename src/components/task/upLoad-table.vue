@@ -58,12 +58,12 @@
         </template>
       </el-table-column>
       <!--所属项目-->
-      <!--<el-table-column-->
-      <!--prop="project"-->
-      <!--label="所属项目"-->
-      <!--show-overflow-tooltip-->
-      <!--:filters="table.projectList"-->
-      <!--width="200" />-->
+      <el-table-column
+      prop="project"
+      label="所属项目"
+      show-overflow-tooltip
+      :filters="table.projectList"
+      width="200" />
       <!--分析开始时间-->
       <el-table-column
         prop="analyseStartTime"

@@ -4,7 +4,7 @@
     <div class="nav">
       <ul>
         <li v-for="(item,index) in navList"
-            :key="index"
+            :key="'nav_' + index"
             :class="[{'active': messageKey.noticeType == index + 1}]"
             @click="changeNavTable(index)">
           <span class="navLi">{{ item }}</span>
@@ -18,8 +18,7 @@
         <ul>
           <li v-for="(item,index) in statusList"
               :key="index"
-              :class="[{'active': messageKey.isRead === item.val}]"
-              class="statusBtn"
+              :class="['statusBtn', {'active': messageKey.isRead === item.val}]"
               @click="changeStatusBtn(item.val)">
             <span>{{ item.label }}</span>
           </li>
@@ -119,7 +118,7 @@
   import {
     mapState
   } from 'vuex'
-  import {messageFun} from "../../assets/common";
+  import {messageFun, pFConversion} from "../../assets/common";
   import task from "../task";
 
   export default {
@@ -160,19 +159,21 @@
         // render   =>  渲染页面
         // recharge =>  充值页面
         // info     =>  用户基本信息页面
-        if (type == 'info') this.$router.push('/Pinfo')
-        else if (type == 'recharge') this.$router.push('/upTop')
+        if (type == 'info') await this.$router.push('/Pinfo')
+        else if (type == 'recharge') await this.$router.push('/upTop')
         else {
-          let data = await getTaskPosition(`taskUuid=${taskUuid}&zoneUuid=${zoneUuid}`),
-            {taskIndex, type} = data.data.data
+          let {data} = await getTaskPosition(pFConversion({
+              taskUuid,
+              zoneUuid
+            })),
+            {taskIndex, type} = data.data
           // taskIndex: 1
           // type: 0          0没查到，2分析列表，3渲染列表，4归档列表
-
           if (type == 0) messageFun('info', '项目已删除')
           else {
             if (this.zoneId != zoneUuid) this.$store.commit('changeZoneId', zoneUuid)
             sessionStorage.setItem('taskListActive', type == 2 ? 0 : 1)
-            if (this.$route.name != 'task') this.$router.push({
+            if (this.$route.name != 'task') await this.$router.push({
               name: 'task',
               params: {
                 from: 'stationLetter',
@@ -181,37 +182,49 @@
                 type
               }
             })
-            else {
-              this.$store.commit('setTaskState', {
-                index: taskIndex,
-                taskUuid,
-                type
-              })
-            }
+            else this.$store.commit('setTaskState', {
+              index: taskIndex,
+              taskUuid,
+              type
+            })
+
           }
         }
         this.$emit('shutMe')
-        let data = await readMessages({
+        let {data} = await readMessages({
           'isRead': 1,
           'noticeUuidList': [row.noticeUuid]
         })
-        if (data.data.code == 201) this.getMessageListF()
-        let systemTotal = await getMessageList(`isRead=&noticeType=1&keyword=&pageIndex=1&pageSize=10`),
-          activityTotal = await getMessageList(`isRead=&noticeType=2&keyword=&pageIndex=1&pageSize=10`)
+        if (data.code == 201) await this.getMessageListF()
+        let systemTotal = await getMessageList(pFConversion({
+            'isRead': '',
+            'noticeType': 1,
+            'keyword': '',
+            'pageIndex': 1,
+            'pageSize': 10
+          })),
+          activityTotal = await getMessageList(pFConversion({
+            'isRead': '',
+            'noticeType': 2,
+            'keyword': '',
+            'pageIndex': 1,
+            'pageSize': 10
+          }))
 
-        if(systemTotal.data.total == 0 && activityTotal.data.total == 0) this.$emit('noMessage')
+        if (systemTotal.data.total == 0 && activityTotal.data.total == 0) this.$emit('noMessage')
       },
       // 标记为已读
       async readedAll(type) {
         let list = type == 'system' ? this.systemSelectionList : this.activitySelectionList
         if (!list.length) return
-        let data = await readMessages({
+        let {data} = await readMessages({
           'isRead': 1,
           'noticeUuidList': list.map(item => item.noticeUuid)
         })
-        if (data.data.code == 201) {
+        if (data.code == 201) {
           messageFun('success', '操作成功')
-          this.getMessageListF()
+          this.$emit('refreshStatus')   // 判断是否存在已读
+          await this.getMessageListF()        // 更新当前列表
         }
       },
       // 系统多选
@@ -242,48 +255,28 @@
         // keyword 关键字
         // pageIndex 索引
         // pageSize 页大小
-        let m = this.messageKey,
-          v = `isRead=${m.isRead}&noticeType=${m.noticeType}&keyword=&pageIndex=${m.pageIndex}&pageSize=10`
-        let data = await getMessageList(v)
-        if (data.data.code == 200) {
+        let {isRead, noticeType, pageIndex} = this.messageKey,
+          {data} = await getMessageList(pFConversion({
+            isRead,
+            noticeType,
+            pageIndex,
+            'pageSize': 10,
+            'keyword': ''
+          }))
+        if (data.code == 200) {
           let halfDay = 1000 * 60 * 60 * 12,                               // 半天的毫秒时
             todayZore = new Date(new Date().toDateString()).getTime(),     // 当日零时时间戳
             yesterdayZore = todayZore - halfDay * 2,                       // 昨天零时时间戳
             theDayBeforeYesterday = todayZore - halfDay * 4,               // 前天零时时间戳
-            list = data.data.data.map(item => {
+            list = data.data.map(item => {
               let createTime
-              if (item.createTime > todayZore) createTime = createDateFun(new Date(item.createTime), false, false, true)                    // 当日
-              else if (item.createTime > yesterdayZore) createTime = '昨天 ' + createDateFun(new Date(item.createTime), false, false, true)
-              else if (item.createTime > theDayBeforeYesterday) createTime = '前天 ' + createDateFun(new Date(item.createTime), false, false, true)
-              else createTime = createDateFun(new Date(item.createTime), true)
+              if (item.createTime > todayZore) createTime = createDateFun(item.createTime, false, false, true)                    // 当日
+              else if (item.createTime > yesterdayZore) createTime = '昨天 ' + createDateFun(item.createTime, false, false, true)
+              else if (item.createTime > theDayBeforeYesterday) createTime = '前天 ' + createDateFun(item.createTime, false, false, true)
+              else createTime = createDateFun(item.createTime, true)
               return Object.assign(item, {createTime})
             })
-          m.noticeType == 1 ? this.systemTableData = list : this.activityTableData = list
-          // {
-          //  createBy: "system"
-          //  createTime: 1591061954296
-          //  customerUuid: "1"
-          //  dataStatus: 1
-          //  frameTaskUuid: null
-          //  id: 1
-          //  isRead: 1
-          //  isSend: 0
-          //  noticeCycle: null
-          //  noticeData: null
-          //  noticeDetail: "任务[任务ID_场景名]新建成功，请您查看。"
-          //  noticeIconPath: ""
-          //  noticeParam: ""
-          //  noticeTemplateUuid: "ea37a176-058b-49a0-8c48-02e3874da001"
-          //  noticeTime: null
-          //  noticeTitle: "添加任务通知"
-          //  noticeType: 1
-          //  noticeUrl: ""
-          //  noticeUuid: "1"
-          //  noticeWay: 1
-          //  requestType: null
-          //  updateBy: "1"
-          //  updateTime: 1591942821051
-          // }
+          noticeType == 1 ? this.systemTableData = list : this.activityTableData = list
         }
       }
     },
@@ -297,6 +290,7 @@
   .messageTable {
     display: flex;
     background-color: rgba(255, 255, 255, 1);
+    height: 100%;
 
     .nav {
       position: relative;

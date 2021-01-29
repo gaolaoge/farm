@@ -6,7 +6,7 @@ export default {
   // 首部
   header: {
     userOLT: ['未知用户', '金币余额', '剩余容量', '基本信息', '退出'],
-    problemOLT: ['渲染指引', '帮助中心'],
+    problemOLT: ['操作指引', '帮助中心'],
     uptopBtn: '充值',
     bulletinT: '公告：',
   },
