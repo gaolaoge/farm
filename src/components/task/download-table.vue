@@ -356,13 +356,11 @@
       },
       // 获取项目列表 暂时关闭
       async getTaskItemListFun() {
-        let data = await getTaskItemList()
-        this.table.itemList = data.data.data.map(curr => {
-          return {
+        let {data} = await getTaskItemList()
+        this.table.itemList = data.data.map(curr => ({
             value: curr.taskProjectUuid,
             text: curr.projectName
-          }
-        })
+          }))
         if (!this.specialJump) await this.getList()
         else this.specialJump = false
       },
@@ -515,7 +513,7 @@
       },
       // 【非业务逻辑】全选
       selectAll(selection) {
-        let {table} =this
+        let {table} = this
         // 取消全选
         if (!('children' in selection[0])) {
           table.selectionList = []
@@ -566,21 +564,7 @@
         let {table, zoneId, zone, keyword} = this,
           {pageSize, pageIndex, sortType, sortBy} = table
         if (obj && obj.renderStatus) table.renderStatus = [obj.renderStatus]
-        if (obj && obj.projectUuid) table.projectUuid = [obj.projectUuid]
-        if (obj && obj.renderStatusFormHome) switch (obj.renderStatusFormHome) {
-          case 'rendering':           // 渲染中
-            table.renderStatus = [2]
-            break
-          case 'waitAllRender':       // 待全部渲染
-            table.renderStatus = [5]
-            break
-          case 'renderPause':         // 渲染暂停
-            table.renderStatus = [3]
-            break
-          case 'finishRender':        // 渲染完成
-            table.renderStatus = [3]
-            break
-        }
+        if (obj && obj.projectUuid) table.projectUuidList = [obj.projectUuid]
         let {data} = zone == 1 ? await getRenderTableList({
             'zoneUuid': zoneId,
             pageIndex,
@@ -776,9 +760,9 @@
       // 排序
       sortChangeHandle({column, prop, order}) {
         let {table} = this
-        if(order == 'ascending') table.sortType = 1
+        if (order == 'ascending') table.sortType = 1
         else table.sortType = 0
-        if(!order) table.sortBy = 'taskNo'
+        if (!order) table.sortBy = 'taskNo'
         else table.sortBy = prop
         this.getList(null)
       },
@@ -790,10 +774,10 @@
             if (data) this.startFunReal()
           })
           .catch(() => createThrowInfo({
-            type:'error',
-            title:'获取余额情况失败',
-            info:'在主任务【开始】操作前判断',
-            site:'components/task/download-table:877'
+            type: 'error',
+            title: '获取余额情况失败',
+            info: '在主任务【开始】操作前判断',
+            site: 'components/task/download-table:877'
           }))
       },
       // 操作 - 开始
@@ -836,10 +820,10 @@
           )
           .catch(error => {
             createThrowInfo({
-              type:'error',
-              title:'报错，操作失败',
-              info:`主任务【开始】操作请求报错, ${error}`,
-              site:'components/task/download-table:877'
+              type: 'error',
+              title: '报错，操作失败',
+              info: `主任务【开始】操作请求报错, ${error}`,
+              site: 'components/task/download-table:877'
             })
           })
       },
@@ -871,10 +855,11 @@
           )
           .catch(error => {
             createThrowInfo({
-              type:'error',
-              title:'报错，操作失败',
-              info:`主任务【归档】操作请求报错, ${error}`,
-              site:'components/task/download-table:919'})
+              type: 'error',
+              title: '报错，操作失败',
+              info: `主任务【归档】操作请求报错, ${error}`,
+              site: 'components/task/download-table:919'
+            })
           })
       },
       // 操作 - 【全部渲染】前预判
@@ -885,10 +870,10 @@
             if (data) this.renderAllFunReal()
           })
           .catch(() => createThrowInfo({
-            type:'error',
-            title:'获取余额情况失败',
-            info:'在主任务【全部渲染】操作前判断',
-            site:'components/task/download-table:951'
+            type: 'error',
+            title: '获取余额情况失败',
+            info: '在主任务【全部渲染】操作前判断',
+            site: 'components/task/download-table:951'
           }))
       },
       // 操作 - 全部渲染
@@ -930,10 +915,10 @@
           )
           .catch(error => {
             createThrowInfo({
-              type:'error',
-              title:'报错，操作失败',
-              info:`主任务【全部渲染】操作请求报错, ${error}`,
-              site:'components/task/download-table:960'
+              type: 'error',
+              title: '报错，操作失败',
+              info: `主任务【全部渲染】操作请求报错, ${error}`,
+              site: 'components/task/download-table:960'
             })
           })
       },
@@ -983,10 +968,10 @@
           )
           .catch(error => {
             createThrowInfo({
-              type:'error',
-              title:'报错，操作失败',
-              info:`主任务【删除】操作请求报错, ${error}`,
-              site:'components/task/download-table:991'
+              type: 'error',
+              title: '报错，操作失败',
+              info: `主任务【删除】操作请求报错, ${error}`,
+              site: 'components/task/download-table:991'
             })
           })
       },
@@ -1023,17 +1008,16 @@
               if (data.data.code == 200) {
                 messageFun('success', '操作成功')
                 this.refreshF()
-              }
-              else if (data.data.code == 1000) messageFun('info', '报错，操作失败')
+              } else if (data.data.code == 1000) messageFun('info', '报错，操作失败')
             },
             () => messageFun('info', '已取消暂停')
           )
           .catch(error => {
             createThrowInfo({
-              type:'error',
-              title:'报错，操作失败',
-              info:`主任务【暂停】操作请求报错, ${error}`,
-              site:'components/task/download-table:1041'
+              type: 'error',
+              title: '报错，操作失败',
+              info: `主任务【暂停】操作请求报错, ${error}`,
+              site: 'components/task/download-table:1041'
             })
           })
       },
@@ -1045,10 +1029,10 @@
             if (data) this.dialogTableVisible = true
           })
           .catch(() => createThrowInfo({
-            type:'error',
-            title:'获取余额情况失败',
-            info:'在主任务【重新渲染】操作前判断，获取余额情况请求报错',
-            site:'components/task/download-table:1082'
+            type: 'error',
+            title: '获取余额情况失败',
+            info: '在主任务【重新渲染】操作前判断，获取余额情况请求报错',
+            site: 'components/task/download-table:1082'
           }))
       },
       // 操作 - 【下载完成帧】前预判
@@ -1066,10 +1050,10 @@
             })
             .catch((err) => {
               createThrowInfo({
-                type:'error',
-                title:'获取余额情况失败',
-                info:'在主任务【下载完成帧】操作前判断',
-                site:'components/task/download-table:1053'
+                type: 'error',
+                title: '获取余额情况失败',
+                info: '在主任务【下载完成帧】操作前判断',
+                site: 'components/task/download-table:1053'
               })
             })
         }
@@ -1080,25 +1064,25 @@
         for (const taskItem of list) {
           if (taskItem.FatherId) {
             let {data} = await downloadCompleteFrame(pFConversion({
-                'transferType': 2,
-                'userID': this.user.id,
-                'isRender': 1,
-                'parent': '',
-                'taskUuid': taskItem['FatherTaskUuId'],
-                'layerTaskUuid': taskItem['taskUuid'],
-                'fileName': taskItem['FatherSceneName']
-              }))
+              'transferType': 2,
+              'userID': this.user.id,
+              'isRender': 1,
+              'parent': '',
+              'taskUuid': taskItem['FatherTaskUuId'],
+              'layerTaskUuid': taskItem['taskUuid'],
+              'fileName': taskItem['FatherSceneName']
+            }))
             this.$store.commit('WEBSOCKET_PLUGIN_SEND', data.data)
           } else {
             let {data} = await downloadCompleteFrame(pFConversion({
-                'transferType': 2,
-                'userID': this.user.id,
-                'isRender': 1,
-                'parent': taskItem['id'] + '-' + taskItem['sceneName'],
-                'taskUuid': taskItem['taskUuid'],
-                'layerTaskUuid': '',
-                'fileName': taskItem['sceneName']
-              }))
+              'transferType': 2,
+              'userID': this.user.id,
+              'isRender': 1,
+              'parent': taskItem['id'] + '-' + taskItem['sceneName'],
+              'taskUuid': taskItem['taskUuid'],
+              'layerTaskUuid': '',
+              'fileName': taskItem['sceneName']
+            }))
             this.$store.commit('WEBSOCKET_PLUGIN_SEND', data.data)
           }
         }
@@ -1109,7 +1093,7 @@
         let data = await getCopySetData(item.taskUuid)
         this.drawerTaskData = item
         let status = this.$refs.drawer.setParameterNext(data.data)
-        if(status && status.code == 1000) return false
+        if (status && status.code == 1000) return false
         this.$refs.drawer.isCopy = true
         this.showDrawer = true
       },
@@ -1212,7 +1196,8 @@
         immediate: true
       },
       'zoneId': function (id) {
-        this.getList()
+        if (!id) return false
+        if (!this.specialJump) this.getList()
         this.closeDrawer()
       },
     },

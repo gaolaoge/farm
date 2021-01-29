@@ -59,11 +59,12 @@
       </el-table-column>
       <!--所属项目-->
       <el-table-column
-      prop="project"
-      label="所属项目"
-      show-overflow-tooltip
-      :filters="table.projectList"
-      width="200" />
+        prop="project"
+        label="所属项目"
+        column-key="task"
+        show-overflow-tooltip
+        :filters="table.projectList"
+        width="200"/>
       <!--分析开始时间-->
       <el-table-column
         prop="analyseStartTime"
@@ -163,7 +164,8 @@
           uploadStatus: [],             // 上传状态数组
           analyseStatus: [],            // 分析状态数组
           setParameters: false,         // 筛选 - 待设置参数 true/false
-          projectList: [],              // 筛选 - 所属项目数组
+          projectUuidList: [],          // 筛选 - 所属项目数组
+          projectList: [],
           statusList: [
             // {text: '全部', value: '全部'},
             {text: '上传中', value: '上传中...'},
@@ -197,6 +199,8 @@
         // this.$refs.uploadTableImportant.clearFilter(type)
         this.table.uploadStatus = []
         this.table.analyseStatus = []
+        this.table.taskStatus = []
+        this.table.projectUuidList.length = 0
         this.getList(null)
       },
       filterChangeF(val) {
@@ -232,6 +236,15 @@
           'type': 'founder',
           'val': val['founder']
         })
+        else if (Object.keys(val)[0] == 'task') {
+          this.$emit('changeFilter', {
+            'tab': 'upload',
+            'type': 'task',
+            'val': val['task'].map(id => this.table.projectList.find(pro => pro.value == id)['text'])
+          })
+          this.table.projectUuidList = val['task']
+          this.getList(null)
+        }
       },
       // farm-drawer 翻页
       changeTypeInfo(val) {
@@ -288,14 +301,12 @@
       },
       // 获取项目列表 暂时关闭
       async getTaskItemListFun() {
-        let data = await getTaskItemList()
-        this.table.projectList = data.data.data.map(curr => {
-          return {
-            value: curr.taskProjectUuid,
-            text: curr.projectName
-          }
-        })
-        if (!this.specialJump) this.getList()
+        let {data} = await getTaskItemList()
+        this.table.projectList = data.data.map(curr => ({
+          value: curr.taskProjectUuid,
+          text: curr.projectName
+        }))
+        if (!this.specialJump) await this.getList()
         else this.specialJump = false
       },
       // 获取 table 列表
@@ -307,8 +318,8 @@
           spinner: 'el-icon-loading',
           background: 'rgba(0, 0, 0, 0.49)'
         })
-        let projectUuid = (obj && obj.projectUuid) ? [obj.projectUuid] : '',
-          {table, keyword, zoneId} = this
+        let {table, keyword, zoneId} = this,
+          projectUuid = (obj && obj.projectUuid) ? [obj.projectUuid] : table.projectUuidList
         if (obj && obj.setParameters) table.setParameters = true
         if (obj && obj.pageIndex) table.pageIndex = obj.pageIndex
         if (obj && obj.type) switch (obj.type) {
@@ -482,7 +493,8 @@
     },
     watch: {
       'zoneId': function (val) {
-        this.getList(null)
+        if (!val) return false
+        if (!this.specialJump) this.getList(null)
         this.closeDrawer()
       }
     },
