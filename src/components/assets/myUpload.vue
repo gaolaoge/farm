@@ -23,10 +23,6 @@
         @sort-change="sortChange"
         :border=true
         class="o"
-        v-loading="loading"
-        element-loading-background="rgba(0, 0, 0, 0.49)"
-        element-loading-spinner="el-icon-loading"
-        element-loading-text="拼命加载中..."
         style="width: 100%">
 
         <el-table-column
@@ -45,14 +41,16 @@
           <template slot-scope="scope">
             <img src="@/icons/folder-a-icon.png" v-if="['文件夹'].some(type => type == scope.row.fileType)" class="a-icon">
             <img src="@/icons/mp3-a-icon.png"
-                 v-else-if="['aiff', 'cd', 'MP3', 'wav', 'wma', 'vqf'].some(type => type == scope.row.fileType)"
+                 v-else-if="['aiff', 'cd', 'mp3', 'wav', 'wma', 'vqf'].some(type => type == scope.row.fileType)"
                  class="a-icon">
             <img src="@/icons/mp4-a-icon.png"
                  v-else-if="['mp4', '3pg', 'avi', 'asf', 'flv', 'mpeg', 'mov', 'rm', 'wmv'].some(type => type == scope.row.fileType)"
                  class="a-icon">
-            <img src="@/icons/ppt-a-icon.png" v-else-if="['ppt'].some(type => type == scope.row.fileType)"
+            <img src="@/icons/ppt-a-icon.png" v-else-if="['ppt', 'pptx'].some(type => type == scope.row.fileType)"
                  class="a-icon">
             <img src="@/icons/word-a-icon.png" v-else-if="['doc', 'docx'].some(type => type == scope.row.fileType)"
+                 class="a-icon">
+            <img src="@/icons/excel-a-icon.png" v-else-if="['xls', 'xlsx'].some(type => type == scope.row.fileType)"
                  class="a-icon">
             <img src="@/icons/exe-a-icon.png"
                  v-else-if="['zip', '7z', 'rar', 'rar4', 'tar.gz', 'tar.xz', 'tar.bz2', 'tar.z'].some(type => type == scope.row.fileType)"
@@ -258,7 +256,7 @@
         newNameErr: false,       // 新建文件夹
         btnCancel: '取消',
         btnSave: '确定',
-        loading: false
+        loading: ''
       }
     },
     props: {
@@ -301,7 +299,7 @@
               'rename': false,
               index_
             }))
-            this.loading = false
+            this.loading.close()
           } else if (data.msg == '601' && this.dialogVisible) {
             // 网盘tree
             let x = data.data.map(item => {
@@ -605,7 +603,12 @@
       getAssetsCatalog(filePath, keyword) {
         if (!this.socket_backs_status) setTimeout(() => this.getAssetsCatalog(filePath, keyword), 1000)
         else {
-          this.loading = true
+          this.loading = this.$loading({
+            lock: true,
+            text: '拼命加载中...',
+            spinner: 'el-icon-loading',
+            background: 'rgba(0, 0, 0, 0.49)'
+          })
           let {pageIndex, pageSize, sortBy, sortType} = this.table
           this.$store.commit('WEBSOCKET_BACKS_SEND', {
             'code': 601,
@@ -618,8 +621,7 @@
             sortType
           })
         }
-      },
-
+      }
     },
     mounted() {
       this.getAssetsCatalog('', this.searchInputVal)

@@ -2,11 +2,10 @@
   <div class="systemTable">
     <div class="btnList">
       <div>
-        <div class="btn"
-             v-for="(item,index) in btnList"
+        <div v-for="(item,index) in btnList"
              @click="changeNav(item.val)"
-             :class="[{'active': item.val === navIndex}]"
-             :key="index">
+             :class="['btn', {'active': item.val === navIndex}]"
+             :key="'btn_' + index">
           <span>{{ item.label }}</span>
         </div>
       </div>
@@ -69,7 +68,8 @@
   } from "../../api/header-api"
   import {
     createDateFun,
-    messageFun
+    messageFun,
+    pFConversion
   } from '@/assets/common'
 
   export default {
@@ -100,13 +100,13 @@
       },
       // 批量标记为已读
       async readAllMessage() {
-        let data = await readMessages({
+        let {data} = await readMessages({
           'isRead': 1,
           'noticeUuidList': this.selectionList.map(item => item.noticeUuid)
         })
-        if (data.data.code == 201) {
+        if (data.code == 201) {
           messageFun('success', '操作成功')
-          this.getList()
+          await this.getList()
         }
       },
       // 多选
@@ -118,45 +118,25 @@
         this.table.currentPage = index
         this.getList()
       },
+      // 获取信息列表
       async getList() {
         // isRead 是否已读 1已读 0未读 3全部
         // noticeType 1系统 2活动
         // keyword 关键字
         // pageIndex 索引
         // pageSize 页大小
-        let v = `isRead=${this.navIndex}&noticeType=1&keyword=&pageIndex=${this.table.currentPage}&pageSize=10`
-        let data = await getMessageList(v)
-        this.table.tableData = data.data.data.map(item => {
-          return Object.assign(item, {
+        let {data} = await getMessageList(pFConversion({
+          'isRead': this.navIndex,
+          'noticeType': 1,
+          'keyword': '',
+          'pageIndex': this.table.currentPage,
+          'pageSize': 10
+        }))
+        this.table.tableData = data.data.map(item => Object.assign(item, {
             createTime: createDateFun(new Date(item.createTime))
           })
-        })
-        this.table.total = data.data.total
-        // {
-        //  createBy: "system"
-        //  createTime: 1591061954296
-        //  customerUuid: "1"
-        //  dataStatus: 1
-        //  frameTaskUuid: null
-        //  id: 1
-        //  isRead: 1
-        //  isSend: 0
-        //  noticeCycle: null
-        //  noticeData: null
-        //  noticeDetail: "任务[任务ID_场景名]新建成功，请您查看。"
-        //  noticeIconPath: ""
-        //  noticeParam: ""
-        //  noticeTemplateUuid: "ea37a176-058b-49a0-8c48-02e3874da001"
-        //  noticeTime: null
-        //  noticeTitle: "添加任务通知"
-        //  noticeType: 1
-        //  noticeUrl: ""
-        //  noticeUuid: "1"
-        //  noticeWay: 1
-        //  requestType: null
-        //  updateBy: "1"
-        //  updateTime: 1591942821051
-        // }
+        )
+        this.table.total = data.total
       }
     },
     mounted() {

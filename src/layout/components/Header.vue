@@ -1,5 +1,5 @@
 <template>
-  <div class="header-wrapper" :class="[{'non-home': !inHome}]">
+  <div :class="['header-wrapper', {'non-home': !inHome}]">
     <div class="wrapper">
       <!--公告-->
       <div class="bulletin">
@@ -12,7 +12,7 @@
         </div>
       </div>
       <!--操作-->
-      <div class="oper" :class="[{'inhome': inHome}]">
+      <div :class="['oper', {'inhome': inHome}]">
         <!--选择分区-->
         <div class="workbench">
           <div class="switch"><img src="@/icons/switch-icon.png"></div>
@@ -27,24 +27,23 @@
         </div>
         <div class="r">
           <!--消息-->
-          <div class="messageE"
-               :class="[{'active': showMessageList},{'isHome': inHome},{'haveNewMS': haveNewMS}]"
+          <div :class="['messageE', {'active': showMessageList, 'isHome': inHome, 'haveNewMS': haveNewMS}]"
                @click.self="showMessageList = !showMessageList"
                v-operating3>
             <img src="@/icons/messageIconheaderM2.png" v-show="!showMessageList" @click.self="showMessageList = true">
             <img src="@/icons/messageIconheaderM-hover.png" v-show="showMessageList"
                  @click.self="showMessageList = false">
             <!--下拉框-->
-            <div class="messageBase" :class="[{'inHome': !inHome}]">
+            <div :class="['messageBase', {'inHome': !inHome}]">
               <message-table v-show="showMessageList"
                              ref="messageTable"
+                             @refreshStatus="haveUnread"
                              @noMessage="haveNewMS = false"
-                             @shutMe="showMessageList = !showMessageList" />
+                             @shutMe="showMessageList = !showMessageList"/>
             </div>
           </div>
           <!--问号-->
-          <div class="problemE"
-               :class="[{'active': showProblemList},{'isHome': inHome}]"
+          <div :class="['problemE', {'active': showProblemList},{'isHome': inHome}]"
                @click="showProblemList = !showProblemList"
                v-operating2>
             <img src="@/icons/problem2.png">
@@ -53,23 +52,19 @@
               <ul class="userOperate" v-show="showProblemList">
                 <!--渲染指引-->
                 <li class="operateLi" @click="guide">
-                <span class="con">
-                  <span class="t">
-                     <span class="sb">
-                       {{ problemOperateList[0]['text'] }}
-                     </span>
+                  <span class="con">
+                    <span class="t">
+                       <span class="sb">{{ problemOperateList[0]['text'] }}</span>
+                    </span>
                   </span>
-                </span>
                 </li>
                 <!--帮助中心-->
                 <li class="operateLi" @click="w">
-                <span class="con">
-                  <span class="t">
-                     <span class="sb">
-                       {{ problemOperateList[1]['text'] }}
-                     </span>
+                  <span class="con">
+                    <span class="t">
+                       <span class="sb">{{ problemOperateList[1]['text'] }}</span>
+                    </span>
                   </span>
-                </span>
                 </li>
               </ul>
             </div>
@@ -80,14 +75,11 @@
             <!--下拉框-->
             <div class="newsBase" :class="[{'show': showUserList}]">
               <ul class="userOperate" v-show="showUserList">
-
                 <!--帐号-->
                 <li class="operateLi userName">
                 <span class="con">
                   <span class="t">
-                     <span class="sb">
-                       {{ user.name }}
-                     </span>
+                     <span class="sb">{{ user.name }}</span>
                       <img :src="userOperateList[0]['iconUrl']" class="iconUrl">
                   </span>
                 </span>
@@ -96,13 +88,9 @@
                 <li class="operateLi balance" @click="$router.push('/upTop')">
                   <span class="con">
                     <span class="t">
-                       <span class="sb">
-                         {{ userOperateList[1]['text'] }}
-                       </span>
+                       <span class="sb">{{ userOperateList[1]['text'] }}</span>
                        <span class="balanceNow">
-                         <span class="amount">
-                            {{ user.balance }}
-                         </span>
+                         <span class="amount">{{ user.balance }}</span>
                        </span>
                     </span>
                   </span>
@@ -114,13 +102,9 @@
                 <li class="operateLi balance2">
                 <span class="con">
                   <span class="t">
-                     <span class="sb">
-                       {{ userOperateList[2]['text'] }}
-                     </span>
+                     <span class="sb">{{ userOperateList[2]['text'] }}</span>
                      <span class="balanceNow">
-                       <span class="amount">
-                          {{ user.haveCapacity }} GB
-                       </span>
+                       <span class="amount">{{ user.haveCapacity }} GB</span>
                      </span>
                   </span>
                 </span>
@@ -129,9 +113,7 @@
                 <li class="operateLi Pinfo" @click="$router.push('/Pinfo')">
                 <span class="con">
                   <span class="t">
-                     <span class="sb">
-                       {{ userOperateList[3]['text'] }}
-                     </span>
+                     <span class="sb">{{ userOperateList[3]['text'] }}</span>
                   </span>
                 </span>
                 </li>
@@ -139,9 +121,7 @@
                 <li class="operateLi quit" @click="quitFun">
                 <span class="con">
                   <span class="t">
-                     <span class="sb">
-                       {{ userOperateList[4]['text'] }}
-                     </span>
+                     <span class="sb">{{ userOperateList[4]['text'] }}</span>
                   </span>
                 </span>
                 </li>
@@ -253,7 +233,7 @@
     mapState
   } from 'vuex'
   import messageTable from '@/components/headerM/message-table'
-  import {messageFun} from "../../assets/common";
+  import {messageFun, pFConversion} from "../../assets/common";
 
   export default {
     name: 'headerM',
@@ -308,10 +288,12 @@
         guideShow: false,                       // 显示【渲染指引】
         guideShowStep: 1,                       // 【渲染指引】步骤
         uptop: this.$t('header.uptopBtn'),
-        bulletin: [{
-          'tit': null,
-          'detail': '暂无公告'
-        }],                           // 公告
+        bulletin: [
+          {
+            'tit': null,
+            'detail': '暂无公告'
+          }
+        ],                           // 公告
         bulletinRealLength: null,               // 公告真实长度
         bulletinIndex: 0                        // 显示的公告索引
       }
@@ -361,7 +343,7 @@
       },
       zoneId: {
         handler: function (id) {
-          if(!id) return false
+          if (!id) return false
           this.getBulletinF()   // 获取公告
           putNewZoneID({"zoneUuid": id})   // 传达切换分区事件
           this.workBenchVal = id
@@ -390,15 +372,22 @@
     methods: {
       // 是否有未读
       async haveUnread() {
-        let v = `isRead=0&noticeType=1&keyword=&pageIndex=1&pageSize=10`,
-          vv = `isRead=0&noticeType=2&keyword=&pageIndex=1&pageSize=10`,
-          data2,
-          data = await getMessageList(v)
-        if (data.data.data.length) {
-          this.haveNewMS = true
-          return false
-        } else data2 = await getMessageList(vv)
-        if (data2.data.data.length) this.haveNewMS = true
+        let systemList = await getMessageList(pFConversion({
+            'isRead': 0,
+            'noticeType': 1,
+            'keyword': '',
+            'pageIndex': 1,
+            'pageSize': 10
+          })),
+          activityList = await getMessageList(pFConversion({
+            'isRead': 0,
+            'noticeType': 2,
+            'keyword': '',
+            'pageIndex': 1,
+            'pageSize': 10
+          }))
+        if (systemList.data.data.length || activityList.data.data.length) this.haveNewMS = true
+        else this.haveNewMS = false
       },
       // 公告滚动
       top() {
@@ -453,14 +442,12 @@
           .then(data => {
             let d = data.data
             if (d.code != 200) return false
-            this.workBenchList = d.data.map(curr => {
-              return {
-                name: curr.zoneName,
-                val: curr.zoneUuid,
-                isGpu: curr.isGpu,
-                zone: curr.zone
-              }
-            })
+            this.workBenchList = d.data.map(curr => ({
+              name: curr.zoneName,
+              val: curr.zoneUuid,
+              isGpu: curr.isGpu,
+              zone: curr.zone
+            }))
           })
           .catch(error => console.log(`工作台下拉框获取报错，${error}`))
       },
@@ -468,12 +455,11 @@
         this.$store.commit('changeIsGpu', this.workBenchList.find(curr => curr.val == this.workBenchVal)['isGpu'] || null)
       },
       async getUserInfo() {
-        let data = await getInfo(),
-          d = data.data.data
-        if (data.data.code != 200) return false
-        setInfo(data.data.data)
-        this.userOperateList[0]['text'] = d.account
-        this.userOperateList[1]['balance'] = d.goldBalance
+        let {data} = await getInfo()
+        if (data.code != 200) return false
+        setInfo(data.data)
+        this.userOperateList[0]['text'] = data.data.account
+        this.userOperateList[1]['balance'] = data.data.goldBalance
       },
       // 渲染指引
       guide() {

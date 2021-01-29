@@ -295,7 +295,8 @@
     UuidFun,
     exportDownloadFun,
     updateBalance,
-    createThrowInfo
+    createThrowInfo,
+    pFConversion
   } from '@/assets/common'
 
   export default {
@@ -483,7 +484,8 @@
           this.table.renderStatus = val['status'].map(item => {
             if (item == '渲染中') return 2
             else if (item == '待全部渲染') return 5
-            else if (item == '渲染暂停' || item == '渲染完成') return 3
+            else if (item == '渲染完成') return 3
+            else if (item == '渲染暂停') return 4
           })
           this.getList(null)
         } else if (Object.keys(val)[0] == 'task') {
@@ -1051,6 +1053,7 @@
       },
       // 操作 - 【下载完成帧】前预判
       downloadFils() {
+        let list = this.computedResult()
         if (!this.table.selectionList.length) return false
         if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.next())
         else this.next()
@@ -1076,13 +1079,27 @@
         let list = this.computedResult()
         for (const taskItem of list) {
           if (taskItem.FatherId) {
-            let val = `transferType=2&userID=${this.user.id}&isRender=1&parent=&taskUuid=${taskItem['FatherTaskUuId']}&layerTaskUuid=${taskItem['taskUuid']}&fileName=${taskItem['FatherSceneName']}`,
-              data = await downloadCompleteFrame(val)
-            this.$store.commit('WEBSOCKET_PLUGIN_SEND', data.data.data)
+            let {data} = await downloadCompleteFrame(pFConversion({
+                'transferType': 2,
+                'userID': this.user.id,
+                'isRender': 1,
+                'parent': '',
+                'taskUuid': taskItem['FatherTaskUuId'],
+                'layerTaskUuid': taskItem['taskUuid'],
+                'fileName': taskItem['FatherSceneName']
+              }))
+            this.$store.commit('WEBSOCKET_PLUGIN_SEND', data.data)
           } else {
-            let val = `transferType=2&userID=${this.user.id}&isRender=1&parent=${taskItem['id'] + '-' + taskItem['sceneName']}&taskUuid=${taskItem['taskUuid']}&layerTaskUuid=&fileName=${taskItem['sceneName']}`,
-              data = await downloadCompleteFrame(val)
-            this.$store.commit('WEBSOCKET_PLUGIN_SEND', data.data.data)
+            let {data} = await downloadCompleteFrame(pFConversion({
+                'transferType': 2,
+                'userID': this.user.id,
+                'isRender': 1,
+                'parent': taskItem['id'] + '-' + taskItem['sceneName'],
+                'taskUuid': taskItem['taskUuid'],
+                'layerTaskUuid': '',
+                'fileName': taskItem['sceneName']
+              }))
+            this.$store.commit('WEBSOCKET_PLUGIN_SEND', data.data)
           }
         }
       },
@@ -1091,8 +1108,8 @@
         let item = this.table.selectionList.find((item, index) => item.children || item.secretChild)
         let data = await getCopySetData(item.taskUuid)
         this.drawerTaskData = item
-        await this.$refs.drawer.getItemList()
-        this.$refs.drawer.setParameterNext(data.data)
+        let status = this.$refs.drawer.setParameterNext(data.data)
+        if(status && status.code == 1000) return false
         this.$refs.drawer.isCopy = true
         this.showDrawer = true
       },
@@ -1156,7 +1173,7 @@
         // 因为指定主任务顺序肯定在其层任务前 所以无需先识别全部主任务
         this.table.selectionList.forEach(curr => {
           if ('selfIndex' in curr) {
-            fatId.push(curr['id'])
+            fatId.push(curr['taskNo'])
             fatItem.push(curr)
           } else if (!fatId.some(item => item == curr.FatherId)) sonItem.push(curr)
         })

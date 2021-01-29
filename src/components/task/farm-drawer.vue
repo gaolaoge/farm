@@ -1475,7 +1475,7 @@
           founderVal: taskInfo.account,                                          // 创建人
           creationTimeVal: createDateFun(new Date(taskInfo.createTime))          // 创建时间
         })
-        this.showMiniImg(result.tableData[0])
+        await this.showMiniImg(result.tableData[0])
         this.loading = false
       },
       //关闭抽屉 复位
@@ -1997,6 +1997,12 @@
         this.turnPage('setting')
         // 【设置参数】-【渲染层数】- 启动分层渲染时的table
         // this.zone  1影视区 2效果图区
+        if(data.code == 1000) {
+          messageFun('info', '任务已过期')
+          return {
+            code: 1000
+          }
+        }
         this.setting.num.tableDataAll = data.data.layerSettingList.map(curr => {
           let formatList = [],
             cameraList = []
