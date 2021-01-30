@@ -1273,12 +1273,11 @@
       async confirmFun() {
         if (!this.confirmLock || this.stepTwoBase.renderListActive == -1) return
         this.confirmLock = false
-        console.log(this.stepOneBase.local.filelist)
         let {stepOneBase: fir, stepTwoBase: sec, stepThreeBase: thi} = this,
           {data} = await newTaskProfession({
             zoneUuid: this.zoneId,                             // 分区uuid
             templateUuid: sec.renderList[sec.renderListActive]['renderTemplate']['templateUuid'],    //选中模板uuid
-            taskCount: fir.index == 0 ? this.stepOneBase.netdisc.sceneFileSelection.length : fir.local.filelist.length,                            // 要创建任务的数量
+            taskCount: fir.index == 0 ? fir.netdisc.sceneFileSelection.length : fir.local.filelist.length,                            // 要创建任务的数量
             pattern: this.taskType == 'easy' ? 1 : 2,          // 渲染模式
             patternNorm: fir.index == 0 ? 2 : 1,               // 提交模式
             source: 1,                                         // 任务来源
@@ -1288,8 +1287,8 @@
                   pathScene: '',
                   fileName: item.sceneFile
                 }
-              })) : this.stepOneBase.netdisc.sceneFileSelection.map(item => {
-              let task = this.stepOneBase.netdisc.treeData.find(curr => curr.id == item)
+              })) : fir.netdisc.sceneFileSelection.map(item => {
+              let task = fir.netdisc.treeData.find(curr => curr.id == item)
               return {
                 filePath: {
                   pathResource: [fir.netdisc.pathV],                        // 工程路径
@@ -1360,7 +1359,6 @@
             }
             return children
           }
-
           this.stepOneBase.netdisc.catalogData = this.stepOneBase.netdisc.catalogData.concat(g(JSON.parse(item)))
         })
       },

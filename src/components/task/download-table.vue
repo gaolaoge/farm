@@ -435,11 +435,11 @@
         if ('FatherId' in row && !result) {
           selectionList.splice(selectionList.findIndex(curr => curr.rowId == row.rowId), 1)
           // 父项是否被选中 取消选中
-          fatherSelected = selection.findIndex(item => tableData[row.FatherIndex].rowId == item.rowId)
+          let fatherSIndex = selectionList.findIndex(item => tableData[row.FatherIndex].rowId == item.rowId)
           // 取消父级选中状态
-          if (fatherSelected != -1) {
+          if (fatherSIndex != -1) {
             table.toggleRowSelection(tableData[row.FatherIndex], false)
-            selectionList.splice(fatherSelected, 1)
+            selectionList.splice(fatherSIndex, 1)
           }
         }
 
@@ -447,24 +447,24 @@
         if (!('FatherId' in row) && result) {
           selectionList.push(row)
           // 勾选全部子项
-          tableData[row.selfIndex]['children'] ? tableData[row.selfIndex]['children'].forEach(son => {
+          tableData[row.selfIndex]['children'] && tableData[row.selfIndex]['children'].forEach(son => {
             // 将此子项勾选
             if (!selection.some(item => item.rowId == son.rowId)) {
               table.toggleRowSelection(son, true)
               selectionList.push(son)
             }
-          }) : null
+          })
         }
         if (!('FatherId' in row) && !result) {
           // 取消勾选全部子项
-          tableData[row.selfIndex]['children'] ? tableData[row.selfIndex]['children'].forEach(son => {
+          tableData[row.selfIndex]['children'] && tableData[row.selfIndex]['children'].forEach(son => {
             // 将此子项取消勾选
-            let sonDefault = selection.findIndex(item => item.rowId == son.rowId)
-            if (sonDefault != -1) {
+            let sonSIndex = selectionList.findIndex(item => item.rowId == son.rowId)
+            if (sonSIndex != -1) {
               table.toggleRowSelection(son, false)
-              selectionList.splice(sonDefault, 1)
+              selectionList.splice(sonSIndex, 1)
             }
-          }) : null
+          })
           // 取消自身勾选
           selectionList.splice(selectionList.findIndex(curr => curr.rowId == row.rowId), 1)
           table.toggleRowSelection(row, false)
