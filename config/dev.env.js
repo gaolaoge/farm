@@ -11,5 +11,5 @@ module.exports = merge(prodEnv, {
   DOWNLOAD_PLUGIN_PATH: '"http://223.80.107.190:8084/CloudTransfer.exe"',                // 开发、测试
   PLUGIN_WS_API: '"ws://localhost:17002"',
   MOCKJS: true,
-  VERSION: 202101291005
+  VERSION: 202101301115
 })
