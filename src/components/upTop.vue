@@ -36,10 +36,10 @@
                     <span class="unit">￥</span>
                     <span class="num">{{ item.ChineseYuan }}</span>
                   </div>
-                  <div class="t">
-                    <p class="remark">{{ item.remark1 }}</p>
-                    <p class="remark">{{ item.remark2 }}</p>
-                  </div>
+                  <!--                  <div class="t">-->
+                  <!--                    <p class="remark">{{ item.remark1 }}</p>-->
+                  <!--                    <p class="remark">{{ item.remark2 }}</p>-->
+                  <!--                  </div>-->
                   <div class="selected" :style="{backgroundImage: 'url(' + require('../icons/x.png') + ')'}">
                     <span>{{ item.ChineseYuan }}</span>
                     <img src="@/icons/check-circle.png">
@@ -72,13 +72,13 @@
                 <img src="@/icons/zhifubao-icon-a.png" v-show="payMethods == 'zfb'">
               </div>
               <!--微信【暂不可用】-->
-<!--              <div @click="payMethods = 'wx'"-->
-<!--                   :class="[{'active': payMethods == 'wx'}, 'pay-base']">-->
-<!--                <img src="@/icons/no-select.png" v-show="payMethods != 'wx'" class="s">-->
-<!--                <img src="@/icons/yes-select.png" v-show="payMethods == 'wx'" class="s">-->
-<!--                <img src="@/icons/weixin-icon.png" v-show="payMethods != 'wx'">-->
-<!--                <img src="@/icons/weixin-icon-a.png" v-show="payMethods == 'wx'">-->
-<!--              </div>-->
+              <!--              <div @click="payMethods = 'wx'"-->
+              <!--                   :class="[{'active': payMethods == 'wx'}, 'pay-base']">-->
+              <!--                <img src="@/icons/no-select.png" v-show="payMethods != 'wx'" class="s">-->
+              <!--                <img src="@/icons/yes-select.png" v-show="payMethods == 'wx'" class="s">-->
+              <!--                <img src="@/icons/weixin-icon.png" v-show="payMethods != 'wx'">-->
+              <!--                <img src="@/icons/weixin-icon-a.png" v-show="payMethods == 'wx'">-->
+              <!--              </div>-->
             </div>
           </div>
           <!--btn-->
@@ -103,15 +103,15 @@
                 <p class="accumulative"> {{ item.total }} </p>
                 <p class="price">{{ form.unit }}<span class="num">{{ item.price }}</span>{{ form.unitPrice }}</p>
                 <p class="k">
-<!--                  &lt;!&ndash;相当于16核32线程节点机&ndash;&gt;-->
-<!--                  <span style="display: block">{{ item.dir1 }}</span>-->
-<!--                  &lt;!&ndash;包含每小时收费3.04元&ndash;&gt;-->
-<!--                  <span style="display: block">{{ form.dir4 }}<span class="v">{{ item.unitPrice }}</span>{{ form.dir2 }}</span>-->
-<!--                  &lt;!&ndash;包含50G 存储空间&ndash;&gt;-->
-<!--                  {{ form.f }}<span class="v">{{ item.RAM }}</span>{{ form.dir3 }}-->
+                  <!--                  &lt;!&ndash;相当于16核32线程节点机&ndash;&gt;-->
+                  <!--                  <span style="display: block">{{ item.dir1 }}</span>-->
+                  <!--                  &lt;!&ndash;包含每小时收费3.04元&ndash;&gt;-->
+                  <!--                  <span style="display: block">{{ form.dir4 }}<span class="v">{{ item.unitPrice }}</span>{{ form.dir2 }}</span>-->
+                  <!--                  &lt;!&ndash;包含50G 存储空间&ndash;&gt;-->
+                  <!--                  {{ form.f }}<span class="v">{{ item.RAM }}</span>{{ form.dir3 }}-->
                   <span style="display: block" class="v">全新硬件</span>
                   <span style="display: block" class="v">发烧级性能</span>
-                  <span style="display: block" class="v">限时<span style="color: #000">5折</span>巨惠</span>
+<!--                  <span style="display: block" class="v">限时<span style="color: #000">5折</span>巨惠</span>-->
                 </p>
               </div>
             </div>
@@ -126,10 +126,10 @@
                 <p class="accumulative"> {{ item.total }} </p>
                 <p class="price">{{ form.unit }}<span class="num">{{ item.price }}</span>{{ form.unitPrice2 }}</p>
                 <p class="k">
-<!--                  <span style="display: block">{{ item.dir1 }}</span>-->
-<!--                  <span style="display: block">{{ form.dir4 }}<span-->
-<!--                    class="v">{{ item.price }}</span>{{ form.dir2 }}</span>-->
-<!--                  {{ form.f }}<span class="v">{{ item.RAM }}</span>{{ form.dir3 }}-->
+                  <!--                  <span style="display: block">{{ item.dir1 }}</span>-->
+                  <!--                  <span style="display: block">{{ form.dir4 }}<span-->
+                  <!--                    class="v">{{ item.price }}</span>{{ form.dir2 }}</span>-->
+                  <!--                  {{ form.f }}<span class="v">{{ item.RAM }}</span>{{ form.dir3 }}-->
                   <span style="display: block" class="v"><span style="color: #000">RTX6000</span>显卡</span>
                   <span style="display: block" class="v">光线追踪</span>
                   <span style="display: block" class="v">性能怪兽</span>
@@ -150,15 +150,15 @@
                 <p class="accumulative"> {{ item.total }} </p>
                 <p class="price">{{ form.unit }}<span class="num">{{ item.price }}</span>{{ form.unitPrice }}</p>
                 <p class="k">
-<!--                  &lt;!&ndash;相当于16核32线程节点机&ndash;&gt;-->
-<!--                  <span style="display: block">{{ item.dir1 }}</span>-->
-<!--                  &lt;!&ndash;包含每小时收费3.04元&ndash;&gt;-->
-<!--                  <span style="display: block">{{ form.dir4 }}<span class="v">{{ item.unitPrice }}</span>{{ form.dir2 }}</span>-->
-<!--                  &lt;!&ndash;包含50G 存储空间&ndash;&gt;-->
-<!--                  {{ form.f }}<span class="v">{{ item.RAM }}</span>{{ form.dir3 }}-->
+                  <!--                  &lt;!&ndash;相当于16核32线程节点机&ndash;&gt;-->
+                  <!--                  <span style="display: block">{{ item.dir1 }}</span>-->
+                  <!--                  &lt;!&ndash;包含每小时收费3.04元&ndash;&gt;-->
+                  <!--                  <span style="display: block">{{ form.dir4 }}<span class="v">{{ item.unitPrice }}</span>{{ form.dir2 }}</span>-->
+                  <!--                  &lt;!&ndash;包含50G 存储空间&ndash;&gt;-->
+                  <!--                  {{ form.f }}<span class="v">{{ item.RAM }}</span>{{ form.dir3 }}-->
                   <span style="display: block" class="v">全新硬件</span>
                   <span style="display: block" class="v">发烧级性能</span>
-                  <span style="display: block" class="v">限时<span style="color: #000">5折</span>巨惠</span>
+<!--                  <span style="display: block" class="v">限时<span style="color: #000">5折</span>巨惠</span>-->
                 </p>
               </div>
             </div>
@@ -216,7 +216,7 @@
         <p class="f">亲爱的 {{ user.account }} ，您好！</p>
         <p class="f s">因服务更新原因，烦请您联系客服进行线下充值～</p>
         <div class="e">
-          <p>24小时客服电话：18560651927</p>
+          <p>24小时客服电话：15610503237</p>
           <p>QQ客服：2860177580</p>
           <p>售后邮箱：ENJINECG@163.com</p>
         </div>
@@ -264,7 +264,7 @@
           upTopLabel: '充值金额',
           upTopVal: '',
           realLabel: '充值到账金币',
-          realVal: '160.000',
+          realVal: '100.000',
           modeLabel: '充值方式',
           modeVal: '',
           listActive: 0,
@@ -304,7 +304,7 @@
               r: '充值后不支持退款。'
             },
             {
-              r: '充值其他问题，请联系客服：18560651927'
+              r: '充值其他问题，请联系客服：15610503237'
             }
           ],
           ChineseYuan: 100,
@@ -417,11 +417,12 @@
           num = this.form.ChineseYuan
         if (!num) this.form.ChineseYuanVerif = null
         else this.form.ChineseYuanVerif = reg.test(num)
-        if (val == 100) this.form.realVal = '160.000'
-        else if (val == 500) this.form.realVal = '900.000'
-        else if (val == 2000) this.form.realVal = '3800.000'
-        else if (val == 5000) this.form.realVal = '10000.000'
-        else this.computeFun()
+        // if (val == 100) this.form.realVal = '160.000'
+        // else if (val == 500) this.form.realVal = '900.000'
+        // else if (val == 2000) this.form.realVal = '3800.000'
+        // else if (val == 5000) this.form.realVal = '10000.000'
+        // else this.computeFun()
+        this.computeFun()
       },
     },
     methods: {
@@ -498,26 +499,36 @@
 
           .gold {
             width: 260px;
-            height: 100px;
+            /*height: 100px;*/
+            height: 100%;
             border-bottom: 1px solid rgba(27, 83, 244, 1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
 
             .unit {
-              display: inline-block;
-              font-size: 16px;
+              /*display: inline-block;*/
+              /*font-size: 16px;*/
               font-weight: 600;
               color: rgba(255, 187, 0, 1);
-              margin-left: 20px;
-              margin-right: 5px;
+              /*margin-left: 20px;*/
+              /*margin-right: 5px;*/
+              vertical-align: bottom;
+              margin-top: 30px;
+              font-size: 20px;
             }
 
             .num {
-              display: inline-block;
-              margin-top: 11px;
-              font-size: 60px;
+              /*display: inline-block;*/
+              /*margin-top: 11px;*/
+              /*font-size: 60px;*/
               font-weight: 600;
               line-height: 84px;
               color: rgba(255, 187, 0, 1);
+              font-size: 68px;
+              font-family: MontserratAlternates-BlackItalic, MontserratAlternates;
             }
+
           }
 
           .t {
@@ -525,6 +536,7 @@
             flex-direction: column;
             justify-content: center;
             height: 73px;
+
             .remark {
               padding-left: 20px;
               font-size: 13px;
@@ -546,6 +558,7 @@
               display: flex;
               flex-direction: column;
               align-items: center;
+              justify-content: center;
 
               span {
                 font-size: 60px;
@@ -553,7 +566,8 @@
                 font-weight: normal;
                 color: rgba(255, 255, 255, 1);
                 line-height: 73px;
-                margin: 18px 0px 15px;
+                /*margin: 18px 0px 15px;*/
+                /*margin: 4px 0px 0px;*/
               }
             }
           }

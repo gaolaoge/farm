@@ -196,39 +196,39 @@
       },
       // 清除筛选条件
       clearFilterF(type) {
-        // this.$refs.uploadTableImportant.clearFilter(type)
-        this.table.uploadStatus = []
-        this.table.analyseStatus = []
-        this.table.taskStatus = []
-        this.table.projectUuidList.length = 0
+        let {uploadStatus, analyseStatus, projectUuidList} = this.table
+        uploadStatus.length = 0
+        analyseStatus.length = 0
+        projectUuidList.length = 0
         this.getList(null)
       },
       filterChangeF(val) {
+        let {uploadStatus, analyseStatus} = this.table
         if (Object.keys(val)[0] == 'status') {
           this.$emit('changeFilter', {
             'tab': 'upload',
             'type': 'status',
             'val': val['status']
           })
-          this.table.uploadStatus = []
-          this.table.analyseStatus = []
+          uploadStatus.length = 0
+          analyseStatus.length = 0
           val['status'].map(item => {
             if (item == '上传中...') {
-              this.table.uploadStatus.push(1)
-              this.table.uploadStatus.push(2)
-            } else if (item == '上传成功') this.table.uploadStatus.push(3)
-            else if (item == '上传暂停') this.table.uploadStatus.push(4)
+              uploadStatus.push(1)
+              uploadStatus.push(2)
+            } else if (item == '上传成功') uploadStatus.push(3)
+            else if (item == '上传暂停') uploadStatus.push(4)
             else if (item == '上传失败') {
-              this.table.uploadStatus.push(5)
-              this.table.uploadStatus.push(6)
+              uploadStatus.push(5)
+              uploadStatus.push(6)
             } else if (item == '分析中...') {
-              this.table.analyseStatus.push(1)
-              this.table.analyseStatus.push(2)
-              this.table.analyseStatus.push(9)
-            } else if (item == '待设置参数') this.table.analyseStatus.push(3)
-            else if (item == '分析警告') this.table.analyseStatus.push(4)
-            else if (item == '分析失败') this.table.analyseStatus.push(5)
-            else if (item == '已放弃') this.table.analyseStatus.push(6)
+              analyseStatus.push(1)
+              analyseStatus.push(2)
+              analyseStatus.push(9)
+            } else if (item == '待设置参数') analyseStatus.push(3)
+            else if (item == '分析警告') analyseStatus.push(4)
+            else if (item == '分析失败') analyseStatus.push(5)
+            else if (item == '已放弃') analyseStatus.push(6)
           })
           this.getList(null)
         } else if (Object.keys(val)[0] == 'founder') this.$emit('changeFilter', {
@@ -281,6 +281,8 @@
       },
       // 上传分析 - 打开详情
       showDetails(row, column, event) {
+        let dom = this.$refs.uploadTable.getElementsByClassName('farmTableSelected')[0]
+        if (dom) dom.classList.remove('farmTableSelected')
         if (row.status == '等待' || !row.status) {
           this.showDrawer = false
           return false
@@ -288,9 +290,7 @@
         this.showDrawer = true
         this.drawerTaskData = row
         let tableDomList = this.$refs.uploadTable.getElementsByClassName('el-table__row'),
-          d = this.$refs.uploadTable.getElementsByClassName('farmTableSelected')[0],
-          index_ = this.table.tableData.findIndex(curr_ => curr_.id == row.id)
-        if (d) d.classList.remove('farmTableSelected')
+          index_ = this.table.tableData.findIndex(curr_ => curr_.taskUuid == row.taskUuid)
         tableDomList[index_].classList.add('farmTableSelected')
       },
       // 上传分析 - 关闭详情
@@ -320,19 +320,19 @@
         })
         let {table, keyword, zoneId} = this,
           projectUuid = (obj && obj.projectUuid) ? [obj.projectUuid] : table.projectUuidList
-        if (obj && obj.setParameters) table.setParameters = true
+        if (obj && obj.setParameters) table.analyseStatus = [3]
         if (obj && obj.pageIndex) table.pageIndex = obj.pageIndex
         if (obj && obj.type) switch (obj.type) {
           case 'waitSetUpParam':       // 待设置参数
-            table.setParameters = true
+            table.analyseStatus = [3]
             break
-          case 'analyzing':       // 分析中
+          case 'analyzing':            // 分析中
             table.analyseStatus = [2]
             break
-          case 'analyseFail':       // 分析失败
+          case 'analyseFail':          // 分析失败
             table.analyseStatus = [5]
             break
-          case 'analyseWarn':       // 分析警告
+          case 'analyseWarn':          // 分析警告
             table.analyseStatus = [4]
             break
         }
@@ -503,6 +503,6 @@
     },
     components: {
       farmDrawer
-    },
+    }
   }
 </script>

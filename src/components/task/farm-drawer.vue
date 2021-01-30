@@ -18,36 +18,20 @@
       <div class="farm-drawer-body e">
         <div class="farm-drawer-body-item one">
           <div class="farm-drawer-item">
-            <span class="farm-drawer-item-label">
-              {{ details.labelId }}：
-            </span>
-            <span class="farm-drawer-item-val">
-              {{ details.valId }}
-            </span>
+            <span class="farm-drawer-item-label">{{ details.labelId }}：</span>
+            <span class="farm-drawer-item-val">{{ details.valId }}</span>
           </div>
           <div class="farm-drawer-item">
-            <span class="farm-drawer-item-label">
-              {{ details.labelName }}：
-            </span>
-            <span class="farm-drawer-item-val">
-              {{ details.valName }}
-            </span>
+            <span class="farm-drawer-item-label">{{ details.labelName }}：</span>
+            <span class="farm-drawer-item-val">{{ details.valName }}</span>
           </div>
           <div class="farm-drawer-item">
-            <span class="farm-drawer-item-label">
-              {{ details.labelCreateTime }}：
-            </span>
-            <span class="farm-drawer-item-val">
-              {{ details.valCreateTime }}
-            </span>
+            <span class="farm-drawer-item-label">{{ details.labelCreateTime }}：</span>
+            <span class="farm-drawer-item-val">{{ details.valCreateTime }}</span>
           </div>
           <div class="farm-drawer-item">
-            <span class="farm-drawer-item-label">
-              {{ details.labelState }}：
-            </span>
-            <span class="farm-drawer-item-val">
-              {{ details.valState }}
-            </span>
+            <span class="farm-drawer-item-label">{{ details.labelState }}：</span>
+            <span class="farm-drawer-item-val">{{ details.valState }}</span>
           </div>
         </div>
         <div class="farm-drawer-body-item two">
@@ -70,18 +54,10 @@
                v-show="!(details.warningList[0] && !details.errorList[0])"
                :style="{'opacity': details.errorList[0] ? 1 : 0}">
             <div class="farm-drawer-list-item" v-for="(item,index) in details.errorList">
-              <div class="icon">
-                <img src="@/icons/errorIcon.png">
-              </div>
+              <div class="icon"><img src="@/icons/errorIcon.png"></div>
               <div class="text">
-                <span class="t">
-                  {{ item.title }}
-                </span>
-                <span class="c">
-
-
-                  {{ item.content }}
-                </span>
+                <span class="t">{{ item.title }}</span>
+                <span class="c">{{ item.content }}</span>
               </div>
             </div>
           </div>
@@ -90,16 +66,10 @@
                v-show="!(!details.warningList[0] && details.errorList[0])"
                :style="{'opacity': details.warningList[0] ? 1 : 0}">
             <div class="farm-drawer-list-item" v-for="(item,index) in details.warningList">
-              <div class="icon">
-                <img src="@/icons/warningIcon.png">
-              </div>
+              <div class="icon"><img src="@/icons/warningIcon.png"></div>
               <div class="text">
-                <span class="t">
-                  {{ item.title }}
-                </span>
-                <span class="c">
-                  {{ item.content }}
-                </span>
+                <span class="t">{{ item.title }}</span>
+                <span class="c">{{ item.content }}</span>
               </div>
             </div>
           </div>
@@ -474,34 +444,20 @@
       <!--表头-->
       <div class="farm-drawer-title">
         <div class="drawer-t">
-          <span class="drawer-text">
-            {{ result.t }}
-          </span>
+          <span class="drawer-text">{{ result.t }}</span>
         </div>
         <div class="dataList">
           <div class="li cost">
-            <span class="label">
-              {{ result.dataO.costLabel }}：
-            </span>
-            <span class="val">
-              {{ result.dataO.costVal }}
-            </span>
+            <span class="label">{{ result.dataO.costLabel }}：</span>
+            <span class="val">{{ result.dataO.costVal }}</span>
           </div>
           <div class="li total">
-            <span class="label">
-              {{ result.dataO.totalLabel }}：
-            </span>
-            <span class="val">
-              {{ result.dataO.totalVal }}
-            </span>
+            <span class="label">{{ result.dataO.totalLabel }}：</span>
+            <span class="val">{{ result.dataO.totalVal }}</span>
           </div>
           <div class="li average">
-            <span class="label">
-              {{ result.dataO.averageLabel }}：
-            </span>
-            <span class="val">
-              {{ result.dataO.averageVal }}
-            </span>
+            <span class="label">{{ result.dataO.averageLabel }}：</span>
+            <span class="val">{{ result.dataO.averageVal }}</span>
           </div>
         </div>
         <div class="closeIcon">
@@ -518,14 +474,14 @@
                  class="img"
                  @click="$store.commit('setShowThumb', true)">
             <img src="@/assets/no_thumb.png" v-show="!result.miniImgHref">
-            <span class="status"
-                  :class="[
+            <span :class="[
+                   'status',
                   {'wait': result.statusData == '等待' || result.statusData == '暂停'},
                   {'ing': result.statusData == '渲染中'},
                   {'done': result.statusData == '渲染成功'},
                   {'pause': result.statusData == '暂无'},
                   {'giveUp': result.statusData == '渲染放弃' || result.statusData == '暂停（欠费）'||  result.statusData == '暂停（超时）'}
-                  ]">
+                ]">
               {{ result.statusData }}
             </span>
           </div>
@@ -533,99 +489,61 @@
 
             <!--任务ID-->
             <div class="item">
-              <span class="label">
-                {{ result.statusList.taskIdLabel }}：
-              </span>
-              <span class="val">
-                {{ result.statusList.taskIdVal }}
-              </span>
+              <span class="label">{{ result.statusList.taskIdLabel }}：</span>
+              <span class="val">{{ result.statusList.taskIdVal }}</span>
             </div>
 
             <!--场景名-->
             <div class="item">
-              <span class="label">
-                {{ result.statusList.scenesNameLabel }}：
-              </span>
-              <span class="val">
-                {{ result.statusList.scenesNameVal }}
-              </span>
+              <span class="label">{{ result.statusList.scenesNameLabel }}：</span>
+              <span class="val">{{ result.statusList.scenesNameVal }}</span>
             </div>
 
             <!--所属项目-->
             <div class="item">
-              <span class="label">
-                {{ result.statusList.projectLabel }}：
-              </span>
-              <span class="val">
-                {{ result.statusList.projectVal }}
-              </span>
+              <span class="label">{{ result.statusList.projectLabel }}：</span>
+              <span class="val">{{ result.statusList.projectVal }}</span>
             </div>
 
             <!--渲染软件-->
             <div class="item">
-              <span class="label">
-                {{ result.statusList.softwareLabel }}：
-              </span>
-              <span class="val">
-                {{ result.statusList.softwareVal }}
-              </span>
+              <span class="label">{{ result.statusList.softwareLabel }}：</span>
+              <span class="val">{{ result.statusList.softwareVal }}</span>
             </div>
 
             <!--渲染插件-->
             <div class="item">
-              <span class="label">
-                {{ result.statusList.pluginLabel }}：
-              </span>
-              <span class="val">
-                {{ result.statusList.pluginVal }}
-              </span>
+              <span class="label">{{ result.statusList.pluginLabel }}：</span>
+              <span class="val">{{ result.statusList.pluginVal }}</span>
             </div>
 
             <!--层名-->
             <div class="item">
-              <span class="label">
-                {{ result.statusList.layerLabel }}：
-              </span>
-              <span class="val">
-                {{ result.statusList.layerVal }}
-              </span>
+              <span class="label">{{ result.statusList.layerLabel }}：</span>
+              <span class="val">{{ result.statusList.layerVal }}</span>
             </div>
 
             <!--分辨率-->
             <div class="item">
-              <span class="label">
-                {{ result.statusList.resolutionLabel }}：
-              </span>
-              <span class="val">
-                {{ result.statusList.resolutionVal }}
-              </span>
+              <span class="label">{{ result.statusList.resolutionLabel }}：</span>
+              <span class="val">{{ result.statusList.resolutionVal }}</span>
             </div>
 
             <!--输出格式-->
             <div class="item">
-              <span class="label">
-                {{ result.statusList.formatLabel }}：
-              </span>
-              <span class="val">
-                {{ result.statusList.formatVal }}
-              </span>
+              <span class="label">{{ result.statusList.formatLabel }}：</span>
+              <span class="val">{{ result.statusList.formatVal }}</span>
             </div>
 
             <!--相机-->
             <div class="item">
-              <span class="label">
-                {{ result.statusList.cameraLabel }}：
-              </span>
-              <span class="val">
-                {{ result.statusList.cameraVal }}
-              </span>
+              <span class="label">{{ result.statusList.cameraLabel }}：</span>
+              <span class="val">{{ result.statusList.cameraVal }}</span>
             </div>
 
             <!--渲染模式-->
             <div class="item">
-              <span class="label">
-                {{ result.statusList.modeLabel }}：
-              </span>
+              <span class="label">{{ result.statusList.modeLabel }}：</span>
               <span class="val" :title="result.statusList.modeVal">
                 {{ result.statusList.modeVal }}
               </span>
@@ -633,9 +551,7 @@
 
             <!--创建人-->
             <div class="item">
-              <span class="label">
-                {{ result.statusList.founderLabel }}：
-              </span>
+              <span class="label">{{ result.statusList.founderLabel }}：</span>
               <span class="val" :title="result.statusList.founderVal">
                 {{ result.statusList.founderVal }}
               </span>
@@ -643,9 +559,7 @@
 
             <!--创建时间-->
             <div class="item">
-              <span class="label">
-                {{ result.statusList.creationTimeLabel }}：
-              </span>
+              <span class="label">{{ result.statusList.creationTimeLabel }}：</span>
 
               <el-tooltip class="item"
                           effect="dark"
@@ -664,21 +578,18 @@
           <div class="table">
             <!--主-操作-->
             <div class="operateBtnBase" v-show="!result.showDetails">
-              <div class="operateBtn"
-                   :class="[{'cannotTrigger': item.classState}]"
+              <div :class="['operateBtn', {'cannotTrigger': item.classState}]"
                    @click="operateFun(item.text)"
                    v-for="(item,index) in result.operateBtnList"
-                   :key="index">
+                   :key="'mainOperatorBtn_' + index">
                 <img :src="item.imgUrlR" v-if="item.imgUrlR" class="r">
                 <img :src="item.imgUrlH" v-if="item.imgUrlH" class="h">
-                <span class="text">
-                {{ item.text }}
-              </span>
+                <span class="text">{{ item.text }}</span>
               </div>
               <div class="searchBase">
                 <img src="@/icons/global-search-icon.png" class="i" @click="getRenderItemMoreTableF">
                 <input type="text"
-                       v-model="result.searchInpVal"
+                       v-model="result.keyword"
                        class="search"
                        placeholder="搜索帧"
                        @keyup.enter="getRenderItemMoreTableF">
@@ -689,12 +600,10 @@
               <div class="operateBtn"
                    @click="moreOperateFun(item.text)"
                    v-for="(item,index) in result.operateMoreBtnList"
-                   :key="index">
+                   :key="'detailsOperatorBtn_' + index">
                 <img :src="item.imgUrl" v-if="item.imgUrl" class="b">
                 <img :src="item.imgUrlW" v-if="item.imgUrlW" class="w">
-                <span class="text">
-                {{ item.text }}
-              </span>
+                <span class="text">{{ item.text }}</span>
               </div>
               <div class="searchBase">
                 <img src="@/icons/global-search-icon.png"
@@ -710,15 +619,15 @@
             <div class="tableBase task-table-seeMore" v-show="!result.showDetails">
               <el-table
                 :data="result.tableData"
+                :border=true
                 @selection-change="handleSelectionChange"
-                @filter-change="filterHandler"
+                @filter-change="filterChange"
+                @sort-change="mainTabSortChange"
                 @row-click="showMiniImg"
                 ref="mainTable"
                 class="vv"
-                :border=true
                 height="auto"
                 style="width: 100%">
-
                 <el-table-column
                   type="selection"
                   align="right"
@@ -728,16 +637,19 @@
                 <!--帧数-->
                 <el-table-column
                   label="帧数"
-                  sortable
+                  prop="frameNo"
+                  sortable="custom"
                   show-overflow-tooltip
                   width="120">
                   <template slot-scope="scope">
-                    {{ scope.row.num }}
+                    {{ scope.row.frameNo }}
                   </template>
                 </el-table-column>
                 <!--帧状态-->
                 <el-table-column
                   label="帧状态"
+                  column-key="status"
+                  :filters="result.framesStatusList"
                   show-overflow-tooltip
                   min-width="120">
                   <template slot-scope="scope">
@@ -754,28 +666,30 @@
                 </el-table-column>
                 <!--渲染费用（金币）-->
                 <el-table-column
-                  prop="prices"
+                  prop="cost"
                   label="渲染费用（金币）"
+                  sortable="custom"
                   show-overflow-tooltip
                   width="142"/>
                 <!--渲染时长-->
                 <el-table-column
-                  prop="direction"
+                  prop="useTime"
                   label="渲染时长"
+                  sortable="custom"
                   show-overflow-tooltip
-                  width="150"/>
+                  width="160"/>
                 <!--渲染开始时间-->
                 <el-table-column
-                  prop="startDate"
+                  prop="startTime"
                   label="渲染开始时间"
-                  sortable
+                  sortable="custom"
                   show-overflow-tooltip
                   width="180"/>
                 <!--渲染完成时间-->
                 <el-table-column
-                  prop="endDate"
+                  prop="endTime"
                   label="渲染完成时间"
-                  sortable
+                  sortable="custom"
                   show-overflow-tooltip
                   width="180"/>
                 <!--CPU利用率-->
@@ -803,17 +717,27 @@
                 <el-table-column
                   prop="log"
                   label="日志"
-                  sortable
                   show-overflow-tooltip
                   width="80">
                   <template slot-scope="scope">
-                  <span class="seeMore" @click="showMore(scope.row)">
-                    查看
-                  </span>
+                    <span class="seeMore"
+                          @click="showMore(scope.row)">
+                      查看
+                    </span>
                   </template>
                 </el-table-column>
-
               </el-table>
+            </div>
+            <!--分页-->
+            <div class="page">
+              <el-pagination
+                background
+                :current-page.sync="result.pageIndex"
+                @current-change="mianTabCurrentChange"
+                :page-size="result.pageSize"
+                layout="prev, pager, next, jumper"
+                :total="result.total">
+              </el-pagination>
             </div>
             <!--详情-table-->
             <div class="tableBase task-table-seeMore-details" v-show="result.showDetails">
@@ -964,8 +888,9 @@
     itemDownloadStatus,
     sortF,
     updateBalance,
-    createThrowInfo
-  } from '@/assets/common.js'
+    createThrowInfo,
+    pFConversion
+  } from '@/assets/common'
   import elTableInfiniteScroll from 'el-table-infinite-scroll'
   import {mapState} from 'vuex'
 
@@ -1139,7 +1064,7 @@
             creationTimeLabel: '创建时间',
             creationTimeVal: ''
           },
-          // 主 table 操作
+          // 主 tab 操作
           operateBtnList: [
             {
               imgUrlR: require('@/icons/playIcon-black.png'),
@@ -1162,7 +1087,7 @@
               classState: true
             },
           ],
-          // 详情 table 操作
+          // 详情 tab 操作
           operateMoreBtnList: [
             {
               imgUrl: require('@/icons/back_icon-black.png'),
@@ -1174,41 +1099,27 @@
             //   text: '下载日志'
             // }
           ],
-          // 主 table 数据
-          tableData: [
-            // {
-            //   num: null,      // 帧数
-            //   status: '',     // 帧状态
-            //   prices: null,   // 渲染费用（金币）
-            //   direction: '',  // 渲染时长
-            //   startDate: '',  // 渲染开始时间
-            //   endDate: '',    // 渲染完成时间
-            //   percent: '',    // CPU利用率
-            //   RAM: '',        // 内存峰值
-            //   times: null,    // 已下载次数
-            //   log: ''         // 日志
-            // },
-          ],
-          // 详情 table 数据
-          detailsTableData: [
-            // {
-            // num: null,      // 帧数
-            // cost: null,     // 渲染费用
-            // duration: '',   // 渲染时长
-            // startDate: '',  // 渲染开始时间
-            // endDate: '',    // 渲染完成时间
-            // price: '',      // 单价
-            // percent: '',    // CPU利用率
-            // peak: ''        // 内存峰值
-            // time: null       // 下载次数
-            // },
-          ],
-          // 主 table 多选结果
+          // 详情 tab 数据
+          detailsTableData: [],
+          // 主 tab 多选结果
           selectionResult: [],
-          // 详情 table 多选结果
+          // 详情 tab 多选结果
           detailsSelectionResult: [],
-          // 主 table 页码
-          mainTableIndex: 0,
+          tableData: [],               // 主 tab data
+          framesStatus: [],            // 主 tab 帧状态筛选
+          framesStatusList: [
+            {text: '渲染中', value: 2},
+            {text: '等待中', value: 1},
+            {text: '暂停', value: 5},
+            {text: '渲染成功', value: 3},
+            {text: '渲染失败', value: 4}
+          ],     // 主 tab 帧状态集合
+          pageIndex: 1,                // 主 tab 页码
+          pageSize: 10,                // 主 tab 当页条数
+          total: 0,                    // 主 tab 总数
+          keyword: '',                 // 主 tab 关键帧
+          sortBy: 'frameNo',
+          sortType: 1,                 // 主 tab 排序 0递减 1递增
           // 主 渲染状态
           happen: [
             {
@@ -1234,9 +1145,9 @@
           ],
           x: '暂无数据',
           showDetails: false,
-          searchInpVal: '',            // 渲染结果 - 主table 操作 关键帧查询
+          detailsKeyword: '',          // 渲染结果 - 详情tab 操作 关键帧查询
           miniImgHref: null,           // 渲染结果 - 缩略图
-          lock: true,                  // 渲染提交事件锁
+          lock: true                   // 渲染提交事件锁
         },
         demo: ``,
         loading: false
@@ -1289,7 +1200,7 @@
       },
       'zoneId': {
         handler: function (id) {
-          if(!id) return false
+          if (!id) return false
           this.getRenderModeF(id)
         },
         immediate: true
@@ -1298,7 +1209,7 @@
     methods: {
       // 获取渲染模式
       async getRenderModeF(id) {
-        if(!id) return false
+        if (!id) return false
         let data = await getRenderMode(id)
         this.setting.mode.modeList = data.data.data.map(item => {
           return {
@@ -1332,9 +1243,9 @@
         details.status = null
 
         Object.assign(details, {
-          valId: taskData.id,
+          valId: taskData.taskNo,
           valName: taskData.scenesName,
-          valCreateTime: taskData.creationTime,
+          valCreateTime: taskData.createTime,
           valState: taskData.status
         })
         details.showProgress = false
@@ -1364,14 +1275,14 @@
         if (data.data && data.data.status) details.status = data.data.status
         if (data.data && data.data.warningMessage)
           details.warningList = data.data.warningMessage.map(curr => ({
-              title: curr,
-              content: ''
-            }))
+            title: curr,
+            content: ''
+          }))
         if (data.data && data.data.errorMessage)
           details.errorList = data.data.errorMessage.map(curr => ({
-              title: curr,
-              content: ''
-            }))
+            title: curr,
+            content: ''
+          }))
         this.loading = false
       },
       // // 渲染下载 - 获取详情 - 渲染结果
@@ -1395,18 +1306,21 @@
       },
       // 渲染下载 - 详情 - 主table 获取列表
       async getRenderItemMoreTableF() {
-        // {
-        //   TaskUuid: '',
-        //   layerTaskUuid: '',
-        //   keyword: '',
-        //   pageIndex: '',
-        //   pageSize: ''
-        // }
-        let {result, taskData} = this
-        result.miniImgHref = null
-        let parameter = `taskUuid=${taskData.FatherTaskUuId}&layerTaskUuid=${taskData.taskUuid}&keyword=${result.searchInpVal}&pageIndex=1&pageSize=999`,
-          {data} = await getRenderTSeeMore(parameter),
+        this.result.miniImgHref = null
+        let {result, taskData} = this,
+          {keyword, pageIndex, pageSize, sortType, sortBy, framesStatus} = result,
+          {data} = await getRenderTSeeMore({
+            'taskUuid': taskData.FatherTaskUuId,
+            'layerTaskUuid': taskData.taskUuid,
+            framesStatus,
+            keyword,
+            pageIndex,
+            pageSize,
+            sortType,
+            sortBy
+          }),
           {frameList, taskInfo, frameCount, topInfo} = data.data
+        result.total = data.total
         result.tableData = frameList.map(curr => {
           let s = null
           switch (curr.frameTaskStatus) {
@@ -1430,12 +1344,12 @@
               break
           }
           return {
-            num: curr.isTest == 1 ? curr.frameNo + '（优先）' : curr.frameNo,      // 帧数
+            frameNo: curr.isTest == 1 ? curr.frameNo + '（优先）' : curr.frameNo,      // 帧数
             status: s,                                            // 帧状态
-            prices: curr.cost,                                    // 渲染费用（金币）
-            direction: consum(curr.useTime),                      // 渲染时长
-            startDate: createDateFun(new Date(curr.startTime)),   // 渲染开始时间
-            endDate: createDateFun(new Date(curr.endTime)),       // 渲染完成时间
+            cost: curr.cost,                                      // 渲染费用（金币）
+            useTime: consum(curr.useTime),                        // 渲染时长
+            startTime: createDateFun(curr.startTime),             // 渲染开始时间
+            endTime: createDateFun(curr.endTime),                 // 渲染完成时间
             percent: '-',                                         // CPU利用率
             RAM: '-',                                             // 内存峰值
             times: curr.downloadCount,                            // 已下载次数
@@ -1460,7 +1374,6 @@
           totalVal: consum(topInfo['allTime']),
           averageVal: consum(topInfo['useTime'])
         })
-
         Object.assign(result.statusList, {
           taskIdVal: taskInfo.taskNo,                                            // 任务ID
           scenesNameVal: taskInfo.fileName,                                      // 场景名
@@ -1478,19 +1391,34 @@
         await this.showMiniImg(result.tableData[0])
         this.loading = false
       },
+      // 渲染结果 - mainTab - 排序
+      mainTabSortChange({column, prop, order}) {
+        let {result} = this
+        if (order == 'descending') result.sortType = 0
+        else result.sortType = 1
+        if (!order) result.sortBy = 'frameNo'
+        else result.sortBy = prop
+        result.pageIndex = 1
+        this.getRenderItemMoreTableF()
+      },
+      // 渲染结果 - mainTab - 翻页
+      mianTabCurrentChange(index) {
+        this.result.pageIndex = index
+        this.getRenderItemMoreTableF()
+      },
       //关闭抽屉 复位
       closeDrawer() {
         this.settingBack()
-        Object.assign(this.setting.priority, {  // 优先渲染初始化
+        let {setting, result} = this
+        Object.assign(setting.priority, {  // 优先渲染初始化
           topVal: '1',
           middleVal: '1',
           bottomVal: '1',
           selfVal: '0',
           customize: ''
         })
-        this.setting.num.singleChoiceVal = '0'        // 启动分层渲染
-        this.result.mainTableIndex = 0
-        this.result.showDetails = false
+        setting.num.singleChoiceVal = '0'        // 启动分层渲染
+        result.showDetails = false
         this.$emit('closeDrawer')
       },
       // 超时提醒改变
@@ -1649,18 +1577,43 @@
       handleDetailsSelectionChange(val) {
         this.result.detailsSelectionResult = val
       },
-      // 主table筛选条件改变
-      filterHandler() {
-
+      // 主 tab 筛选条件改变
+      filterChange(val) {
+        console.log(val)
+        let arr = [...val.status]
+        if(arr.some(curr => curr == 2)) arr.push(9)
+        this.result.framesStatus = arr
+        this.getRenderItemMoreTableF()
       },
       // 查看详情
       async showMore(row) {
         this.result.showDetails = true
         let {data} = await getFrameHistoryTable(`layerTaskUuid=${row.layerTaskUuid}&frameTaskUuid=${row.frameTaskUuid}`)
         this.result.detailsTableData = data.data.frameTaskList.map(item => {
+          let status
+          switch (item.frameTaskStatus) {
+            case 1:
+              status = '等待中'
+              break
+            case 2:
+            case 9:
+              status = '渲染中'
+              break
+            case 3:
+              status = '渲染成功'
+              break
+            case 4:
+              status = '渲染失败'
+              break
+            case 5:
+              if (item.result == 7) status = '暂停（欠费）'
+              else if (item.result == 6) status = '暂停（超时）'
+              else status = '暂停'
+              break
+          }
           return Object.assign(item, {
             num: item.frameNo,                   // 帧数
-            status: itemDownloadStatus(item.frameTaskStatus),                  // 帧状态
+            status,                              // 帧状态
             prices: item.cost,                   // 渲染费用
             direction: consum(item.useTime),     // 渲染时长
             startDate: createDateFun(new Date(item.startTime)),   // 渲染开始时间
@@ -1690,10 +1643,10 @@
             if (data) this.startRenderFunReal()
           })
           .catch(() => createThrowInfo({
-            type:'error',
-            title:'获取余额情况失败',
-            info:'在上传分析【开始渲染】操作前判断',
-            site:'components/task/farm-drawer:1691'
+            type: 'error',
+            title: '获取余额情况失败',
+            info: '在上传分析【开始渲染】操作前判断',
+            site: 'components/task/farm-drawer:1691'
           }))
       },
       // 设置参数 - 开始渲染
@@ -1997,7 +1950,7 @@
         this.turnPage('setting')
         // 【设置参数】-【渲染层数】- 启动分层渲染时的table
         // this.zone  1影视区 2效果图区
-        if(data.code == 1000) {
+        if (data.code == 1000) {
           messageFun('info', '任务已过期')
           return {
             code: 1000
@@ -2445,6 +2398,7 @@
       height: calc(100% - 20px);
 
       .table {
+        position: relative;
         padding: 10px;
         box-sizing: border-box;
         border-radius: 4px;
@@ -2556,7 +2510,7 @@
 
         .tableBase {
           width: 100%;
-          height: calc(100% - 27px);
+          height: calc(100% - 27px - 42px);
           display: flex;
           flex-direction: column;
           /*日志详情*/
@@ -2574,6 +2528,10 @@
                 text-align: center;
               }
             }
+          }
+
+          /deep/.el-table {
+            height: 100%!important;
           }
 
           /*日志*/
@@ -2733,13 +2691,13 @@
     }
   }
 
-  /deep/.el-table__body-wrapper {
+  /deep/ .el-table__body-wrapper {
     height: auto !important;
   }
 
   .task-table-seeMore {
-    /deep/.el-table__body-wrapper {
-      height: calc(100% - 47px) !important;
+    /deep/ .el-table__body-wrapper {
+      height: calc(100% - 45px) !important;
     }
   }
 </style>
