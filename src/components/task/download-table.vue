@@ -1078,7 +1078,7 @@
               'transferType': 2,
               'userID': this.user.id,
               'isRender': 1,
-              'parent': taskItem['id'] + '-' + taskItem['sceneName'],
+              'parent': taskItem['taskNo'] + '-' + taskItem['sceneName'],
               'taskUuid': taskItem['taskUuid'],
               'layerTaskUuid': '',
               'fileName': taskItem['sceneName']
@@ -1185,7 +1185,7 @@
             task = new Set(),      // 选中项所属任务的长度
             mainTask = new Set()   // 选中的主任务的长度
           val.forEach(curr => {
-            task.add(curr.FatherId ? curr.FatherId : curr.id)
+            task.add(curr.FatherId ? curr.FatherId : curr.taskNo)
             if (curr['children'] || curr['secretChild']) mainTask.add(curr.id)
             if (curr['children']) curr['children'].forEach(item => r.add(item.status))
             r.add(curr.status)

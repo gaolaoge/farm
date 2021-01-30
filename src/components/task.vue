@@ -365,15 +365,9 @@
         if (val.includes(this.$t('task.status.render_ing'))) {            // 渲染中
           t.downloadTableBtnDelete = false
         }
-        if (val.includes(this.$t('task.status.render_timeOut'))) {        // 渲染暂停
-
-        }
-        if (val.includes(this.$t('task.status.render_all'))) {            // 待全部渲染
-
-        }
-        if (val.includes(this.$t('task.status.render_done'))) {           // 渲染完成
-
-        }
+        if (val.includes(this.$t('task.status.render_timeOut'))) {}       // 渲染暂停
+        if (val.includes(this.$t('task.status.render_all'))) {}           // 待全部渲染
+        if (val.includes(this.$t('task.status.render_done'))) {}          // 渲染完成
         if (val.every(item => item == this.$t('task.status.render_timeOut'))) t.downloadTableBtnStart = true  // 全部为【暂停】可点击开始
         if (val.every(item => item == this.$t('task.status.render_ing'))) t.downloadTableBtnPause = true      // 全部为【渲染中】可点击暂停
         if (val.every(item => item == this.$t('task.status.render_all'))) t.downloadTableBtnRenderAll = true  // 全部为【待全部渲染】可点击全部渲染
@@ -516,30 +510,35 @@
             if (val.name) switch (val.name) {
               case this.$t('task.status.toBeSet'):          // 待设置参数
                 sessionStorage.setItem('taskListActive', '0')
+                this.table.filterList[0]['status'] = ['待设置参数']
                 this.table.navListActiveIndex = 0
                 this.$refs.uploadMode.specialJump = true
-                this.$refs.uploadMode.getList({setParameters: true})
+                this.$refs.uploadMode.getList({type: 'waitSetUpParam'})
                 break
               case this.$t('task.status.render_ing'):       // 渲染中
                 sessionStorage.setItem('taskListActive', '1')
+                this.table.filterList[1]['status'] = ['渲染中']
                 this.table.navListActiveIndex = 1
                 this.$refs.renderMode.specialJump = true
                 this.$refs.renderMode.getList({renderStatus: 2})
                 break
               case this.$t('task.status.render_all'):       // 待全部渲染
                 sessionStorage.setItem('taskListActive', '1')
+                this.table.filterList[1]['status'] = ['待全部渲染']
                 this.table.navListActiveIndex = 1
                 this.$refs.renderMode.specialJump = true
                 this.$refs.renderMode.getList({renderStatus: 5})
                 break
               case this.$t('task.status.render_timeOut'):   // 渲染暂停
                 sessionStorage.setItem('taskListActive', '1')
+                this.table.filterList[1]['status'] = ['渲染暂停']
                 this.table.navListActiveIndex = 1
                 this.$refs.renderMode.specialJump = true
                 this.$refs.renderMode.getList({renderStatus: 4})
                 break
               case this.$t('task.status.render_done'):      // 渲染完成
                 sessionStorage.setItem('taskListActive', '1')
+                this.table.filterList[1]['status'] = ['渲染完成']
                 this.table.navListActiveIndex = 1
                 this.$refs.renderMode.specialJump = true
                 this.$refs.renderMode.getList({renderStatus: 3})

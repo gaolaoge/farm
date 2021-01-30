@@ -386,13 +386,14 @@
       },
       // 项目 - 点击【编辑】
       editItem(index) {
+        console.log(this.tableData[index])
         this.editBaseShow = true
         let data = this.tableData[index]
         Object.assign(this.editProject, {
           nameV: data.projectName,
           oldNameV: data.projectName,
-          statusV: data.projectStatus == '禁用' ? 0 : 1,
-          oldStatusV: data.projectStatus == '禁用' ? 0 : 1,
+          statusV: data.projectStatus == '停用' ? 0 : 1,
+          oldStatusV: data.projectStatus == '停用' ? 0 : 1,
           thumbnail: data.thumbnail,
           oldThumbnail: data.thumbnail,
           taskProjectUuid: data.taskProjectUuid

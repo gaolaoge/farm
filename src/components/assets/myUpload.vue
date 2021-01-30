@@ -139,13 +139,14 @@
     <el-dialog
       :show-close="false"
       :visible.sync="dialogVisible"
+      @close="dl.checkPath = '/'"
       width="50%">
       <header class="dl_header">
         <span class="title">{{ dl.title }}</span>
         <img src="@/icons/shutDialogIcon.png" class="closeIcon" @click="shutDialog">
       </header>
       <div class="dl-wrapper">
-        <div class="tree">
+        <div class="tree setScollBarStyle">
           <el-tree
             node-key="id"
             lazy
@@ -154,8 +155,8 @@
             :load="dlGetTreeData"
             :destroy-on-close="true"
             :props="dl.defaultProps">
-            <span class="custom-tree-node" slot-scope="{ node, data }">
-              <el-checkbox v-model="dl.checkPath" :true-label="data.position"/>
+            <span class="custom-tree-node" slot-scope="{ node, data }" @click="dl.checkPath = data.position">
+              <img src="@/icons/folder-a-icon.png">
               <span>{{ node.label }}</span>
             </span>
           </el-tree>
@@ -240,7 +241,7 @@
           treeData: [],
           path: '/',
           btn: ['确定', '取消'],
-          checkPath: '',        // 选中路径
+          checkPath: '/',        // 选中路径
           defaultProps: {
             children: 'children',
             label: 'label'

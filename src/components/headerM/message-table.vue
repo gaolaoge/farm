@@ -129,7 +129,7 @@
         statusList: [
           {label: '全部', val: ''},
           {label: '未读', val: 0},
-          {label: '已读', val: 1}
+          // {label: '已读', val: 1}
         ],
         all: '查看所有消息',
         checkboxBtn: '标记为已读',
@@ -282,7 +282,7 @@
     },
     mounted() {
       this.getMessageListF()  // 获取站内信列表
-    },
+    }
   }
 </script>
 

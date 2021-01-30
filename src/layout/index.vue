@@ -130,7 +130,7 @@
           dialogMainText: '需要安装传输插件才能进行文件传输若已安装过插件，请点此',
           triggerText: '启动传输插件',
           downloadText: '下载传输插件',
-          warnInfo: '若已启用，依然无法传输，\n' + '请联系24小时在线客服18560651927',
+          warnInfo: '若已启用，依然无法传输，\n' + '请联系24小时在线客服15610503237',
         },
         // 下线通知win
         remoteLoginDialog: {
