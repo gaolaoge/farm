@@ -2448,7 +2448,7 @@
         padding: 10px;
         box-sizing: border-box;
         border-radius: 4px;
-        height: calc(100vh - 234px);
+        height: calc(100% - 60px);
         background-color: rgba(255, 255, 255, 0.05);
         border-radius: 4px;
         box-shadow: 0px 0px 1px 1px rgba(22, 29, 37, 0.15);
@@ -2556,7 +2556,7 @@
 
         .tableBase {
           width: 100%;
-          height: calc(100vh - 290px);
+          height: calc(100% - 27px);
           display: flex;
           flex-direction: column;
           /*日志详情*/
@@ -2739,7 +2739,7 @@
 
   .task-table-seeMore {
     /deep/.el-table__body-wrapper {
-      height: 556px !important;
+      height: calc(100% - 47px) !important;
     }
   }
 </style>
