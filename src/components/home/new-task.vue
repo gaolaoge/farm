@@ -824,8 +824,7 @@
         infoMessageShow: false,     // 选择渲染文件 - 我的电脑 - 工程路径 - 问号
         renderFileTypeList: [],     // 可用的场景文件格式
         confirmLock: true,          // 开始渲染事件锁
-        initialAcquV: true,         // 首次获取场景文件tree
-        lock: false                 // 创建成功回调锁
+        initialAcquV: true          // 首次获取场景文件tree
       }
     },
     props: {},
@@ -1044,7 +1043,7 @@
       },
       // 4.关闭窗口
       closeDialogFun() {
-        this.$emit('closeDialogFun')
+        this.$emit('closeDialogFunReal')
         this.dataReset()
       },
       // 2.设置渲染模板 - 选择插件版本
@@ -1344,9 +1343,7 @@
       },
       // 4.创建成功
       createSuc() {
-        if(this.lock) return false
-        this.lock = true
-        setTimeout(() => this.lock = false, 3000)
+        console.log('vvvvvvvvvvvv')
         messageFun('success', '新建成功，请等待上传分析完成！')
         this.closeDialogFun()
         sessionStorage.setItem('taskListActive', '0')

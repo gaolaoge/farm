@@ -63,7 +63,7 @@
                @opened="r()"
                top="8vh"
                width="862px">
-      <newTask @closeDialogFun="closeDialogFun" ref="dialog"/>
+      <newTask @closeDialogFunReal="closeDialogFun" ref="dialog"/>
     </el-dialog>
   </div>
 </template>
