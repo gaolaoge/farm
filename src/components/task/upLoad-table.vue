@@ -320,11 +320,11 @@
         })
         let {table, keyword, zoneId} = this,
           projectUuid = (obj && obj.projectUuid) ? [obj.projectUuid] : table.projectUuidList
-        if (obj && obj.setParameters) table.analyseStatus = [3]
+        if (obj && obj.setParameters) table.analyseStatus = [3, 4]  // 待设置参数(+分析警告)
         if (obj && obj.pageIndex) table.pageIndex = obj.pageIndex
         if (obj && obj.type) switch (obj.type) {
-          case 'waitSetUpParam':       // 待设置参数
-            table.analyseStatus = [3]
+          case 'waitSetUpParam':       // 待设置参数(+分析警告)
+            table.analyseStatus = [3, 4]
             break
           case 'analyzing':            // 分析中
             table.analyseStatus = [2]

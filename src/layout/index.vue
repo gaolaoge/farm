@@ -241,6 +241,8 @@
       // 触发插件
       triggerPlugin() {
         let son = document.createElement('IFRAME')
+        son.style.width = '0px'
+        son.style.height = '0px'
         document.body.appendChild(son)
         // son.src = 'jhzy://'
         son.src = 'cloudtransfer://'

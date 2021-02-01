@@ -68,12 +68,6 @@
         class="o"
         style="width: 100%">
 
-        <el-table-column
-          type="selection"
-          align="right"
-          show-overflow-tooltip
-          min-width="58"
-          width="58"/>
         <!--发票抬头-->
         <el-table-column
           prop="invoice"
