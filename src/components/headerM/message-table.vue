@@ -7,7 +7,7 @@
             :key="'nav_' + index"
             :class="[{'active': messageKey.noticeType == index + 1}]"
             @click="changeNavTable(index)">
-          <span class="navLi">{{ item }}</span>
+          <span :class="['navLi', {hasNews: item.num > 0}]">{{ item.name }}</span>
         </li>
       </ul>
     </div>
@@ -125,7 +125,16 @@
     name: 'messageTable',
     data() {
       return {
-        navList: ['系统', '活动'],
+        navList: [
+          {
+            name: '系统',
+            num: 0
+          },
+          {
+            name: '活动',
+            num: 0
+          }
+        ],
         statusList: [
           {label: '全部', val: ''},
           {label: '未读', val: 0},
@@ -249,16 +258,17 @@
         this.$router.push('/messageCenter')
       },
       // 获取站内信列表
-      async getMessageListF() {
+      async getMessageListF(noticeType_) {
         // isRead 是否已读 1已读 0未读 3全部
         // noticeType 1系统 2活动
         // keyword 关键字
         // pageIndex 索引
         // pageSize 页大小
         let {isRead, noticeType, pageIndex} = this.messageKey,
+          index_ = noticeType_ || noticeType,
           {data} = await getMessageList(pFConversion({
             isRead,
-            noticeType,
+            'noticeType': index_,
             pageIndex,
             'pageSize': 10,
             'keyword': ''
@@ -276,12 +286,14 @@
               else createTime = createDateFun(item.createTime, true)
               return Object.assign(item, {createTime})
             })
-          noticeType == 1 ? this.systemTableData = list : this.activityTableData = list
+          index_ == 1 ? this.systemTableData = list : this.activityTableData = list
+          index_ == 1 ? this.navList[0]['num'] = list.length : this.navList[1]['num'] = list.length
         }
       }
     },
     mounted() {
-      this.getMessageListF()  // 获取站内信列表
+      this.getMessageListF(1)  // 获取站内信列表
+      this.getMessageListF(2)  // 获取站内信列表
     }
   }
 </script>
@@ -308,9 +320,21 @@
         cursor: pointer;
 
         .navLi {
+          position: relative;
           font-size: 14px;
           color: rgba(22, 29, 37, 0.59);
           line-height: 20px;
+
+          &.hasNews::after {
+            position: absolute;
+            top: -2px;
+            right: -4px;
+            content: '';
+            width: 8px;
+            height: 8px;
+            background-color: rgba(255, 62, 77, 0.8);
+            border-radius: 50%;
+          }
         }
 
         &.active {

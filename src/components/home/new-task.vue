@@ -508,6 +508,7 @@
                    @blur="nameVerif"
                    @focus="dialogAdd.form.formatName = null"
                    v-model="dialogAdd.form.valName">
+            <span></span>
           </div>
           <!--渲染软件-->
           <div class="farm-form-item">
@@ -823,7 +824,8 @@
         infoMessageShow: false,     // 选择渲染文件 - 我的电脑 - 工程路径 - 问号
         renderFileTypeList: [],     // 可用的场景文件格式
         confirmLock: true,          // 开始渲染事件锁
-        initialAcquV: true          // 首次获取场景文件tree
+        initialAcquV: true,         // 首次获取场景文件tree
+        lock: false                 // 创建成功回调锁
       }
     },
     props: {},
@@ -1042,7 +1044,7 @@
       },
       // 4.关闭窗口
       closeDialogFun() {
-        this.$emit('closeDialogFun', '')
+        this.$emit('closeDialogFun')
         this.dataReset()
       },
       // 2.设置渲染模板 - 选择插件版本
@@ -1161,7 +1163,6 @@
       },
       // 2.设置渲染模板 - 插件下拉框选中
       changePlugin(val) {
-        console.log(val)
         //匹配项
         let t = this.dialogAdd.pluginList.find(curr => curr.val == val)
         this.dialogAdd.oList = t.list.map(curr => {
@@ -1343,10 +1344,14 @@
       },
       // 4.创建成功
       createSuc() {
+        if(this.lock) return false
+        this.lock = true
+        setTimeout(() => this.lock = false, 3000)
         messageFun('success', '新建成功，请等待上传分析完成！')
         this.closeDialogFun()
         sessionStorage.setItem('taskListActive', '0')
-        this.$router.push('/task')
+        if(this.$route.name != 'task') this.$router.push('/task')
+        else this.$store.commit('switchTaskTab', '0')
       },
       // 0.选择渲染文件 - 我的资产 - 创建网盘目录
       createCatalog(data) {

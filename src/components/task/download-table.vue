@@ -654,10 +654,10 @@
             failure: curr.frameCount.fail,                         // 失败
             useTime: consum(curr.useTime),                         // 渲染时长
             renderingCost: curr.cost,                              // 渲染费用（金币）
-            frameRange: children.length == 1 ? children[0]['frameRange'] : '-',             // 帧范围
-            intervalFrame: children.length == 1 ? children[0]['intervalFrame'] : '-',       // 间隔帧
-            camera: children.length == 1 ? children[0]['camera'] : '-',                     // 相机
-            layerName: children.length == 1 ? children[0]['layerName'] : '-',               // 层名
+            frameRange: children.length == 1 ? children[0]['frameRange'] : '',              // 帧范围
+            intervalFrame: children.length == 1 ? children[0]['intervalFrame'] : '',        // 间隔帧
+            camera: children.length == 1 ? children[0]['camera'] : ' ',                     // 相机
+            layerName: children.length == 1 ? children[0]['layerName'] : '',                // 层名
             downloadStatus,                                                                 // 下载情况
             startTime: createDateFun(curr.startTime),                                       // 渲染开始时间
             endTime: children.length == 1 ? children[0]['endTime'] : createDateFun(curr.endTime),                        // 渲染结束时间
@@ -1037,11 +1037,7 @@
       },
       // 操作 - 【下载完成帧】前预判
       downloadFils() {
-        let list = this.computedResult()
         if (!this.table.selectionList.length) return false
-        if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.next())
-        else this.next()
-
         this.next = function () {
           // 判断余额是否充足
           updateBalance('下载完成帧')
@@ -1056,6 +1052,8 @@
                 site: 'components/task/download-table:1053'
               })
             })
+        if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.next())
+        else this.next()
         }
       },
       // 操作 - 下载完成帧
@@ -1165,7 +1163,7 @@
       },
       // 刷新
       refreshF() {
-        this.getList(null)
+        this.getList(null, true)
         this.table.selectionList = []
       }
     },

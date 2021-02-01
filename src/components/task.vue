@@ -364,10 +364,14 @@
         t.downloadTableBtnArchive = false       // 渲染下载 - 归档
         if (val.includes(this.$t('task.status.render_ing'))) {            // 渲染中
           t.downloadTableBtnDelete = false
+          t.downloadTableBtnRenderAgain = false
         }
-        if (val.includes(this.$t('task.status.render_timeOut'))) {}       // 渲染暂停
-        if (val.includes(this.$t('task.status.render_all'))) {}           // 待全部渲染
-        if (val.includes(this.$t('task.status.render_done'))) {}          // 渲染完成
+        if (val.includes(this.$t('task.status.render_timeOut'))) {
+        }       // 渲染暂停
+        if (val.includes(this.$t('task.status.render_all'))) {
+        }           // 待全部渲染
+        if (val.includes(this.$t('task.status.render_done'))) {
+        }          // 渲染完成
         if (val.every(item => item == this.$t('task.status.render_timeOut'))) t.downloadTableBtnStart = true  // 全部为【暂停】可点击开始
         if (val.every(item => item == this.$t('task.status.render_ing'))) t.downloadTableBtnPause = true      // 全部为【渲染中】可点击暂停
         if (val.every(item => item == this.$t('task.status.render_all'))) t.downloadTableBtnRenderAll = true  // 全部为【待全部渲染】可点击全部渲染
@@ -469,7 +473,6 @@
         } else if (val.type == 4) {
           // 归档记录
           this.dialogTable.status = true
-
         }
       }
     },
@@ -563,15 +566,24 @@
 
         },
         immediate: true
+      },
+      'taskIndex': function (index) {
+        if(!index) return false
+        this.table.navListActiveIndex = Number(index)
       }
     },
     mounted() {
       // 选择上次关闭时选中的Table
       if (sessionStorage.getItem('taskListActive') == '1') this.table.navListActiveIndex = 1
+      else this.table.navListActiveIndex = 0
       createTableIconList()  // 图标
+      console.dir(document)
+      document.addEventListener('storage', e => {
+        console.log(e)
+      })
     },
     computed: {
-      ...mapState(['socket_backS_msg', 'zone', 'taskState'])
+      ...mapState(['socket_backS_msg', 'zone', 'taskState', 'taskIndex'])
     }
   }
 </script>
@@ -594,7 +606,7 @@
       }
     }
 
-    /deep/.el-table {
+    /deep/ .el-table {
       height: 100%;
 
       .el-table__body-wrapper {

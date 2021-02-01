@@ -115,7 +115,7 @@
               <span style="font-size: 18px; color: rgba(27, 83, 244, 1)">
                 {{ setting.num.selected.length }}
               </span>
-              {{ setting.num.miniTitT }}
+              {{ zone == 1 ? setting.num.miniTitT1 : setting.num.miniTitT2 }}
             </span>
             <!--启动分层渲染-->
             <div class="switchLayered">
@@ -140,12 +140,13 @@
               </el-tooltip>
             </div>
           </div>
-          <!--table-->
+          <!--影视 tab-->
           <el-table
             :data="setting.num.tableData"
-            class="mini-table"
             :row-class-name="tableRowClassName"
             @selection-change="settingTableItemChange"
+            v-if="zone == 1"
+            class="mini-table"
             ref="renderTable"
             style="width: calc(42vw - 34px);min-width: 766px;margin-left: -30px;">
 
@@ -153,10 +154,10 @@
               type="selection"
               align="right"
               width="55"/>
-
+            <!--层名-->
             <el-table-column
               prop="name"
-              :label="zone == 1 ? '层名' : '图像名称'"
+              label="层名"
               width="160"/>
             <!--帧范围-->
             <el-table-column
@@ -278,6 +279,104 @@
                 </el-select>
               </template>
             </el-table-column>
+
+          </el-table>
+          <!--效果图 tab-->
+          <el-table
+            :data="setting.num.tableData"
+            :row-class-name="tableRowClassName"
+            @selection-change="settingTableItemChange"
+            v-if="zone == 2"
+            class="mini-table"
+            ref="renderTable"
+            style="width: calc(42vw - 34px);min-width: 766px;margin-left: -30px;">
+
+            <el-table-column
+              type="selection"
+              align="right"
+              width="55"/>
+            <!--相机名称-->
+            <el-table-column
+              label="相机名称"
+              width="140">
+              <template slot-scope="scope">
+                <el-select v-model="scope.row.camera">
+                  <el-option
+                    v-for="(item,index) in scope.row.cameraList"
+                    :key="index"
+                    :label="item.label"
+                    :value="item.val">
+                  </el-option>
+                </el-select>
+              </template>
+            </el-table-column>
+            <!--图像宽度-->
+            <el-table-column
+              label="图像宽度"
+              width="88">
+              <template slot-scope="scope">
+                <span :class="[{'show': scope.row.wEdit == false}]"
+                      class="farm-table-td-span">
+                  {{ scope.row.w }}
+                </span>
+                <input type="text"
+                       v-model="scope.row.w"
+                       :class="[{'show': scope.row.wEdit == true}]"
+                       @focus="scope.row.wEdit = true"
+                       @blur="wChange($event,scope.$index)"
+                       class="farm-table-td-input">
+              </template>
+            </el-table-column>
+            <!--图像高度-->
+            <el-table-column
+              label="图像高度"
+              width="88">
+              <template slot-scope="scope">
+                <span :class="[{'show': scope.row.hEdit == false}]"
+                      class="farm-table-td-span">
+                  {{ scope.row.h }}
+                </span>
+                <input type="text"
+                       v-model="scope.row.h"
+                       :class="[{'show': scope.row.hEdit == true}]"
+                       @focus="scope.row.hEdit = true"
+                       @blur="hChange($event,scope.$index)"
+                       class="farm-table-td-input">
+              </template>
+            </el-table-column>
+            <!--图像比例-->
+            <el-table-column
+              label="图像比例"
+              width="100">
+              <template slot-scope="scope">
+                <div class="ratio">
+                  <span class="farm-table-td-span show">{{ scope.row.ratio }}</span>
+                  <!--锁住状态-->
+                  <img src="@/icons/lock.png" v-show="scope.row.lock" @click="changeLock(scope.$index)">
+                  <!--解锁状态-->
+                  <img src="@/icons/unLock.png" v-show="!scope.row.lock" @click="changeLock(scope.$index)">
+                </div>
+              </template>
+            </el-table-column>
+            <!--输出格式-->
+            <el-table-column
+              label="输出格式"
+              width="120">
+              <template slot-scope="scope">
+                <el-select v-model="scope.row.format">
+                  <el-option
+                    v-for="(item,index) in scope.row.formatList"
+                    :key="index"
+                    :label="item.label"
+                    :value="item.val">
+                  </el-option>
+                </el-select>
+              </template>
+            </el-table-column>
+            <!--图像名称-->
+            <el-table-column
+              prop="name"
+              label="图像名称"/>
 
           </el-table>
         </div>
@@ -733,7 +832,7 @@
               <el-pagination
                 background
                 :current-page.sync="result.pageIndex"
-                @current-change="mianTabCurrentChange"
+                @current-change="mainTabCurrentChange"
                 :page-size="result.pageSize"
                 layout="prev, pager, next, jumper"
                 :total="result.total">
@@ -943,7 +1042,8 @@
             title1: '渲染层数',
             title2: '渲染相机',
             miniTitO: '（已选择',
-            miniTitT: '个层）',
+            miniTitT1: '个层）',
+            miniTitT2: '个摄像机）',
             val: '2',
             singleChoice1: '启动分层渲染',
             singleChoice2: '启动分相机渲染',
@@ -1172,8 +1272,9 @@
       }
     },
     watch: {
-      taskData: function (val) {
-        if (val.rowId != null || this.typeInfo == 'upload-table') this.getData()
+      taskData: function () {
+        if (this.typeInfo == 'setting') this.turnPage('upload-table')
+        this.$nextTick(() => this.getData())
       },
       'setting.priority.selfVal': function (val) {
         // 选中【单选】时取消【首帧】【中间帧】【末帧】，反之复原
@@ -1289,7 +1390,7 @@
       // getRenderItemMoreF() {
       //   this.getRenderItemMoreTableF()
       // },
-      // 渲染下载 - 详情 - 缩略图
+      // 渲染结果 - 详情 - 缩略图
       async showMiniImg(row, column, event) {
         try {
           this.result.statusData = row['status']
@@ -1304,7 +1405,7 @@
         } catch (err) {
         }
       },
-      // 渲染下载 - 详情 - 主table 获取列表
+      // 渲染结果 - 详情 - 主table 获取列表
       async getRenderItemMoreTableF() {
         this.result.miniImgHref = null
         let {result, taskData} = this,
@@ -1402,7 +1503,7 @@
         this.getRenderItemMoreTableF()
       },
       // 渲染结果 - mainTab - 翻页
-      mianTabCurrentChange(index) {
+      mainTabCurrentChange(index) {
         this.result.pageIndex = index
         this.getRenderItemMoreTableF()
       },
@@ -1550,27 +1651,27 @@
       handleSelectionChange(val) {
         let {result} = this
         result.selectionResult = val
-        let t = val.map(curr => curr.status)
-        let s = result.operateBtnList[0], // 开始
-          p = result.operateBtnList[1],   // 暂停
-          d = result.operateBtnList[2],   // 下载完成帧
-          a = result.operateBtnList[3]    // 重新渲染
+        let statusList = val.map(curr => curr.status)
+        let start_ = result.operateBtnList[0], // 开始
+          pause_ = result.operateBtnList[1],   // 暂停
+          download_ = result.operateBtnList[2],   // 下载完成帧
+          again_ = result.operateBtnList[3]    // 重新渲染
 
-        if (t.length > 0 && t.every(item => ['暂停', '暂停（超时）', '暂停（欠费）'].includes(item))) {
-          s['classState'] = false
-        } else s['classState'] = true
+        if (statusList.length > 0 && statusList.every(item => ['暂停', '暂停（超时）', '暂停（欠费）'].includes(item))) {
+          start_['classState'] = false
+        } else start_['classState'] = true
 
-        if (t.length > 0 && t.every(item => ['渲染成功', '渲染中', '渲染失败'].includes(item))) {
-          a['classState'] = false
-        } else a['classState'] = true
+        if (statusList.length > 0 && statusList.every(item => ['渲染成功', '渲染失败'].includes(item))) {
+          again_['classState'] = false
+        } else again_['classState'] = true
 
-        if (t.length > 0 && t.every(item => ['渲染中', '等待中'].includes(item))) {
-          p['classState'] = false
-        } else p['classState'] = true
+        if (statusList.length > 0 && statusList.every(item => ['渲染中', '等待中'].includes(item))) {
+          pause_['classState'] = false
+        } else pause_['classState'] = true
 
-        if (t.length > 0 && t.every(item => '渲染成功' == item)) {
-          d['classState'] = false
-        } else d['classState'] = true
+        if (statusList.length > 0 && statusList.every(item => '渲染成功' == item)) {
+          download_['classState'] = false
+        } else download_['classState'] = true
 
       },
       // 详情table多选事件
@@ -1579,9 +1680,8 @@
       },
       // 主 tab 筛选条件改变
       filterChange(val) {
-        console.log(val)
         let arr = [...val.status]
-        if(arr.some(curr => curr == 2)) arr.push(9)
+        if (arr.some(curr => curr == 2)) arr.push(9)
         this.result.framesStatus = arr
         this.getRenderItemMoreTableF()
       },
@@ -1829,9 +1929,6 @@
       // 渲染结果 - 主 - 操作 - 【下载完成帧】前预判
       async operateDownloadFrame() {
         if (!this.result.selectionResult.length || this.result.operateBtnList[2]['classState']) return false
-        else if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.next())
-        else this.next()
-
         this.next = function () {
           // 判断余额是否充足
           updateBalance('下载完成帧')
@@ -1845,6 +1942,8 @@
               site: 'components/task/farm-drawer:1957'
             }))
         }
+        if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.next())
+        else this.next()
       },
       // 渲染结果 - 主 - 操作 - 下载完成帧
       operateDownloadFrameReal() {
@@ -2530,8 +2629,8 @@
             }
           }
 
-          /deep/.el-table {
-            height: 100%!important;
+          /deep/ .el-table {
+            height: 100% !important;
           }
 
           /*日志*/

@@ -854,8 +854,6 @@
       operateDownloadFrame() {
         if (this.result.operateBtnList[2]['classState']) return false
         if (!this.result.selectionResult.length) return false
-        if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.next())
-        else this.next()
         this.next = function () {
           // 判断余额是否充足
           updateBalance('下载完成帧')
@@ -869,6 +867,8 @@
               site:'components/task/drawer/result-cardM:847'
             }))
         }
+        if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.next())
+        else this.next()
       },
       // 渲染结果 - 主 - 操作 - 下载完成帧
       async operateDownloadFrameReal() {
