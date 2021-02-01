@@ -99,7 +99,6 @@ export default new Vuex.Store({
     },
     // 创建与插件的websocket
     WEBSOCKET_PLUGIN_INIT(state, triggerPlugin) {
-      // console.log(triggerPlugin)
       if(triggerPlugin && state.socket_plugin_time == 0) messageFun('info', '正在启动传输插件，请稍后…')
       state.socket_plugin = new WebSocket(process.env.PLUGIN_WS_API)
       state.socket_plugin.addEventListener('open', () => {
@@ -119,6 +118,11 @@ export default new Vuex.Store({
         }
       })
       state.socket_plugin.addEventListener('message', data => state.socket_plugin_msg = data)
+      state.socket_plugin.addEventListener('close', e => {
+        state.socket_plugin = null
+        // console.log(`--与插件连接断开，code码为${e.code},尝试重新连接--` + new Date().toLocaleString())
+        // this.WEBSOCKET_BACKS_INIT(state, account)
+      })
     },
     // 对与插件的websocket发送消息
     WEBSOCKET_PLUGIN_SEND(state, data) {

@@ -315,7 +315,7 @@
             'taskProjectUuid': curr.taskProjectUuid,
             'createTime': createDateFun(new Date(curr.createTime)),
             'projectName': curr.projectName,
-            'customerName': curr.customerName,
+            'customerName': curr.createBy == 'system' ? '系统默认创建' : curr.customerName,
             'isDefault': curr.isDefault == 0 ? '否' : '是',
             'projectStatus': curr.projectStatus == 0 ? '停用' : '启用',
             'thumbnail': curr.thumbnail,     // 缩略图

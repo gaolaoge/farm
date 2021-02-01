@@ -113,7 +113,7 @@
             <div class="btnR btn">
               <img src="@/icons/recentRightA.png" class="c" v-show="recentList.length - 3 > recentShowIndex"
                    @click="recentShowIndex ++">
-              <img src="@/icons/recentRight.png" v-show="recentList.length - 4 == recentShowIndex">
+              <img src="@/icons/recentRight.png" v-show="recentList.length - 3 == recentShowIndex">
             </div>
           </div>
         </div>
