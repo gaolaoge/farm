@@ -69,7 +69,9 @@
             <img src="@/icons/max-a-icon.png" v-else-if="['max'].some(type => type == scope.row.fileType)"
                  class="a-icon">
             <img src="@/icons/file-a-icon.png" v-else class="a-icon">
-            <div class="fileNameBox" :style="{'width': scope.row.fileName.length * 10 + 'px'}">
+            <div class="fileNameBox"
+                 v-show="!scope.row.ing"
+                 :style="{'width': scope.row.fileName.length * 10 + 'px'}">
               <input type="text"
                      :ref="'renameInput-' + scope.row.index_"
                      v-model="scope.row.nameInput"
@@ -78,6 +80,7 @@
                      @blur="confirmToRename(scope.row)">
               <span :class="['name', {'rename': scope.row.rename}]">{{ scope.row.fileName }}</span>
             </div>
+            <span class="name" v-show="scope.row.ing">{{ scope.row.fileName }}</span>
             <span v-show="scope.row.ing && scope.row.fileType !== '文件夹'">.cloudtransfer.uploading</span>
           </template>
         </el-table-column>

@@ -2617,13 +2617,13 @@
           .log {
             display: flex;
             justify-content: center;
-            margin-top: -316px;
+            margin-top: -230px;
 
             .tableDataNull {
               .tableDataNullText {
                 font-size: 14px;
                 font-weight: 400;
-                color: rgba(255, 255, 255, 0.29);
+                color: rgba(22, 29, 37, 0.29);
                 text-align: center;
               }
             }

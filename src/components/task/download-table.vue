@@ -358,9 +358,9 @@
       async getTaskItemListFun() {
         let {data} = await getTaskItemList()
         this.table.itemList = data.data.map(curr => ({
-            value: curr.taskProjectUuid,
-            text: curr.projectName
-          }))
+          value: curr.taskProjectUuid,
+          text: curr.projectName
+        }))
         if (!this.specialJump) await this.getList()
         else this.specialJump = false
       },
@@ -1052,9 +1052,9 @@
                 site: 'components/task/download-table:1053'
               })
             })
+        }
         if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.next())
         else this.next()
-        }
       },
       // 操作 - 下载完成帧
       async downloadingFile() {
