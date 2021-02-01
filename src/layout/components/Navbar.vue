@@ -182,6 +182,7 @@
               this.navActive = 2
               break
             case 'bill':
+            case 'upTop':
               this.navActive = 3
               break
           }

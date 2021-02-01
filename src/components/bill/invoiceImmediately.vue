@@ -176,8 +176,7 @@
       </div>
       <div class="btnList">
         <div class="farm-form-btn cancel" @click="closeDialog"><span>取消</span></div>
-        <div :class="[{'cannotBe': !dialogData.list[0]['errInfo'] || !dialogData.list[1]['errInfo'] || !dialogData.list[2]['errInfo'] || !dialogData.list[4]['errInfo']},
-                      'farm-form-btn']"
+        <div :class="[{'cannotBe': !dialogData.list[0]['errInfo'] || !dialogData.list[1]['errInfo'] || !dialogData.list[2]['errInfo'] || !dialogData.list[4]['errInfo']}, 'farm-form-btn']"
              @click="addHeader" v-show="!editHeader"><span>确定</span></div>
         <div :class="[{'cannotBe': !dialogData.list[0]['errInfo'] || !dialogData.list[1]['errInfo'] || !dialogData.list[2]['errInfo'] || !dialogData.list[4]['errInfo']}, 'farm-form-btn']"
              @click="editHeaderF" v-show="editHeader"><span>确定</span></div>
@@ -301,6 +300,7 @@
               Val: '',
               Placeholder: '请输入公司电话',
               id: 'phone',
+              required: true,
               errInfo: null
             },
             {
@@ -353,6 +353,7 @@
             list[4]['errInfo'] = true
           } else list[4]['errInfo'] = false
         }
+        console.log(list)
       },
       // 即时验证
       instantVerif(type) {

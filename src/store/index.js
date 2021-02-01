@@ -63,7 +63,8 @@ export default new Vuex.Store({
     taskState: null,        // 站内信选中项目
     openOverdueBillsWin: {bool: false, action: null},     // 打开已欠费窗口
     openBalanceIsEmptyWin: {bool: false, action: null},   // 打开余额为零窗口
-    openCapacityIsLessWin: {bool: false, action: null}    // 打开容量不足窗口
+    openCapacityIsLessWin: {bool: false, action: null},   // 打开容量不足窗口
+    taskIndex: null         // 切换 taskTab 显示
   },
   getter: {},
   mutations: {
@@ -135,6 +136,10 @@ export default new Vuex.Store({
       if (!state.socket_backS) return false
       state.socket_backS.close()
       state.socket_backS = null
+    },
+    // task 切换 tab
+    switchTaskTab(state, index) {
+      state.taskIndex = index
     },
     // websocket连接成功
     websocketConnectonSuc(state, type) {

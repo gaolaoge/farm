@@ -117,10 +117,11 @@
     },
     methods: {
       // 验证验证码
-      verifCode(node, code, ing){
-        if(/^\d{6}$/.test(this[node])) this.verif[code] = true
+      verifCode(node, code, ing) {
+        if (/^\d{6}$/.test(this[node])) this.verif[code] = true
+        else if (!this[node]) return false
         else {
-          if(ing) this.verif[code] = null
+          if (ing) this.verif[code] = null
           else this.verif[code] = false
         }
       },

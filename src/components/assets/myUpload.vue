@@ -111,7 +111,7 @@
           width="280"/>
       </el-table>
       <!--暂无数据-->
-      <div class="nullTableData" v-show="table.tableData.length == 0">
+      <div class="nullTableData" v-show="table.tableData.length == 0 && table.gotData">
         <img src="@/icons/tableDataNull.png">
         <span>暂无数据</span>
       </div>
@@ -228,7 +228,8 @@
           rowUuid: null,                // 选中行Uuid
           objectName: null,             // 项目名
           layerObj: {},                 // 层名
-          frameObj: {}                  // 帧名
+          frameObj: {},                 // 帧名
+          gotData: false                // 已获取数据
         },
         projectList: [],
         navF: '资产',
@@ -272,7 +273,8 @@
     watch: {
       'socket_backS_msg': {
         handler: function (e) {
-          let data = JSON.parse(e.data)
+          let data = JSON.parse(e.data),
+            {table} = this
           if (data.code != 208) return false
           if (data.msg == '601' && !this.dialogVisible) {
             // completedTime: 1597815711001  // 完成时间  => 为0修改名字
@@ -287,8 +289,8 @@
             })
             this.nav = nav
             this.path = data.other == '' ? '/' : data.other
-            this.table.total = data.total
-            this.table.tableData = data.data.map((item, index_) => Object.assign(item, {
+            table.total = data.total
+            table.tableData = data.data.map((item, index_) => Object.assign(item, {
               'updateTime': createDateFun(new Date(item.updateTime)),
               'completedTime': item.completedTime,
               'validPeriod': consum(item.validPeriod),
@@ -300,6 +302,7 @@
               'rename': false,
               index_
             }))
+            table.gotData = true
             this.loading.close()
           } else if (data.msg == '601' && this.dialogVisible) {
             // 网盘tree

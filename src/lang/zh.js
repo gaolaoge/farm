@@ -18,7 +18,7 @@ export default {
     // 短信验证
     SMS_verif: {
       phone_placeholder: '请输入手机号',
-      phone_warnInfo: '手机号格式错误',
+      phone_warnInfo: '手机号格式不正确，请重新输入',
       code_placeholder: '请输入验证码',
       auto_login: '5天内自动登录',
 
@@ -83,7 +83,7 @@ export default {
       ac_verif_one: '请输入框8-14个字符',
       ac_verif_two: '请在大小写字母、汉字、数字、下划线中设置帐号且至少包含任意2种',
       ac_verif_three: '该账号已注册，请重新输入',
-      ac_verif_four: '该账号未被注册，请核对后重新输入',
+      ac_verif_four: '该账号未被注册，请先注册',
       ps_verif_one: '请至少包含大小写字母、数字、特殊字符中任意2种字符',
       ps_verif_two: '请输入8-18个字符',
       ac_ps_null: '帐号或密码未输入',
