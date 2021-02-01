@@ -72,7 +72,8 @@
           width="200"
           label="操作">
           <template slot-scope="scope">
-            <span class="operateBtn" @click="editItem(scope.$index)">{{ tableOperateBtn[0] }}</span>
+            <span class="operateBtn" @click="editItem(scope.$index)" v-if="!scope.row.defaultP">{{ tableOperateBtn[0] }}</span>
+            <span class="operateBtn cannotBeGo" v-if="scope.row.defaultP">{{ tableOperateBtn[0] }}</span>
             <span class="operateBtn" @click="setItem(scope.row.taskProjectUuid)">{{ tableOperateBtn[1] }}</span>
           </template>
         </el-table-column>
@@ -318,6 +319,7 @@
             'isDefault': curr.isDefault == 0 ? '否' : '是',
             'projectStatus': curr.projectStatus == 0 ? '停用' : '启用',
             'thumbnail': curr.thumbnail,     // 缩略图
+            'defaultP': curr.createBy == 'system' ? true : false
           }
         })
       },
@@ -484,6 +486,12 @@
     margin-right: 10px;
     cursor: pointer;
     text-decoration: underline;
+
+    &.cannotBeGo {
+      color: rgba(22, 29, 37, 0.39);
+      cursor: no-drop;
+      text-decoration: none;
+    }
   }
 
   .createProject,

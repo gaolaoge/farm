@@ -79,12 +79,6 @@
         :border=true
         style="width: 100%">
 
-        <el-table-column
-          type="selection"
-          align="right"
-          show-overflow-tooltip
-          min-width="58"
-          width="58"/>
         <!--任务ID-->
         <el-table-column
           prop="id"

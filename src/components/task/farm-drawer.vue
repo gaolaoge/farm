@@ -527,7 +527,7 @@
         <!--按钮-->
         <div class="b">
           <!--返回-->
-          <div class="btn" @click="settingBack">{{ setting.btn.returnBtn }}</div>
+          <div v-show="!isCopy" class="btn" @click="settingBack">{{ setting.btn.returnBtn }}</div>
           <!--开始渲染-->
           <div class="btn" @click="startRenderFun">{{ setting.btn.startBtn }}</div>
         </div>
@@ -1273,7 +1273,7 @@
     },
     watch: {
       taskData: function () {
-        if (this.typeInfo == 'setting') this.turnPage('upload-table')
+        if (this.typeInfo == 'setting' && !this.isCopy) this.turnPage('upload-table')
         this.$nextTick(() => this.getData())
       },
       'setting.priority.selfVal': function (val) {
@@ -1311,15 +1311,16 @@
       // 获取渲染模式
       async getRenderModeF(id) {
         if (!id) return false
-        let data = await getRenderMode(id)
-        this.setting.mode.modeList = data.data.data.map(item => {
+        let {mode} = this.setting,
+          {data} = await getRenderMode(id)
+        mode.modeList = data.data.map(item => {
           return {
             val: item.patternCode,
             label: item.patternName,
             id: item.patternUuid
           }
         })
-        if (this.setting.mode.modeList.length) this.setting.mode.mode = this.setting.mode.modeList[0]['val']
+        if (mode.modeList.length) mode.mode = mode.modeList[0]['val']
       },
       // 上传分析 - 重新分析BTN
       async renderAgainBtnFun() {

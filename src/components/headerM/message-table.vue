@@ -7,7 +7,7 @@
             :key="'nav_' + index"
             :class="[{'active': messageKey.noticeType == index + 1}]"
             @click="changeNavTable(index)">
-          <span :class="['navLi', {hasNews: item.num > 0}]">{{ item.name }}</span>
+          <span :class="['navLi', {hasNews: item.unReadLength > 0}]">{{ item.name }}</span>
         </li>
       </ul>
     </div>
@@ -24,8 +24,8 @@
           </li>
         </ul>
       </div>
-      <!--系统-->
-      <div class="item-system" v-show="messageKey.noticeType == 1">
+      <!--系统 all-->
+      <div class="item-system" v-show="messageKey.noticeType == 1 && messageKey.isRead !== 0">
         <span v-show="!systemTableData.length" class="null">{{ null_ }}</span>
         <el-table
           v-show="systemTableData.length"
@@ -55,13 +55,73 @@
             prop="createTime"/>
         </el-table>
       </div>
-      <!--活动-->
-      <div class="item-activity" v-show="messageKey.noticeType == 2">
+      <!--系统 unread-->
+      <div class="item-system" v-show="messageKey.noticeType == 1 && messageKey.isRead === 0">
+        <span v-show="!systemUnreadTabData.length" class="null">{{ null_ }}</span>
+        <el-table
+          v-show="systemUnreadTabData.length"
+          :show-header=false
+          :data="systemUnreadTabData"
+          @selection-change="systemSelectionChange"
+          @row-click="tableClick"
+          style="width: 100%">
+          <!--多选-->
+          <el-table-column
+            type="selection"
+            align="right"
+            width="45"/>
+          <!--消息-->
+          <el-table-column
+            width="250">
+            <template slot-scope="scope">
+              <span :class="[
+                'messageItem',
+                {'readed': scope.row.isRead == 1},
+                {'unread': scope.row.isRead == 0}
+              ]" :title="scope.row.noticeDetail">{{ scope.row.noticeDetail }}</span>
+            </template>
+          </el-table-column>
+          <!--时间-->
+          <el-table-column
+            prop="createTime"/>
+        </el-table>
+      </div>
+      <!--活动 all-->
+      <div class="item-activity" v-show="messageKey.noticeType == 2 && messageKey.isRead !== 0">
         <span v-show="!activityTableData.length" class="null">{{ null_ }}</span>
         <el-table
           v-show="activityTableData.length"
           :show-header=false
           :data="activityTableData"
+          style="width: 100%">
+          <!--多选-->
+          <el-table-column
+            type="selection"
+            align="right"
+            width="45"/>
+          <!--消息-->
+          <el-table-column
+            width="250">
+            <template slot-scope="scope">
+              <span :class="[
+                'messageItem',
+                {'readed': scope.row.isRead == 1},
+                {'unread': scope.row.isRead == 0}
+              ]" :title="scope.row.noticeDetail">{{ scope.row.noticeDetail }}</span>
+            </template>
+          </el-table-column>
+          <!--时间-->
+          <el-table-column
+            prop="createTime"/>
+        </el-table>
+      </div>
+      <!--活动 unread-->
+      <div class="item-activity" v-show="messageKey.noticeType == 2 && messageKey.isRead === 0">
+        <span v-show="!activityUnreadTableData.length" class="null">{{ null_ }}</span>
+        <el-table
+          v-show="activityUnreadTableData.length"
+          :show-header=false
+          :data="activityUnreadTableData"
           style="width: 100%">
           <!--多选-->
           <el-table-column
@@ -128,11 +188,11 @@
         navList: [
           {
             name: '系统',
-            num: 0
+            unReadLength: 0
           },
           {
             name: '活动',
-            num: 0
+            unReadLength: 0
           }
         ],
         statusList: [
@@ -144,7 +204,9 @@
         checkboxBtn: '标记为已读',
         checkboxBtnVal: '',
         systemTableData: [],
+        systemUnreadTabData: [],
         activityTableData: [],
+        activityUnreadTableData: [],
         null_: '空空如也～',
         messageKey: {
           isRead: '',         // isRead 是否已读 1已读 0未读 null全部
@@ -158,7 +220,23 @@
     computed: {
       ...mapState['zoneId', 'user']
     },
+    watch: {
+      systemUnreadTabData() {
+        this.switchMessageStatus()
+      },
+      activityUnreadTableData() {
+        this.switchMessageStatus()
+      }
+    },
     methods: {
+      //
+      switchMessageStatus() {
+        let status
+        status = this.systemUnreadTabData.length || this.activityUnreadTableData.length
+        this.navList[0]['unReadLength'] = this.systemUnreadTabData.length
+        this.navList[1]['unReadLength'] = this.activityUnreadTableData.length
+        this.$emit('changeNewsStatus', status)
+      },
       // 打开消息详情
       async tableClick(row, column, event) {
         let taskUuid = JSON.parse(row.noticeParam)['taskUuid'],
@@ -196,7 +274,8 @@
               taskUuid,
               type
             })
-
+            if (this.messageKey.isRead === 0 && this.messageKey.noticeType === 1) this.navList[0]['num']--
+            if (this.messageKey.isRead === 0 && this.messageKey.noticeType === 2) this.navList[1]['num']--
           }
         }
         this.$emit('shutMe')
@@ -204,23 +283,10 @@
           'isRead': 1,
           'noticeUuidList': [row.noticeUuid]
         })
-        if (data.code == 201) await this.getMessageListF()
-        let systemTotal = await getMessageList(pFConversion({
-            'isRead': '',
-            'noticeType': 1,
-            'keyword': '',
-            'pageIndex': 1,
-            'pageSize': 10
-          })),
-          activityTotal = await getMessageList(pFConversion({
-            'isRead': '',
-            'noticeType': 2,
-            'keyword': '',
-            'pageIndex': 1,
-            'pageSize': 10
-          }))
-
-        if (systemTotal.data.total == 0 && activityTotal.data.total == 0) this.$emit('noMessage')
+        if (data.code == 201) {
+          await this.getMessageListF()
+          if (row.isRead) await this.getMessageListF(true, this.messageKey.noticeType)
+        }
       },
       // 标记为已读
       async readedAll(type) {
@@ -258,7 +324,7 @@
         this.$router.push('/messageCenter')
       },
       // 获取站内信列表
-      async getMessageListF(noticeType_) {
+      async getMessageListF(isRead_, noticeType_) {
         // isRead 是否已读 1已读 0未读 3全部
         // noticeType 1系统 2活动
         // keyword 关键字
@@ -266,8 +332,9 @@
         // pageSize 页大小
         let {isRead, noticeType, pageIndex} = this.messageKey,
           index_ = noticeType_ || noticeType,
+          read = isRead_ ? 0 : isRead,
           {data} = await getMessageList(pFConversion({
-            isRead,
+            'isRead': read,
             'noticeType': index_,
             pageIndex,
             'pageSize': 10,
@@ -286,14 +353,20 @@
               else createTime = createDateFun(item.createTime, true)
               return Object.assign(item, {createTime})
             })
-          index_ == 1 ? this.systemTableData = list : this.activityTableData = list
-          index_ == 1 ? this.navList[0]['num'] = list.length : this.navList[1]['num'] = list.length
+          if (index_ == 1 && read !== 0) this.systemTableData = list
+          else if (index_ == 1 && read === 0) this.systemUnreadTabData = list
+          else if (index_ == 2 && read !== 0) this.activityTableData = list
+          else if (index_ == 2 && read === 0) this.activityUnreadTableData = list
         }
+      },
+      initialization() {
+        this.getMessageListF(true, 1)  // 获取站内信列表
+        this.getMessageListF(true, 2)  // 获取站内信列表
+        this.getMessageListF(false, 1)  // 获取站内信列表
       }
     },
     mounted() {
-      this.getMessageListF(1)  // 获取站内信列表
-      this.getMessageListF(2)  // 获取站内信列表
+      this.initialization()
     }
   }
 </script>

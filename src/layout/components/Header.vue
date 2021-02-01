@@ -38,7 +38,7 @@
               <message-table v-show="showMessageList"
                              ref="messageTable"
                              @refreshStatus="haveUnread"
-                             @noMessage="haveNewMS = false"
+                             @changeNewsStatus="changeNewsStatus"
                              @shutMe="showMessageList = !showMessageList"/>
             </div>
           </div>
@@ -356,7 +356,7 @@
           if (!val) return false
           this.getBulletinF()   // 获取公告
           // this.$store.commit('WEBSOCKET_BACKS_INIT', val)
-          this.$refs.messageTable.getMessageListF()
+          this.$refs.messageTable.initialization()
           this.$store.commit('WEBSOCKET_BACKS_INIT', val)
         },
         immediate: true
@@ -370,6 +370,10 @@
       }
     },
     methods: {
+      //
+      changeNewsStatus(status) {
+        this.haveNewMS = status
+      },
       // 是否有未读
       async haveUnread() {
         let systemList = await getMessageList(pFConversion({

@@ -153,13 +153,13 @@
       // 确定修改btn
       async saveFun() {
         if (!this.status.code || !this.status.ps || !this.status.psa) return false
-        let data = await editPassWord({
+        let {data} = await editPassWord({
           password: this.passWordVal,
           code: this.codeVal
         })
-        if (data.data.code == 999) messageFun('error', '未知错误')
-        else if (data.data.code == 4043) messageFun('error', '验证码已过期')
-        else if (data.data.code == 200) {
+        if (data.code == 999) messageFun('error', '未知错误')
+        else if (data.code == 4034) messageFun('error', '验证码已过期')
+        else if (data.code == 200) {
           this.reset()
           messageFun('success', '修改成功')
           this.editing = false
