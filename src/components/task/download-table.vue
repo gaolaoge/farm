@@ -600,7 +600,7 @@
             if (status == '渲染暂停' && item.result == 5) status = '待全部渲染'
             return {
               taskNo: item.layerNo,                                  // 任务ID
-              sceneName: curr.fileName + '-' + item.layerName,       // 场景名
+              sceneName: curr.isExpire == 1 ? '(过期)' + curr.fileName + '-' + item.layerName : curr.fileName + '-' + item.layerName,       // 场景名
               FatherSceneName: curr.fileName,                        // 主任务场景名
               status,                                                // 状态
               renderingProgress: item.frameCount.done + '/' + item.frameCount.total,    //渲染进度
@@ -644,7 +644,7 @@
             taskNo: curr.taskNo,                                   // 任务ID
             sceneName: curr.isExpire == 1 ? '(过期)' + curr.fileName : curr.fileName,        // 场景名
             status: itemDownloadStatus(curr.renderStatus),         // 状态
-            renderingProgress: curr.frameCount.done + '/' + curr.frameCount.total,          //渲染进度
+            renderingProgress: curr.frameCount.w + '/' + curr.frameCount.total,          //渲染进度
             percent: curr.frameCount.total == null ? 0 : Math.floor(curr.frameCount.done / curr.frameCount.total * 100),
             projectName: curr.projectName,                         // 所属项目
             rendering: curr.frameCount.running,                    // 渲染中
@@ -684,7 +684,7 @@
             return {
               taskNo: item.layerNo,                                  // 任务ID
               FatherSceneName: curr.fileName,                        // 主任务场景名
-              sceneName: item.fileName,                              // 场景名
+              sceneName: curr.isExpire == 1 ? '(过期)' + curr.fileName : curr.fileName,      // 场景名
               status,                                                // 状态
               renderingProgress: item.win + '/' + itemTotal,         //渲染进度
               percent: itemTotal == null ? 0 : Math.floor(item.win / itemTotal * 100),
@@ -722,7 +722,7 @@
           return {
             taskUuid: curr.taskUuid,
             taskNo: curr.taskNo,                                   // 任务ID
-            sceneName: curr.fileName,                              // 场景名
+            sceneName: curr.isExpire == 1 ? '(过期)' + curr.fileName : curr.fileName,        // 场景名
             status: itemDownloadStatus(curr.renderStatus),         // 状态
             renderingProgress: (curr.win + curr.lose) + '/' + framesTotal,          //渲染进度
             percent: curr.win + curr.lose == 0 ? 0 : Math.floor((curr.win + curr.lose) / framesTotal * 100),
@@ -755,6 +755,7 @@
         if (obj && obj.taskUuid) this.$nextTick(() => {
           this.$refs.renderTableImportant.toggleRowSelection(table.tableData.find(item => item['taskUuid'] == obj['taskUuid']), true)
         })
+        if (this.specialJump) this.specialJump = false
         loading.close()
       },
       // 排序

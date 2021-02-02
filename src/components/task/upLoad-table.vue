@@ -424,6 +424,7 @@
         if (obj && obj.taskUuid) this.$nextTick(() => {
           this.$refs.uploadTableImportant.toggleRowSelection(table.tableData.find(item => item['taskUuid'] == obj['taskUuid']), true)
         })
+        if (this.specialJump) this.specialJump = false
         loading.close()
       },
       // 排序

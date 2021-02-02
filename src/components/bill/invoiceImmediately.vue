@@ -198,9 +198,10 @@
     invoicing
   } from '@/api/bill-api'
   import {
-    createDateFun
+    createDateFun,
+    messageFun,
+    createThrowInfo
   } from '@/assets/common'
-  import {messageFun} from "../../assets/common"
   import {
     mapState
   } from 'vuex'
@@ -296,6 +297,7 @@
         },
         editHeader: false,          // 添加默认抬头 确认btn 切换
         checked: null,              // 开票抬头索引
+        lock: false                 // 编辑 or 添加【抬头】锁
       }
     },
     methods: {
@@ -352,6 +354,8 @@
       },
       // 添加发票抬头
       async addHeader() {
+        if (this.lock) return false
+        this.lock = true
         let list = this.dialogData.list,
           {regExp} = this
         if (!list[0]['Val']) {
@@ -376,21 +380,32 @@
           messageFun('error', '请输入正确的手机号')
           list[4]['status'] = false
         } else {
-          let {data} = await addInvoiceHeader({
-            invoiceTitle: list[0]['Val'],                 // 发票抬头
-            taxpayerId: list[1]['Val'],                   // 纳税人识别号
-            email: list[2]['Val'],                        // 邮箱
-            companyAddress: list[3]['Val'],               // 公司地址
-            companyTelephone: list[4]['Val'],             // 公司电话
-            companyBank: list[5]['Val'],                  // 公司开户行地址
-            bankAccount: list[6]['Val'],                  // 公司开户行账号
-            isDefault: this.dialogData.isDefault          // 0:非默认 1:默认
-          })
-          if (data.code == 200) {
-            messageFun('success', '操作成功')
-            await this.getInvoiceHeaderList()
-            this.dialogData.visible = false
-            this.reset()
+          try {
+            let {data} = await addInvoiceHeader({
+              invoiceTitle: list[0]['Val'],                 // 发票抬头
+              taxpayerId: list[1]['Val'],                   // 纳税人识别号
+              email: list[2]['Val'],                        // 邮箱
+              companyAddress: list[3]['Val'],               // 公司地址
+              companyTelephone: list[4]['Val'],             // 公司电话
+              companyBank: list[5]['Val'],                  // 公司开户行地址
+              bankAccount: list[6]['Val'],                  // 公司开户行账号
+              isDefault: this.dialogData.isDefault          // 0:非默认 1:默认
+            })
+            if (data.code == 200) {
+              messageFun('success', '操作成功')
+              await this.getInvoiceHeaderList()
+              this.dialogData.visible = false
+              this.reset()
+            } else messageFun('error', '操作失败')
+            this.lock = false
+          } catch (err) {
+            createThrowInfo({
+              'type': 'error',
+              'title': '添加发票抬头意外失败',
+              'info': err,
+              'site': 'components/bill/invoiceImmediately-355'
+            })
+            this.lock = false
           }
         }
       },
@@ -416,6 +431,8 @@
       },
       // 发票抬头 - 编辑 - 发送
       async editHeaderF() {
+        if (this.lock) return false
+        this.lock = true
         let list = this.dialogData.list,
           {regExp} = this
         if (!list[0]['Val']) {
@@ -440,22 +457,34 @@
           messageFun('error', '请输入正确的手机号')
           list[4]['status'] = false
         } else {
-          let {data} = await editItemIn({
-            invoiceSettingUuid: this.Uuid,
-            invoiceTitle: list[0]['Val'],                 // 发票抬头
-            taxpayerId: list[1]['Val'],                   // 纳税人识别号
-            email: list[2]['Val'],                        // 邮箱
-            companyAddress: list[3]['Val'],               // 公司地址
-            companyTelephone: list[4]['Val'],             // 公司电话
-            companyBank: list[5]['Val'],                  // 公司开户行地址
-            bankAccount: list[6]['Val'],                  // 公司开户行账号
-            isDefault: this.dialogData.isDefault          // 0:非默认 1:默认
-          })
-          if (data.code == 200) {
-            this.editHeader = false
-            messageFun('success', '操作成功')
-            this.dialogData.visible = false
-            await this.getInvoiceHeaderList()
+          try {
+            let {data} = await editItemIn({
+              invoiceSettingUuid: this.Uuid,
+              invoiceTitle: list[0]['Val'],                 // 发票抬头
+              taxpayerId: list[1]['Val'],                   // 纳税人识别号
+              email: list[2]['Val'],                        // 邮箱
+              companyAddress: list[3]['Val'],               // 公司地址
+              companyTelephone: list[4]['Val'],             // 公司电话
+              companyBank: list[5]['Val'],                  // 公司开户行地址
+              bankAccount: list[6]['Val'],                  // 公司开户行账号
+              isDefault: this.dialogData.isDefault          // 0:非默认 1:默认
+            })
+            if (data.code == 200) {
+              this.editHeader = false
+              messageFun('success', '操作成功')
+              this.dialogData.visible = false
+              await this.getInvoiceHeaderList()
+              this.reset()
+            } else messageFun('error', '操作失败')
+            this.lock = false
+          } catch (err) {
+            createThrowInfo({
+              'type': 'error',
+              'title': '编辑发票抬头意外失败',
+              'info': err,
+              'site': 'components/bill/invoiceImmediately-433'
+            })
+            this.lock = false
           }
         }
       },

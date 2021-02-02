@@ -60,6 +60,7 @@
     <el-dialog :visible.sync="createTaskDialog"
                :show-close=false
                :destroy-on-close=true
+               :close-on-click-modal="false"
                @opened="r()"
                top="8vh"
                width="862px">

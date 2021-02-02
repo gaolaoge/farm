@@ -663,7 +663,7 @@
       // 创建画布
       setCanvas() {
         let canvas = document.getElementsByClassName('canvas')[0]
-        if (!canvas.getContext) return
+        if (!canvas || !canvas.getContext) return
         let ctx = canvas.getContext('2d')
 
         ctx.beginPath()
