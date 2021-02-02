@@ -577,10 +577,6 @@
       if (sessionStorage.getItem('taskListActive') == '1') this.table.navListActiveIndex = 1
       else this.table.navListActiveIndex = 0
       createTableIconList()  // 图标
-      console.dir(document)
-      document.addEventListener('storage', e => {
-        console.log(e)
-      })
     },
     computed: {
       ...mapState(['socket_backS_msg', 'zone', 'taskState', 'taskIndex'])
