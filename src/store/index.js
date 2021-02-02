@@ -86,7 +86,7 @@ export default new Vuex.Store({
           this.WEBSOCKET_BACKS_INIT(state, account)
         }
       })
-      state.socket_backS.addEventListener('message', data => state.socket_backS_msg = data)
+      state.socket_backS.addEventListener('message', data => this.commit('WEBSOCKET_BACKS_NEWMSG', data))
       state.socket_backS.addEventListener('close', e => {
         console.log(`--与后台连接断开，code码为${e.code},尝试重新连接--` + new Date().toLocaleString())
         this.WEBSOCKET_BACKS_INIT(state, account)
@@ -117,7 +117,7 @@ export default new Vuex.Store({
           this.commit('WEBSOCKET_PLUGIN_INIT', triggerPlugin)
         }
       })
-      state.socket_plugin.addEventListener('message', data => state.socket_plugin_msg = data)
+      state.socket_plugin.addEventListener('message', data => this.commit('WEBSOCKET_PLUGIN_NEWMSG', data))
       state.socket_plugin.addEventListener('close', e => {
         state.socket_plugin = null
         // console.log(`--与插件连接断开，code码为${e.code},尝试重新连接--` + new Date().toLocaleString())
@@ -140,6 +140,14 @@ export default new Vuex.Store({
       if (!state.socket_backS) return false
       state.socket_backS.close()
       state.socket_backS = null
+    },
+    // 与后台的websocket获取新消息
+    WEBSOCKET_BACKS_NEWMSG(state, data) {
+      state.socket_backS_msg = data
+    },
+    // 与插件的websocket获取新消息
+    WEBSOCKET_PLUGIN_NEWMSG(state, data) {
+      state.socket_plugin_msg = data
     },
     // task 切换 tab
     switchTaskTab(state, index) {
@@ -328,7 +336,7 @@ export default new Vuex.Store({
             context.dispatch('WEBSOCKET_PLUGIN_INIT', triggerPlugin)
           }
         })
-        context.state.socket_plugin.addEventListener('message', data => context.state.socket_plugin_msg = data)
+        context.state.socket_plugin.addEventListener('message', data => context.commit('WEBSOCKET_PLUGIN_NEWMSG', data))
       })
     }
 

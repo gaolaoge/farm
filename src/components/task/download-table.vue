@@ -644,7 +644,7 @@
             taskNo: curr.taskNo,                                   // 任务ID
             sceneName: curr.isExpire == 1 ? '(过期)' + curr.fileName : curr.fileName,        // 场景名
             status: itemDownloadStatus(curr.renderStatus),         // 状态
-            renderingProgress: curr.frameCount.w + '/' + curr.frameCount.total,          //渲染进度
+            renderingProgress: curr.frameCount.done + '/' + curr.frameCount.total,          //渲染进度
             percent: curr.frameCount.total == null ? 0 : Math.floor(curr.frameCount.done / curr.frameCount.total * 100),
             projectName: curr.projectName,                         // 所属项目
             rendering: curr.frameCount.running,                    // 渲染中
@@ -724,8 +724,8 @@
             taskNo: curr.taskNo,                                   // 任务ID
             sceneName: curr.isExpire == 1 ? '(过期)' + curr.fileName : curr.fileName,        // 场景名
             status: itemDownloadStatus(curr.renderStatus),         // 状态
-            renderingProgress: (curr.win + curr.lose) + '/' + framesTotal,          //渲染进度
-            percent: curr.win + curr.lose == 0 ? 0 : Math.floor((curr.win + curr.lose) / framesTotal * 100),
+            renderingProgress: curr.win + '/' + framesTotal,       //渲染进度
+            percent: curr.win == 0 ? 0 : Math.floor(curr.win / framesTotal * 100),
             projectName: curr.projectName,                         // 所属项目
             rendering: curr.rendering,                             // 渲染中
             wait: curr.await,                                      // 等待

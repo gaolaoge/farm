@@ -506,9 +506,10 @@
                    :class="[{'inputError': dialogAdd.form.formatName == false}, 'farm-form-item-input']"
                    :placeholder="dialogAdd.namePlaceholder"
                    @blur="nameVerif"
-                   @focus="dialogAdd.form.formatName = null"
+                   @focus="() => dialogAdd.form.formatName = null"
+                   @input="dialogAdd.nameError = false"
                    v-model="dialogAdd.form.valName">
-            <span></span>
+            <span class="errorInfo" v-if="dialogAdd.nameError">项目名已存在</span>
           </div>
           <!--渲染软件-->
           <div class="farm-form-item">
@@ -581,11 +582,11 @@
           </div>
           <!--按钮-->
           <div class="btnGroup">
-            <div class="btnGroup-btn save" @click="taskDefine"
-                 :class="[{'disable-self': !disableSelf || !dialogAdd.nList.length}]">
+            <div @click="taskDefine"
+                 :class="['btnGroup-btn', 'save', {'disable-self': !disableSelf || !dialogAdd.nList.length}]">
               <span>{{ dialogAdd.save }}</span>
             </div>
-            <div class="btnGroup-btn cancel" @click="innerVisible = false">
+            <div class="btnGroup-btn cancel" @click="closeAddTemplateDialog">
               <span>{{ dialogAdd.cancel }}</span>
             </div>
           </div>
@@ -797,6 +798,7 @@
         dialogAdd: {
           title: '添加模板',
           namePlaceholder: '输入模版名称',
+          nameError: false,      // 模板名称重复 报错
           form: {
             labelName: '模板名称',
             valName: '',
@@ -1174,56 +1176,67 @@
       },
       // 2.设置渲染模板 - 关闭【新建/编辑渲染模板窗口】
       closeAddTemplateDialog() {
+        this.innerVisible = false
         // 窗口数据初始化
         let {dialogAdd} = this,
           {form} = dialogAdd
         form.valName = ''
         form.valSoftware = ''
-        form.softwareList.length = 0
         form.valPlugin = ''
+        dialogAdd.softwareList.length = 0
         dialogAdd.pluginList.length = 0
         dialogAdd.oList.length = 0
         dialogAdd.nList.length = 0
+        dialogAdd.namePlaceholder = '输入模版名称'
+        dialogAdd.nameError = false
       },
       // 2.设置渲染模板 - 添加or修改
       async taskDefine() {
         let val
         // 若表格未填写完整 返回
         if (!this.disableSelf || !this.dialogAdd.nList.length) return false   // 验证表格是否填写完整
+        let {form, nList} = this.dialogAdd
         switch (this.dialogAdd.editOrAdd) {
           // 新建模板
           case 'addMore':
-            let {form, nList} = this.dialogAdd,
-              {data} = await createTaskSetNewPlugin({
+            let {data} = await createTaskSetNewPlugin({
                 templateName: form.valName,        //模板名称
                 softUuid: form.valSoftware[1],     //软件uuid
-                pluginUuids: nList.map(curr => {
-                  return curr.pluginUuid
-                })
+                pluginUuids: nList.map(curr => curr.pluginUuid)
               })
             if (data.code == 201) {
               messageFun('success', '创建模板成功')
               this.innerVisible = false
               await this.getList()
-            } else if (data.code == 101) messageFun('info', '模板名已存在，创建失败')
+            } else if (data.code == 101) {
+              // 模板名称重复
+              console.log('ddddd')
+              this.dialogAdd.nameError = true
+              this.dialogAdd.namePlaceholder = form.valName
+              form.valName = ''
+            }
             //创建失败
             break
           // 编辑模板
           case 'editOne':
             let obj = this.stepTwoBase['renderList'][this.dialogAdd.index],
               data2 = await createTaskSetEditPlugin({
-                templateUuid: obj['renderTemplate']['templateUuid'],                 // 模板uuid
-                templateName: this.dialogAdd.form.valName,                           // 模板名称
-                softUuid: this.dialogAdd.form.valSoftware[1],                        // 软件uuid
-                isDefault: obj['renderTemplate']['isDefault'],                       // 是否默认
-                pluginUuids: this.dialogAdd.nList.map(curr => curr.pluginUuid)       // 插件
+                templateUuid: obj['renderTemplate']['templateUuid'],  // 模板uuid
+                templateName: form.valName,                           // 模板名称
+                softUuid: form.valSoftware[1],                        // 软件uuid
+                isDefault: obj['renderTemplate']['isDefault'],        // 是否默认
+                pluginUuids: nList.map(curr => curr.pluginUuid)       // 插件
               })
             if (data2.data.code == 200) {
               messageFun('success', '编辑成功')
               this.innerVisible = false
               await this.getList()
-            } else if (data2.data.code == 101) messageFun('info', '模板名已存在，编辑失败')
-            break
+            } else if (data2.data.code == 101) {
+              // 模板名称重复
+              this.dialogAdd.nameError = true
+              this.dialogAdd.namePlaceholder = form.valName
+              form.valName = ''
+            }
         }
       },
       // 1.选择渲染文件 - 我的电脑 - table多选
@@ -2369,6 +2382,19 @@
           color: rgba(255, 255, 255, 0.4);
           cursor: default;
         }
+      }
+    }
+
+    .farm-form-item {
+      position: relative;
+
+      .errorInfo {
+        position: absolute;
+        top: 40px;
+        left: 124px;
+        font-size: 12px;
+        color: rgba(255, 62, 77, 0.79);
+        user-select: none;
       }
     }
   }
