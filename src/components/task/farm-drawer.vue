@@ -827,17 +827,6 @@
                 </el-table-column>
               </el-table>
             </div>
-            <!--分页-->
-            <div class="page">
-              <el-pagination
-                background
-                :current-page.sync="result.pageIndex"
-                @current-change="mainTabCurrentChange"
-                :page-size="result.pageSize"
-                layout="prev, pager, next, jumper"
-                :total="result.total">
-              </el-pagination>
-            </div>
             <!--详情-table-->
             <div class="tableBase task-table-seeMore-details" v-show="result.showDetails">
               <!--table-->
@@ -1215,7 +1204,7 @@
             {text: '渲染失败', value: 4}
           ],     // 主 tab 帧状态集合
           pageIndex: 1,                // 主 tab 页码
-          pageSize: 10,                // 主 tab 当页条数
+          pageSize: 999,               // 主 tab 当页条数
           total: 0,                    // 主 tab 总数
           keyword: '',                 // 主 tab 关键帧
           sortBy: 'frameNo',
@@ -1501,11 +1490,6 @@
         if (!order) result.sortBy = 'frameNo'
         else result.sortBy = prop
         result.pageIndex = 1
-        this.getRenderItemMoreTableF()
-      },
-      // 渲染结果 - mainTab - 翻页
-      mainTabCurrentChange(index) {
-        this.result.pageIndex = index
         this.getRenderItemMoreTableF()
       },
       //关闭抽屉 复位
@@ -2610,7 +2594,7 @@
 
         .tableBase {
           width: 100%;
-          height: calc(100% - 27px - 42px);
+          height: calc(100% - 27px);
           display: flex;
           flex-direction: column;
           /*日志详情*/

@@ -248,20 +248,22 @@
       filterHandler(value, row, column) {
         console.log(value, row, column)
       },
-      // 主任务table 查看层任务
+      // 进入文件夹
       seeRow(row) {
         let {table, bread} = this
         this.$emit('clearInput')
+        table.objectName = row.project
         table.rowUuid = row.itemUuid
+        // 主任务table 查看层任务
         if (table.nextTableType == 'layer') {
           this.getLayerList()
-          table.objectName = row.project
           table.layerObj = row
           bread.list.push({
             text: row.fileName,
             name: 'layer'
           })
         }
+        // 层任务table 查看帧任务
         if (table.nextTableType == 'frame') {
           this.getFrameList()
           table.frameObj = row
@@ -317,7 +319,7 @@
         this.loading = true
         this.fullscreenLoading = true
         let {table, keyword} = this,
-          {rowUuid, pageIndex, pageSize, objectName, sortBy, sortType} = table,
+          {rowUuid, pageIndex, pageSize, sortBy, sortType} = table,
           {data} = await assetsExportLayer(pFConversion({
             'taskUuid': rowUuid,
             keyword,
@@ -332,7 +334,7 @@
           return {
             id: curr.layerNo,                   // 任务ID
             fileName: curr.layerName,           // 文件名
-            project: objectName,                // 所属项目
+            project: table.objectName,                // 所属项目
             fileSize: curr.fileSize,            // 文件大小
             fileType: '文件夹',                  // 文件类型
             downloadCount: '-',                 // 下载次数
