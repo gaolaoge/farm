@@ -24,7 +24,7 @@
                        @change="changeCheckBox(scope.row.noticeSettingUuid, scope.row.customerNoticeSettingUuid, 1, scope.row.isMessage)"/>
           <el-checkbox v-model="scope.row.isEmail" true-label="1" false-label="0" label="邮件"
                        @change="changeCheckBox(scope.row.noticeSettingUuid, scope.row.customerNoticeSettingUuid, 2, scope.row.isEmail)"/>
-          <el-checkbox v-model="scope.row.isNote" true-label="1" false-label="0" label="短信" v-if="false"
+          <el-checkbox v-model="scope.row.isNote" true-label="1" false-label="0" label="短信"
                        @change="changeCheckBox(scope.row.noticeSettingUuid, scope.row.customerNoticeSettingUuid, 3, scope.row.isNote)"/>
         </template>
       </el-table-column>
@@ -63,7 +63,7 @@
         let data = await getMessageData()
         if (data.data.code != 200) return false
         this.tableData = data.data.data.map(item => {
-          return Object.assign(item,{
+          return Object.assign(item, {
             isEmail: item.isEmail == 1 ? '1' : '0',   // 邮箱
             isMessage: item.isMessage == 1 ? '1' : '0', // 站内信
             isNote: item.isNote == 1 ? '1' : '0',    // 短信
@@ -71,14 +71,14 @@
         })
       },
       // 修改设置
-      async changeCheckBox(noticeSettingUuid, customerNoticeSettingUuid, noticeWay, noticeStatus){
+      async changeCheckBox(noticeSettingUuid, customerNoticeSettingUuid, noticeWay, noticeStatus) {
         let data = await setMessageData({
           noticeSettingUuid,
           customerNoticeSettingUuid,
           noticeWay,
           noticeStatus
         })
-        if(data.data.code == 201) messageFun('success', '修改成功')
+        if (data.data.code == 201) messageFun('success', '修改成功')
       }
     },
     mounted() {
@@ -89,22 +89,30 @@
 
 <style lang="less" scoped>
   .messageSetting {
-    height: calc(100vh - 203px);
+    height: 100%;
     padding: 10px;
     box-sizing: border-box;
   }
 
-  /deep/ .el-table .el-table__row:hover::after {
-    display: none
+  /deep/ .el-table__body-wrapper {
+    height: calc(100% - 47px);
   }
 
-  /deep/.el-checkbox__input.is-checked+.el-checkbox__label {
-    color: rgba(27, 83, 244, 1);
-  }
+  /deep/ .el-table {
+    height: 100%;
 
-  /deep/.el-table__header tr th:nth-of-type(1) .cell,
-  /deep/.el-table__body tr td:nth-of-type(1) .cell {
-    padding-left: 20px;
+    .el-table__row:hover::after {
+      display: none;
+    }
+
+    .el-checkbox__input.is-checked + .el-checkbox__label {
+      color: rgba(27, 83, 244, 1);
+    }
+
+    .el-table__header tr th:nth-of-type(1) .cell,
+    .el-table__body tr td:nth-of-type(1) .cell {
+      padding-left: 20px;
+    }
   }
 
 </style>

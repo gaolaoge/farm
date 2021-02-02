@@ -3,7 +3,7 @@
     <div class="container">
       <p class="title">
         <span>{{ title }}</span>
-        <img src="@/icons/shutDialogIcon.png" alt="" class="shutImg" @click="cancelFun">
+        <img src="@/icons/shutDialogIcon.png" class="shutImg" @click="cancelFun">
       </p>
       <!--编辑-->
       <div class="content" v-show="editing">
@@ -75,7 +75,7 @@
       </div>
       <!--修改成功-->
       <div class="success" v-show="!editing">
-        <img src="@/icons/smail.png" alt="">
+        <img src="@/icons/smail.png">
         <h5 class="tit">{{ successTit }}</h5>
         <span class="dire">{{ time }}{{ unit }}{{ dire }}</span>
         <div class="btnn" @click="cancelFun"><span>{{ btnn }}</span></div>
@@ -153,13 +153,13 @@
       // 确定修改btn
       async saveFun() {
         if (!this.status.code || !this.status.ps || !this.status.psa) return false
-        let data = await editPassWord({
+        let {data} = await editPassWord({
           password: this.passWordVal,
           code: this.codeVal
         })
-        if (data.data.code == 999) messageFun('error', '未知错误')
-        else if (data.data.code == 4043) messageFun('error', '验证码已过期')
-        else if (data.data.code == 200) {
+        if (data.code == 999) messageFun('error', '未知错误')
+        else if (data.code == 4034) messageFun('error', '验证码已过期')
+        else if (data.code == 200) {
           this.reset()
           messageFun('success', '修改成功')
           this.editing = false

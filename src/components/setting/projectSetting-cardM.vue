@@ -10,11 +10,9 @@
              v-for="(item,index) in btnGroup"
              @click="uploadOperating(item['text'])"
              :key="index">
-          <img :src="item.initialIcon" alt="" v-if="item.initialIcon" class="btnIcon default">
-          <img :src="item.selectedIcon" alt="" v-if="item.selectedIcon" class="btnIcon hover">
-          <span>
-            {{ item['text'] }}
-          </span>
+          <img :src="item.initialIcon" v-if="item.initialIcon" class="btnIcon default">
+          <img :src="item.selectedIcon" v-if="item.selectedIcon" class="btnIcon hover">
+          <span>{{ item['text'] }}</span>
         </div>
       </div>
       <div class="rightOPerate">
@@ -26,7 +24,6 @@
                  :placeholder="placeholder">
           <!--搜索按钮-->
           <img src="@/icons/global-search-icon.png"
-               alt=""
                class="searchIcon"
                @click="getData">
         </div>
@@ -75,7 +72,8 @@
           width="200"
           label="操作">
           <template slot-scope="scope">
-            <span class="operateBtn" @click="editItem(scope.$index)">{{ tableOperateBtn[0] }}</span>
+            <span class="operateBtn" @click="editItem(scope.$index)" v-if="!scope.row.defaultP">{{ tableOperateBtn[0] }}</span>
+            <span class="operateBtn cannotBeGo" v-if="scope.row.defaultP">{{ tableOperateBtn[0] }}</span>
             <span class="operateBtn" @click="setItem(scope.row.taskProjectUuid)">{{ tableOperateBtn[1] }}</span>
           </template>
         </el-table-column>
@@ -92,7 +90,7 @@
         :total="page.total">
       </el-pagination>
       <div class="farm-primary-form-btn btn" @click="getList('', 1, page.size)">
-        <span>{{ refresh }}</span>
+        <span>{{ $t('public_text.refresh') }}</span>
       </div>
     </div>
 
@@ -101,12 +99,11 @@
       <div class="createBase">
         <div class="tit">
           <span>{{ createProject.tit }}</span>
-          <img src="@/icons/shutDialogIcon.png" alt="" @click="createCancelBtnFun">
+          <img src="@/icons/shutDialogIcon.png" @click="createCancelBtnFun">
         </div>
         <div class="con">
           <input type="text"
-                 class="name"
-                 :class="[{'err': newNameErr}]"
+                 :class="['name', {'err': newNameErr}]"
                  @focus="newNameErr = false"
                  @keyup.enter="createSaveBtnFun"
                  v-model="createProject.name"
@@ -114,10 +111,10 @@
           <el-checkbox v-model="createProject.checked" true-label='1' false-label='0' label="设为当前项目"/>
           <div class="btn-group">
             <div class="farm-btn cancel" @click="createCancelBtnFun">
-              <span>{{ btnCancel }}</span>
+              <span>{{ $t('public_text.cancel') }}</span>
             </div>
-            <div class="farm-btn save" :class="[{'cannotBeGo': verif}]" @click="createSaveBtnFun">
-              <span>{{ btnSave }}</span>
+            <div :class="['farm-btn', 'save', {'cannotBeGo': verif}]" @click="createSaveBtnFun">
+              <span>{{ $t('public_text.confirm') }}</span>
             </div>
           </div>
         </div>
@@ -128,13 +125,11 @@
       <div class="editBase">
         <div class="tit">
           <span>{{ editProject.tit }}</span>
-          <img src="@/icons/shutDialogIcon.png" alt="" @click="editCancelBtnFun">
+          <img src="@/icons/shutDialogIcon.png" @click="editCancelBtnFun">
         </div>
         <div class="con">
           <!--缩略图-->
           <div class="imgB">
-            <!--            <div class="avatarEdit" @click="avatarEditFun"><span>{{ editAvatar }}</span></div>-->
-            <!--            <img class="img" :src="editProject.thumbnail" alt="">-->
             <div class="avatarEdit"><span>{{ editAvatar }}</span></div>
             <img :src="editProject.thumbnail" class="avatar img">
             <el-upload
@@ -151,8 +146,7 @@
           <div class="item">
             <span class="label">{{ editProject.nameL }}：</span>
             <input type="text"
-                   class="name v"
-                   :class="[{'err': editNameErr}]"
+                   :class="['name', 'v', {'err': editNameErr}]"
                    @focus="editNameErr = false"
                    @keyup.enter="editSaveBtnFun"
                    v-model="editProject.nameV">
@@ -171,12 +165,11 @@
           </div>
           <div class="btn-group">
             <div class="farm-btn cancel" @click="editCancelBtnFun">
-              <span>{{ btnCancel }}</span>
+              <span>{{ $t('public_text.cancel') }}</span>
             </div>
-            <div class="farm-btn save"
-                 :class="[{'cannotBeGo': editVerif}]"
+            <div :class="['farm-btn', 'save', {'cannotBeGo': !editWinVerif}]"
                  @click="editSaveBtnFun">
-              <span>{{ btnSave }}</span>
+              <span>{{ $t('public_text.confirm') }}</span>
             </div>
           </div>
         </div>
@@ -203,8 +196,8 @@
     name: 'projectSetting',
     data() {
       return {
-        newNameErr: false,     // 新建项目 项目名状态
-        editNameErr: false,    // 编辑项目 项目名状态
+        newNameErr: false,      // 新建项目 项目名状态
+        editNameErr: false,     // 编辑项目 项目名状态
         tableData: [],
         tableOperateBtn: ['编辑', '设为当前项目'],
         btnGroup: [
@@ -233,11 +226,14 @@
         editProject: {
           tit: '编辑项目',
           nameL: '项目名称',
-          nameV: '',
+          nameV: null,                // 项目名称
+          oldNameV: null,             // 原项目名称
           statusL: '项目状态',
-          statusV: null,
-          thumbnail: null,
-          taskProjectUuid: null,
+          statusV: null,              // 项目状态
+          oldStatusV: null,           // 原项目状态
+          thumbnail: null,            // 头像
+          oldThumbnail: null,         // 原头像
+          taskProjectUuid: null,      // 项目UUID
           options: [
             {
               value: 1,
@@ -257,10 +253,7 @@
           size: 10,
           total: 0
         },
-        btnCancel: '取消',
-        btnSave: '确定',
-        editAvatar: '修改图片',
-        refresh: '刷新'
+        editAvatar: '修改图片'
       }
     },
     watch: {
@@ -273,30 +266,23 @@
     },
     methods: {
       // 编辑头像
-      // avatarEditFun() {
-      //   let input = document.createElement('INPUT')
-      //   input.type = 'file'
-      //   input.accept = '.jpg,.jpeg,.png'
-      //   input.addEventListener('change', event => {
-      //     this.$refs.avatarEdit.fileChange(event)
-      //   })
-      //   input.click()
-      // },
       handleAvatarChange(res, file) {
         const type = ['image/jpeg', 'image/jpg', 'image/png'],
           isType = type.some(t => t == res.raw.type),
           isLt2M = res.raw.size / 1024 / 1024 < 2
         if (!isType) this.$message.error('上传头像图片只能是 JPG JPEG PNG 格式!')
         else if (!isLt2M) this.$message.error('上传头像图片大小不能超过 2MB!')
-        else this.editProject.thumbnail = window.URL.createObjectURL(res.raw)
+        else {
+          let read = new FileReader()
+          read.readAsDataURL(file[0].raw)
+          read.addEventListener('load', e => {
+            this.editProject.thumbnail = e.target.result
+          })
+        }
       },
       handleSelectionChange(val) {
         this.selectionList = val
       },
-      // 保存裁剪好的头像
-      // saveAvatar(src) {
-      //   this.editProject.thumbnail = src
-      // },
       // 关键字搜索
       getData() {
         this.getList(this.searchInputVal, 1, this.page.size)
@@ -329,10 +315,11 @@
             'taskProjectUuid': curr.taskProjectUuid,
             'createTime': createDateFun(new Date(curr.createTime)),
             'projectName': curr.projectName,
-            'customerName': curr.customerName,
+            'customerName': curr.createBy == 'system' ? '系统默认创建' : curr.customerName,
             'isDefault': curr.isDefault == 0 ? '否' : '是',
             'projectStatus': curr.projectStatus == 0 ? '停用' : '启用',
             'thumbnail': curr.thumbnail,     // 缩略图
+            'defaultP': curr.createBy == 'system' ? true : false
           }
         })
       },
@@ -370,19 +357,19 @@
       },
       // 编辑项目 - 保存
       async editSaveBtnFun() {
-        let c = this.editProject
-        if (this.editVerif) return false
-        let data = await editTask({
-          'projectName': c.nameV,
-          'projectStatus': c.statusV,
-          'taskProjectUuid': c.taskProjectUuid,
-          'thumbnail': c.thumbnail
+        if (!this.editWinVerif) return false
+        let {editProject, page} = this
+        let {data} = await editTask({
+          'projectName': editProject.nameV === editProject.oldNameV ? null : editProject.nameV,
+          'projectStatus': editProject.statusV === editProject.oldStatusV ? null : editProject.statusV,
+          'thumbnail': editProject.thumbnail === editProject.oldThumbnail ? null : editProject.thumbnail,
+          'taskProjectUuid': editProject.taskProjectUuid
         })
-        if (data.data.code == 201) {
+        if (data.code == 201) {
           messageFun('success', '编辑成功')
           this.editBaseShow = false
-          this.getList('', 1, this.page.size)
-        } else if (data.data.code == 101) messageFun('info', '项目名已存在')
+          await this.getList('', 1, page.size)
+        } else if (data.code == 101) messageFun('info', '项目名已存在')
       },
       // 操作按钮
       uploadOperating(name) {
@@ -399,25 +386,27 @@
       createProjectFun() {
         this.createBaseShow = true
       },
-      // 项目 - 编辑
+      // 项目 - 点击【编辑】
       editItem(index) {
+        console.log(this.tableData[index])
         this.editBaseShow = true
         let data = this.tableData[index]
         Object.assign(this.editProject, {
           nameV: data.projectName,
-          statusV: data.projectStatus == '禁用' ? 0 : 1,
+          oldNameV: data.projectName,
+          statusV: data.projectStatus == '停用' ? 0 : 1,
+          oldStatusV: data.projectStatus == '停用' ? 0 : 1,
           thumbnail: data.thumbnail,
+          oldThumbnail: data.thumbnail,
           taskProjectUuid: data.taskProjectUuid
         })
       },
       // 项目 - 设为当前项目
       async setItem(id) {
-        let data = await setDefault({
-          'taskProjectUuid': id
-        })
+        let data = await setDefault({'taskProjectUuid': id})
         if (data.data.code == 201) {
           messageFun('success', '设置成功')
-          this.getList('', 1, this.page.size)
+          await this.getList('', 1, this.page.size)
         }
       },
       // 删除
@@ -428,12 +417,13 @@
           type: 'warning'
         })
           .then(async () => {
-            let data = await deleteTask({'projectList': this.selectionList.map(curr => curr.taskProjectUuid)})
-            if (data.data.code == 201) {
+            let {searchInputVal, page} = this,
+              {data} = await deleteTask({'projectList': this.selectionList.map(curr => curr.taskProjectUuid)})
+            if (data.code == 201) {
               messageFun('success', '操作成功')
-              this.getList(this.searchInputVal, this.page.index, this.page.size)
-            } else if (data.data.code == 1000) messageFun('error', '操作失败')
-            else if (data.data.code == 10001) messageFun('error', '参数无效')
+              await this.getList(searchInputVal, page.index, page.size)
+            } else if (data.code == 1000) messageFun('error', '操作失败')
+            else if (data.code == 10001) messageFun('error', '参数无效')
           })
       },
       // 跳页
@@ -451,8 +441,10 @@
       verif() {
         return (Boolean(this.newNameErr) || !Boolean(this.createProject.name.trim()))
       },
-      editVerif() {
-        return (Boolean(this.editNameErr) || !Boolean(this.editProject.nameV.trim()))
+      editWinVerif() {
+        // return (Boolean(this.editNameErr) || !Boolean(this.editProject.nameV.trim()))
+        let {editProject} = this
+        return (editProject.nameV !== editProject.oldNameV) || (editProject.statusV !== editProject.oldStatusV) || (editProject.thumbnail !== editProject.oldThumbnail)
       }
     }
   }
@@ -460,7 +452,9 @@
 
 <style lang="less" scoped>
   .projectSetting {
-    height: calc(100vh - 203px);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
 
     .operating {
       padding: 30px 27px 10px;
@@ -472,6 +466,18 @@
         align-items: center;
       }
     }
+
+    .table {
+      flex-grow: 1;
+
+      /deep/ .el-table {
+        height: 100%;
+
+        .el-table__body-wrapper {
+          height: calc(100% - 47px);
+        }
+      }
+    }
   }
 
   .operateBtn {
@@ -480,6 +486,12 @@
     margin-right: 10px;
     cursor: pointer;
     text-decoration: underline;
+
+    &.cannotBeGo {
+      color: rgba(22, 29, 37, 0.39);
+      cursor: no-drop;
+      text-decoration: none;
+    }
   }
 
   .createProject,
@@ -617,7 +629,6 @@
 
           .label {
             font-size: 14px;
-            font-family: PingFangSC-Regular, PingFang SC;
             color: rgba(22, 29, 37, 0.6);
           }
 
@@ -659,9 +670,12 @@
     }
   }
 
-  /deep/ .el-table .el-table__row:hover::after {
-    display: none;
+  /deep/ .el-table {
+    .el-table__row:hover::after {
+      display: none;
+    }
   }
+
 
   .avatar-uploader {
     opacity: 0;

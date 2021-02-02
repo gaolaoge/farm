@@ -15,7 +15,7 @@
         <div ref="infoTable"
              class="infoTable"
              v-show="table.navListActiveIndex == 0">
-          <person-info />
+          <person-info/>
         </div>
       </div>
     </div>
@@ -24,9 +24,10 @@
 
 <script>
   import personInfo from '@/components/Pinfo/personInfo'
+
   export default {
     name: 'Pinfo',
-    data(){
+    data() {
       return {
         table: {
           navListActiveIndex: 0,
@@ -48,5 +49,16 @@
   .Pinfo-wrapper {
     overflow: hidden;
     width: 100%;
+    height: 100%;
+
+    .tableGroup {
+      height: calc(100% - 20px);
+      display: flex;
+      flex-direction: column;
+
+      .tableList {
+        flex-grow: 1;
+      }
+    }
   }
 </style>

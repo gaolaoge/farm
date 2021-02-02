@@ -41,11 +41,9 @@ businessServer.interceptors.response.use(
 function createEM(remoteLogin) {
   if(!lock) return false
   else lock = false
-  if(remoteLogin) {
-    // messageFun('error', '异地登录')
-    store.commit('remoteLoginFun', remoteLogin)
-  } else {
-    messageFun('error', '授权失效，需要重新登录')
+  if(remoteLogin) store.commit('remoteLoginFun', remoteLogin)  // 异地登录
+  else {
+    messageFun('warning', 'Token过期，请重新登录。')
     vue.$router.push('/login')
   }
   setTimeout(() => lock = true, 1000)

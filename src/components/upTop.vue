@@ -36,10 +36,6 @@
                     <span class="unit">￥</span>
                     <span class="num">{{ item.ChineseYuan }}</span>
                   </div>
-<!--                  <div class="t">-->
-<!--                    <p class="remark">{{ item.remark1 }}</p>-->
-<!--                    <p class="remark">{{ item.remark2 }}</p>-->
-<!--                  </div>-->
                   <div class="selected" :style="{backgroundImage: 'url(' + require('../icons/x.png') + ')'}">
                     <span>{{ item.ChineseYuan }}</span>
                     <img src="@/icons/check-circle.png">
@@ -72,13 +68,13 @@
                 <img src="@/icons/zhifubao-icon-a.png" v-show="payMethods == 'zfb'">
               </div>
               <!--微信【暂不可用】-->
-<!--              <div @click="payMethods = 'wx'"-->
-<!--                   :class="[{'active': payMethods == 'wx'}, 'pay-base']">-->
-<!--                <img src="@/icons/no-select.png" v-show="payMethods != 'wx'" class="s">-->
-<!--                <img src="@/icons/yes-select.png" v-show="payMethods == 'wx'" class="s">-->
-<!--                <img src="@/icons/weixin-icon.png" v-show="payMethods != 'wx'">-->
-<!--                <img src="@/icons/weixin-icon-a.png" v-show="payMethods == 'wx'">-->
-<!--              </div>-->
+              <!--              <div @click="payMethods = 'wx'"-->
+              <!--                   :class="[{'active': payMethods == 'wx'}, 'pay-base']">-->
+              <!--                <img src="@/icons/no-select.png" v-show="payMethods != 'wx'" class="s">-->
+              <!--                <img src="@/icons/yes-select.png" v-show="payMethods == 'wx'" class="s">-->
+              <!--                <img src="@/icons/weixin-icon.png" v-show="payMethods != 'wx'">-->
+              <!--                <img src="@/icons/weixin-icon-a.png" v-show="payMethods == 'wx'">-->
+              <!--              </div>-->
             </div>
           </div>
           <!--btn-->
@@ -103,12 +99,12 @@
                 <p class="accumulative"> {{ item.total }} </p>
                 <p class="price">{{ form.unit }}<span class="num">{{ item.price }}</span>{{ form.unitPrice }}</p>
                 <p class="k">
-<!--                  &lt;!&ndash;相当于16核32线程节点机&ndash;&gt;-->
-<!--                  <span style="display: block">{{ item.dir1 }}</span>-->
-<!--                  &lt;!&ndash;包含每小时收费3.04元&ndash;&gt;-->
-<!--                  <span style="display: block">{{ form.dir4 }}<span class="v">{{ item.unitPrice }}</span>{{ form.dir2 }}</span>-->
-<!--                  &lt;!&ndash;包含50G 存储空间&ndash;&gt;-->
-<!--                  {{ form.f }}<span class="v">{{ item.RAM }}</span>{{ form.dir3 }}-->
+                  <!--                  &lt;!&ndash;相当于16核32线程节点机&ndash;&gt;-->
+                  <!--                  <span style="display: block">{{ item.dir1 }}</span>-->
+                  <!--                  &lt;!&ndash;包含每小时收费3.04元&ndash;&gt;-->
+                  <!--                  <span style="display: block">{{ form.dir4 }}<span class="v">{{ item.unitPrice }}</span>{{ form.dir2 }}</span>-->
+                  <!--                  &lt;!&ndash;包含50G 存储空间&ndash;&gt;-->
+                  <!--                  {{ form.f }}<span class="v">{{ item.RAM }}</span>{{ form.dir3 }}-->
                   <span style="display: block" class="v">全新硬件</span>
                   <span style="display: block" class="v">发烧级性能</span>
 <!--                  <span style="display: block" class="v">限时<span style="color: #000">5折</span>巨惠</span>-->
@@ -126,10 +122,10 @@
                 <p class="accumulative"> {{ item.total }} </p>
                 <p class="price">{{ form.unit }}<span class="num">{{ item.price }}</span>{{ form.unitPrice2 }}</p>
                 <p class="k">
-<!--                  <span style="display: block">{{ item.dir1 }}</span>-->
-<!--                  <span style="display: block">{{ form.dir4 }}<span-->
-<!--                    class="v">{{ item.price }}</span>{{ form.dir2 }}</span>-->
-<!--                  {{ form.f }}<span class="v">{{ item.RAM }}</span>{{ form.dir3 }}-->
+                  <!--                  <span style="display: block">{{ item.dir1 }}</span>-->
+                  <!--                  <span style="display: block">{{ form.dir4 }}<span-->
+                  <!--                    class="v">{{ item.price }}</span>{{ form.dir2 }}</span>-->
+                  <!--                  {{ form.f }}<span class="v">{{ item.RAM }}</span>{{ form.dir3 }}-->
                   <span style="display: block" class="v"><span style="color: #000">RTX6000</span>显卡</span>
                   <span style="display: block" class="v">光线追踪</span>
                   <span style="display: block" class="v">性能怪兽</span>
@@ -150,15 +146,8 @@
                 <p class="accumulative"> {{ item.total }} </p>
                 <p class="price">{{ form.unit }}<span class="num">{{ item.price }}</span>{{ form.unitPrice }}</p>
                 <p class="k">
-<!--                  &lt;!&ndash;相当于16核32线程节点机&ndash;&gt;-->
-<!--                  <span style="display: block">{{ item.dir1 }}</span>-->
-<!--                  &lt;!&ndash;包含每小时收费3.04元&ndash;&gt;-->
-<!--                  <span style="display: block">{{ form.dir4 }}<span class="v">{{ item.unitPrice }}</span>{{ form.dir2 }}</span>-->
-<!--                  &lt;!&ndash;包含50G 存储空间&ndash;&gt;-->
-<!--                  {{ form.f }}<span class="v">{{ item.RAM }}</span>{{ form.dir3 }}-->
                   <span style="display: block" class="v">全新硬件</span>
                   <span style="display: block" class="v">发烧级性能</span>
-                  <span style="display: block" class="v">限时<span style="color: #000">5折</span>巨惠</span>
                 </p>
               </div>
             </div>
@@ -209,14 +198,14 @@
     <!--充值窗口-->
     <el-dialog title="" width="600px" :visible.sync="dialogNode">
       <header class="dl_header">
-        <span>{{ dialogNodeText.title }}</span>
+        <span class="title">{{ dialogNodeText.title }}</span>
         <img src="@/icons/shutDialogIcon.png" class="closeIcon" @click="dialogNode = false">
       </header>
-      <div class="dl_wrapper">
+      <div class="dl_wrapper2">
         <p class="f">亲爱的 {{ user.account }} ，您好！</p>
         <p class="f s">因服务更新原因，烦请您联系客服进行线下充值～</p>
         <div class="e">
-          <p>24小时客服电话：18560651927</p>
+          <p>24小时客服电话：15610503237</p>
           <p>QQ客服：2860177580</p>
           <p>售后邮箱：ENJINECG@163.com</p>
         </div>
@@ -264,7 +253,7 @@
           upTopLabel: '充值金额',
           upTopVal: '',
           realLabel: '充值到账金币',
-          realVal: '160.000',
+          realVal: '100.000',
           modeLabel: '充值方式',
           modeVal: '',
           listActive: 0,
@@ -304,7 +293,7 @@
               r: '充值后不支持退款。'
             },
             {
-              r: '充值其他问题，请联系客服：18560651927'
+              r: '充值其他问题，请联系客服：15610503237'
             }
           ],
           ChineseYuan: 100,
@@ -470,6 +459,10 @@
 
     .tableGroup {
       height: 100%;
+      padding-bottom: 20px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
     }
 
     .tableList {
@@ -524,6 +517,7 @@
               font-size: 68px;
               font-family: MontserratAlternates-BlackItalic, MontserratAlternates;
             }
+
           }
 
           .t {
@@ -531,6 +525,7 @@
             flex-direction: column;
             justify-content: center;
             height: 73px;
+
             .remark {
               padding-left: 20px;
               font-size: 13px;
@@ -589,10 +584,6 @@
         .s {
           margin-right: 10px;
         }
-
-        &.active {
-
-        }
       }
 
       .btn {
@@ -627,7 +618,7 @@
       &:nth-last-of-type(1) {
         margin-bottom: 0px;
         border-radius: 8px;
-        height: 198px;
+        flex-grow: 1;
       }
     }
 
@@ -745,36 +736,13 @@
     }
   }
 
-  .dl_header {
-    height: 36px;
-    text-align: center;
-    background-color: rgba(241, 244, 249, 1);
-    box-shadow: 0px 1px 6px 0px rgba(27, 83, 244, 0.3);
-    padding: 0px 30px;
-    box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    span {
-      font-size: 14px;
-      font-weight: 600;
-      color: rgba(22, 29, 37, 1);
-    }
-
-    img {
-      cursor: pointer;
-    }
-  }
-
-  .dl_wrapper {
+  .dl_wrapper2 {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
 
     .f {
       font-size: 14px;
-      font-family: PingFangSC-Medium, PingFang SC;
       font-weight: 500;
       color: rgba(22, 29, 37, 1);
       margin-left: 59px;
@@ -791,7 +759,6 @@
 
       p {
         font-size: 14px;
-        font-family: PingFangSC-Medium, PingFang SC;
         font-weight: 500;
         color: rgba(27, 83, 244, 1);
         line-height: 27px;
@@ -813,7 +780,6 @@
 
         p {
           font-size: 14px;
-          font-family: PingFangSC-Regular, PingFang SC;
           font-weight: 400;
           color: rgba(22, 29, 37, 1);
           margin-top: 12px;

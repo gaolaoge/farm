@@ -3,7 +3,7 @@
     <div class="container">
       <p class="title">
         <span>{{ title }}</span>
-        <img src="@/icons/shutDialogIcon.png" alt="" class="shutImg" @click="cancelFun">
+        <img src="@/icons/shutDialogIcon.png" class="shutImg" @click="cancelFun">
       </p>
       <div class="content">
         <input type="text"
@@ -11,8 +11,8 @@
                @input="nameVerif(true)"
                @blur="nameVerif(false)"
                @focus="status === false ? status = null : null"
-               :placeholder="placeHolder"
-               v-model="name">
+               v-model="name"
+               :placeholder="placeHolder">
         <span class="warn" v-show="status === false">请输入2-18位字符，支持数字、字母、汉字、下划线、特殊字符</span>
         <!--按钮-->
         <div class="btn-group">

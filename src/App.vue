@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="app" class="setScollBarStyle">
     <win />
   </div>
 </template>
@@ -24,11 +24,10 @@ export default {
     padding: 0px;
   }
   #app {
-    /*font-family: 'SourceHanSansCN','Arial Bold';*/
-    /*-webkit-font-smoothing: antialiased;*/
-    /*-moz-osx-font-smoothing: grayscale;*/
-    min-height: 810px;
-    min-width: 900px;
+    height: 100vh;
+    width: 100vw;
+    min-height: 950px;
+    min-width: 1500px;
   }
 
 

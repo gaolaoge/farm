@@ -42,12 +42,12 @@
         </div>
         <!--全屏-->
         <span class="bigger fc bl" v-show="fullBtn">
-          <img src="@/icons/bigger.png" alt="" @click="f">
+          <img src="@/icons/bigger.png" @click="f">
         </span>
         <!--返回-->
         <div class="farm-primary-form-btn" v-show="!fullBtn" @click="e">
-          <img src="@/icons/back_icon-black.png" alt="" class="btnIcon default">
-          <img src="@/icons/back_icon-white.png" alt="" class="btnIcon hover">
+          <img src="@/icons/back_icon-black.png" class="btnIcon default">
+          <img src="@/icons/back_icon-white.png" class="btnIcon hover">
           <span>返回</span>
         </div>
       </div>
@@ -71,7 +71,7 @@
       <div class="itemList">
         <div class="item" v-for="(item,index) in taskL" :key="index">
           <span>{{ item.label }}</span>
-          <img src="@/icons/b.png" alt="" @click="taskV.splice(index, 1)">
+          <img src="@/icons/b.png" @click="taskV.splice(index, 1)">
         </div>
       </div>
       <div class="ec" ref="ec"/>

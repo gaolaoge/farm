@@ -2,7 +2,6 @@
   <div class="recharge-centre">
     <!--table-->
     <div class="recharge-table" ref="rechargeTable">
-
       <!--条件筛选-->
       <div class="filter">
         <!--交易状态-->
@@ -96,24 +95,19 @@
 
       <!--table-->
       <el-table
-        :data="table.rechargeData"
+        :data="table.tableData"
         @selection-change="handleSelectionChange"
         @filter-change="filterHandler"
+        @sort-change="sortChangeHandle"
         class="o"
         :border=true
         style="width: 100%">
 
-        <el-table-column
-          type="selection"
-          align="right"
-          show-overflow-tooltip
-          min-width="58"
-          width="58"/>
         <!--交易ID-->
         <el-table-column
-          prop="id"
+          prop="outTradeNo"
           label="交易ID"
-          sortable
+          sortable="custom"
           show-overflow-tooltip
           min-width="180"/>
         <!--交易状态-->
@@ -125,14 +119,14 @@
         </el-table-column>
         <!--实际支付金额（元）-->
         <el-table-column
-          prop="realPay"
+          prop="actualPayment"
           label="实际支付金额（元）"
           show-overflow-tooltip
-          sortable
+          sortable="custom"
           width="172"/>
         <!--充值到账（金币）-->
         <el-table-column
-          prop="realArrive"
+          prop="arrivalAmount"
           label="充值到账（金币）"
           sortable
           show-overflow-tooltip
@@ -183,12 +177,9 @@
                  v-show="scope.row.operate != '-'">
               {{ scope.row.operate }}
             </div>
-            <div class="download-tab-none" v-show="scope.row.operate == '-'">
-              -
-            </div>
+            <div class="download-tab-none" v-show="scope.row.operate == '-'">-</div>
           </template>
         </el-table-column>
-
       </el-table>
     </div>
     <!--分页-->
@@ -200,7 +191,7 @@
         :current-page.sync="table.currentPage"
         :total="table.outPutTableTotal"/>
       <div class="farm-primary-form-btn btn" @click="getList">
-        <span>{{ refresh }}</span>
+        <span>{{ $t('public_text.refresh') }}</span>
       </div>
     </div>
   </div>
@@ -227,24 +218,13 @@
     data() {
       return {
         table: {
-          rechargeData: [
-            // {
-            //   id: '',               // 交易ID
-            //   state: '',            // 交易状态
-            //   realPay: '',          // 实际支付金额（元）
-            //   realArrive: '',       // 充值到账（金币）
-            //   directions: '',       // 充值说明
-            //   paymentMethod: '',    // 充值方式
-            //   singleNumber: '',     // 支付单号
-            //   date: '',             // 交易时间
-            //   operate: ''           // 操作
-            //   invoice: ''           // 开票标识
-            // },
-          ],
+          tableData: [],
           outPutTableTotal: 0,
           currentPage: 1,
           pageSize: 10,
           selectionList: [],            //渲染输出选中项
+          sortBy: 0,
+          sortType: 0
         },
         filter: {
           tradingtatusLabel: '交易状态',
@@ -312,14 +292,34 @@
           iquireBtn: '查询',
           resetBtn: '重置',
           exportBtn: '导出记录'
-        },
-        refresh: '刷新'
+        }
       }
     },
     components: {
       modelCalendar
     },
     methods: {
+      // 排序
+      sortChangeHandle({column, prop, order}) {
+        let {table} = this
+        if (order == 'ascending') table.sortType = 1
+        else table.sortType = 0
+        // 排序字段:0:交易id, 1:交易状态,2:实际支付金额,3:充值到账金币,4:充值说明,5:支付方式,6:支付单号,7:修改时间
+        if (!order) table.sortBy = 0
+        else switch(prop) {
+            case 'outTradeNo':
+              table.sortBy = 0
+                  break
+            case 'actualPayment':
+              table.sortBy = 2
+              break
+            case 'outTradeNo':
+              table.sortBy = 3
+              break
+          }
+        this.getList()
+      },
+      // 点击拷贝
       copySingleNumber(val) {
         let oInput = document.createElement('INPUT')
         oInput.style.display = 'none'
@@ -352,10 +352,13 @@
       // 获取table数据
       async getList() {
         let f = this.filter,
-          t = `paymentStatus=${f.tradingtatusVal}&paymentTitle=${f.paymentMethodVal}&invoice=${f.markVal}&productOrderUuid=${f.singleNumberVal}&beginTime=${f.date ? f.date[0].getTime() : 0}&endTime=${f.date ? f.date[1].getTime() : new Date().getTime()}&sortColumn=1&sortBy=0&pageIndex=${this.table.currentPage}&pageSize=${Number(this.table.pageSize)}`,
-          data = await getUpTopTable(t)
-        this.table.outPutTableTotal = data.data.total
-        this.table.rechargeData = data.data.data.map(curr => {
+          {table, filter} = this,
+          {tradingtatusVal, paymentMethodVal, markVal, singleNumberVal, date} = filter,
+          {sortType, currentPage, pageSize, sortBy} = table,
+          t = `paymentStatus=${tradingtatusVal}&paymentTitle=${paymentMethodVal}&invoice=${markVal}&productOrderUuid=${singleNumberVal}&beginTime=${date ? date[0].getTime() : 0}&endTime=${date ? date[1].getTime() : new Date().getTime()}&pageIndex=${currentPage}&pageSize=${Number(pageSize)}&sortBy=${sortType}&sortColumn=${sortBy}`,
+          {data} = await getUpTopTable(t)
+        table.outPutTableTotal = data.total
+        table.tableData = data.data.map(curr => {
           curr.operate = '-'
           switch (curr.paymentStatus) {
             case 1:
@@ -373,7 +376,7 @@
           if (!curr.actualPayment) curr.actualPayment = '-'
           let {year, month, day, hour, minutes, seconds} = createCalendar(new Date(curr.updateTime)),
             invoice
-          switch(curr.invoice){
+          switch (curr.invoice) {
             case 0:
               invoice = '不可开票'
               break
@@ -388,10 +391,10 @@
               break
           }
           return {
-            id: curr.outTradeNo,                // 交易ID
+            outTradeNo: curr.outTradeNo,          // 交易ID
             state: curr.paymentStatus,            // 交易状态
-            realPay: curr.actualPayment,          // 实际支付金额（元）
-            realArrive: curr.arrivalAmount,       // 充值到账（金币）
+            actualPayment: curr.actualPayment,    // 实际支付金额（元）
+            arrivalAmount: curr.arrivalAmount,    // 充值到账（金币）
             directions: curr.rechargeExplain,     // 充值说明
             paymentMethod: curr.paymentTitle == '1' ? '支付宝' : '-',                      // 充值方式
             singleNumber: curr.productOrderUuid ? curr.productOrderUuid : '-',  // 支付单号
@@ -409,8 +412,6 @@
           paymentMethodVal: '-1',
           markVal: '-1',
           singleNumberVal: '',
-          // inquireValS: 0,
-          // inquireValV: new Date(),
           date: null
         })
         this.getList()
@@ -432,7 +433,7 @@
         //   sortBy: ''         // 排序方式:0降序,1升序
         // }
         let f = this.filter,
-          t = `paymentStatus=${f.tradingtatusVal}&paymentTitle=${f.paymentMethodVal}&invoice=${f.markVal}&outTradeNo=${f.singleNumberVal}&beginTime=${f.date ? f.date[0].getTime() : 0}&endTime=${f.date ? f.date[1].getTime() : new Date().getTime()}&sortColumn=1&sortBy=1&pageIndex=${this.table.currentPage}&pageSize=${Number(this.table.pageSize)}`,
+          t = `paymentStatus=${f.tradingtatusVal}&paymentTitle=${f.paymentMethodVal}&invoice=${f.markVal}&outTradeNo=${f.singleNumberVal}&beginTime=${f.date ? f.date[0].getTime() : 0}&endTime=${f.date ? f.date[1].getTime() : new Date().getTime()}&sortColumn=${this.table.sortBy}&sortBy=${this.table.sortType}&pageIndex=${this.table.currentPage}&pageSize=${Number(this.table.pageSize)}`,
           data = await exportUpTopTable(t)
         // 导出下载
         exportDownloadFun(data, '充值记录', 'xlsx')

@@ -1,5 +1,5 @@
 <template>
-  <div class="Navbar-wrapper">
+  <div class="Navbar-wrapper" ref="navbar">
     <svg height="100%" width="130" class="svg">
       <defs>
         <radialGradient id="gg" x1="0" y1="0" x2="0" y2="100%">
@@ -14,7 +14,7 @@
       </defs>
       <path :d="d" stroke="url(#gg)" stroke-width="5" fill="rgba(255,255,255,1)"/>
     </svg>
-    <img src="@/icons/logo2.png" alt="" class="mainLogo" @click="$router.push('/')">
+    <img src="@/icons/logo2.png" class="mainLogo" @click="$router.push('/')">
     <div class="navList">
       <ul>
         <li v-for="(item,index) in navList"
@@ -25,8 +25,8 @@
             ]"
             @click="jump(index,item.link)">
           <div class="ib">
-            <img :src="item.iconUrl" alt="" class="selectIcon">
-            <img :src="item.iconsUrlDefault" alt="" class="defaultIcon">
+            <img :src="item.iconUrl" class="selectIcon">
+            <img :src="item.iconsUrlDefault" class="defaultIcon">
           </div>
           <span class="text">
             {{ item.text }}
@@ -35,7 +35,7 @@
       </ul>
     </div>
     <div class="addTask" @click="createTask">
-      <img src="@/icons/addIcon-Whit.png" alt="" class="addTaskIcon">
+      <img src="@/icons/addIcon-Whit.png" class="addTaskIcon">
     </div>
     <div class="systemList">
       <ul>
@@ -47,8 +47,8 @@
             ]"
             @click="jump(index + 4,item.link)">
           <div class="ib">
-            <img :src="item.iconUrl" alt="" class="selectIcon">
-            <img :src="item.iconsUrlDefault" alt="" class="defaultIcon">
+            <img :src="item.iconUrl" class="selectIcon">
+            <img :src="item.iconsUrlDefault" class="defaultIcon">
           </div>
           <span class="text">
             {{ item.text }}
@@ -60,16 +60,24 @@
     <el-dialog :visible.sync="createTaskDialog"
                :show-close=false
                :destroy-on-close=true
-               top="8vh"
+               :close-on-click-modal="false"
                @opened="r()"
+               top="8vh"
                width="862px">
-      <newTask @closeDialogFun="closeDialogFun" ref="dialog"/>
+      <newTask @closeDialogFunReal="closeDialogFun" ref="dialog"/>
     </el-dialog>
   </div>
 </template>
 
 <script>
   import newTask from '@/components/home/new-task'
+  import {
+    updateBalance,
+    createThrowInfo
+  } from '@/assets/common'
+  import {
+    mapState
+  } from 'vuex'
 
   export default {
     name: 'Navbar',
@@ -102,6 +110,7 @@
           }
         ],
         systemList: [
+          // 统计
           // {
           //   link: '/statisticsM',
           //   iconUrl: require('@/icons/console-icon-statistics-h.png'),
@@ -135,7 +144,17 @@
       },
       // 新建任务
       createTask() {
-        this.createTaskDialog = true
+        // 判断余额是否充足
+        updateBalance('新建任务')
+          .then(data => {
+            if(data) this.createTaskDialog = true
+          })
+          .catch(() => createThrowInfo({
+            type:'error',
+            title:'获取余额情况失败',
+            info:'在【新建任务】操作前判断',
+            site:'layout/components/Navbar:145'
+          }))
       },
       // 关闭新建任务弹窗
       closeDialogFun() {
@@ -143,7 +162,7 @@
       },
       // 背景 svg
       createSVG() {
-        this.d = `M 0 0 H 100 A 20 20 0 0 1 120 20 V 552 C 120 567 123 569 114 598 C 104 627 52 632 52 676 C 51 735 120 723 120 786 V ${document.body.clientHeight - 20} A 20 20 0 0 1 100 ${document.body.clientHeight} H 0 Z`
+        this.d = `M 0 0 H 100 A 20 20 0 0 1 120 20 V 552 C 120 567 123 569 114 598 C 104 627 52 632 52 676 C 51 735 120 723 120 786 V ${this.$refs.navbar.offsetHeight - 20} A 20 20 0 0 1 100 ${this.$refs.navbar.offsetHeight} H 0 Z`
       }
     },
     mounted() {
@@ -164,12 +183,16 @@
               this.navActive = 2
               break
             case 'bill':
+            case 'upTop':
               this.navActive = 3
               break
           }
         },
         immediate: true
       }
+    },
+    computed: {
+      ...mapState(['user'])
     }
   }
 </script>
@@ -178,12 +201,12 @@
   .Navbar-wrapper {
     position: relative;
     width: 120px;
-    height: 100vh;
     min-height: 950px;
     border-radius: 0px 20px 20px 0px;
     display: flex;
     flex-direction: column;
     align-items: center;
+
 
     .svg {
       position: absolute;

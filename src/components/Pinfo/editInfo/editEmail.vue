@@ -3,7 +3,7 @@
     <div class="container">
       <p class="title">
         <span>{{ title }}</span>
-        <img src="@/icons/shutDialogIcon.png" alt="" class="shutImg" @click="cancelFun">
+        <img src="@/icons/shutDialogIcon.png" class="shutImg" @click="cancelFun">
       </p>
       <!--编辑-->
       <div class="content" v-show="editing">
@@ -16,15 +16,14 @@
         <!--验证码-->
         <div class="farm-item">
           <input type="text"
-                 class="farm-input code"
-                 :class="[{'error': verif.phoneCode === false}]"
+                 :class="['farm-input', 'code', {'error': verif.phoneCode === false}]"
                  v-model="codeVal"
                  @blur="verifCode('codeVal', 'phoneCode')"
                  @focus="verif.phoneCode = null"
                  @input="verifCode('codeVal', 'phoneCode', true)"
                  :placeholder="codePlaceholder">
           <span class="errorInfo" v-show="verif.phoneCode === false">{{ errorInfo.code }}</span>
-          <div class="getCode" :class="[{'cannotBe': getPhoneCodeD.showCountdown}]">
+          <div :class="['getCode', {'cannotBe': getPhoneCodeD.showCountdown}]">
             <span class="getSpan" v-show="!getPhoneCodeD.showCountdown" @click="getPhoneCode">{{ codeLabel }}</span>
             <span class="countdown" v-show="getPhoneCodeD.showCountdown">{{ getPhoneCodeD.time }}{{ unit }}</span>
           </div>
@@ -36,7 +35,7 @@
         <!--验证码-->
         <div class="farm-item">
           <input type="text" class="farm-input code" v-model="emailCodeVal" :placeholder="emailCodePlaceholder">
-          <div class="getCode" :class="[{'cannotBe': getEmailCodeD.showCountdown}]">
+          <div :class="['getCode', {'cannotBe': getEmailCodeD.showCountdown}]">
             <span class="getSpan" v-show="!getEmailCodeD.showCountdown" @click="getEmailCode">{{ codeLabel }}</span>
             <span class="countdown" v-show="getEmailCodeD.showCountdown">{{ getEmailCodeD.time }}{{ unit }}</span>
           </div>
@@ -118,10 +117,11 @@
     },
     methods: {
       // 验证验证码
-      verifCode(node, code, ing){
-        if(/^\d{6}$/.test(this[node])) this.verif[code] = true
+      verifCode(node, code, ing) {
+        if (/^\d{6}$/.test(this[node])) this.verif[code] = true
+        else if (!this[node]) return false
         else {
-          if(ing) this.verif[code] = null
+          if (ing) this.verif[code] = null
           else this.verif[code] = false
         }
       },

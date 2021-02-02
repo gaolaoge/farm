@@ -365,8 +365,9 @@ export function getRenderTableList(data){
 // 任务 - 渲染下载 - 查看详情
 export function getRenderTSeeMore(data){
   return businessServer({
-    url: `/professional/frame/getAllFrameTaskList?${data}`,
-    method: 'GET',
+    url: `/professional/frame/getAllFrameTaskList`,
+    method: 'POST',
+    data
   })
 }
 

@@ -1,50 +1,37 @@
 <template>
   <div class="farm-drawer-wrapper">
     <!--分析结果-->
-    <div :class="[{'active': showDrawer}, 'farm-drawer']" v-show="typeInfo == 'upload-table'">
+    <div :class="[{'active': showDrawer}, 'farm-drawer']"
+         v-show="typeInfo == 'upload-table'"
+         v-loading="loading"
+         element-loading-background="rgba(0, 0, 0, 0.49)"
+         element-loading-spinner="el-icon-loading"
+         element-loading-text="拼命加载中...">
       <div class="farm-drawer-title">
         <div class="drawer-t">
-          <span class="drawer-text">
-            {{ details.t }}
-          </span>
+          <span class="drawer-text">{{ details.t }}</span>
         </div>
         <div class="closeIcon">
-          <img src="@/icons/icon_ close1.png" alt="" @click="closeDrawer">
+          <img src="@/icons/icon_ close1.png" @click="closeDrawer">
         </div>
       </div>
       <div class="farm-drawer-body e">
         <div class="farm-drawer-body-item one">
           <div class="farm-drawer-item">
-            <span class="farm-drawer-item-label">
-              {{ details.labelId }}：
-            </span>
-            <span class="farm-drawer-item-val">
-              {{ details.valId }}
-            </span>
+            <span class="farm-drawer-item-label">{{ details.labelId }}：</span>
+            <span class="farm-drawer-item-val">{{ details.valId }}</span>
           </div>
           <div class="farm-drawer-item">
-            <span class="farm-drawer-item-label">
-              {{ details.labelName }}：
-            </span>
-            <span class="farm-drawer-item-val">
-              {{ details.valName }}
-            </span>
+            <span class="farm-drawer-item-label">{{ details.labelName }}：</span>
+            <span class="farm-drawer-item-val">{{ details.valName }}</span>
           </div>
           <div class="farm-drawer-item">
-            <span class="farm-drawer-item-label">
-              {{ details.labelCreateTime }}：
-            </span>
-            <span class="farm-drawer-item-val">
-              {{ details.valCreateTime }}
-            </span>
+            <span class="farm-drawer-item-label">{{ details.labelCreateTime }}：</span>
+            <span class="farm-drawer-item-val">{{ details.valCreateTime }}</span>
           </div>
           <div class="farm-drawer-item">
-            <span class="farm-drawer-item-label">
-              {{ details.labelState }}：
-            </span>
-            <span class="farm-drawer-item-val">
-              {{ details.valState }}
-            </span>
+            <span class="farm-drawer-item-label">{{ details.labelState }}：</span>
+            <span class="farm-drawer-item-val">{{ details.valState }}</span>
           </div>
         </div>
         <div class="farm-drawer-body-item two">
@@ -67,18 +54,10 @@
                v-show="!(details.warningList[0] && !details.errorList[0])"
                :style="{'opacity': details.errorList[0] ? 1 : 0}">
             <div class="farm-drawer-list-item" v-for="(item,index) in details.errorList">
-              <div class="icon">
-                <img src="@/icons/errorIcon.png" alt="">
-              </div>
+              <div class="icon"><img src="@/icons/errorIcon.png"></div>
               <div class="text">
-                <span class="t">
-                  {{ item.title }}
-                </span>
-                <span class="c">
-
-
-                  {{ item.content }}
-                </span>
+                <span class="t">{{ item.title }}</span>
+                <span class="c">{{ item.content }}</span>
               </div>
             </div>
           </div>
@@ -87,16 +66,10 @@
                v-show="!(!details.warningList[0] && details.errorList[0])"
                :style="{'opacity': details.warningList[0] ? 1 : 0}">
             <div class="farm-drawer-list-item" v-for="(item,index) in details.warningList">
-              <div class="icon">
-                <img src="@/icons/warningIcon.png" alt="">
-              </div>
+              <div class="icon"><img src="@/icons/warningIcon.png"></div>
               <div class="text">
-                <span class="t">
-                  {{ item.title }}
-                </span>
-                <span class="c">
-                  {{ item.content }}
-                </span>
+                <span class="t">{{ item.title }}</span>
+                <span class="c">{{ item.content }}</span>
               </div>
             </div>
           </div>
@@ -125,13 +98,9 @@
     <div :class="[{'active': showDrawer}, 'farm-drawer', 's']" v-show="typeInfo == 'setting'">
       <div class="farm-drawer-title">
         <div class="drawer-t">
-          <span class="drawer-text">
-            {{ setting.t }}
-          </span>
+          <span class="drawer-text">{{ setting.t }}</span>
         </div>
-        <div class="closeIcon">
-          <img src="@/icons/icon_ close1.png" alt="" @click="closeDrawer">
-        </div>
+        <div class="closeIcon"><img src="@/icons/icon_ close1.png" @click="closeDrawer"></div>
       </div>
       <div class="farm-drawer-body e">
         <!--渲染层数-->
@@ -142,7 +111,11 @@
               {{ zone == 1 ? setting.num.title1 : setting.num.title2 }}
             </span>
             <span class="farm-drawer-body-item-header-assist">
-              {{ setting.num.miniTitO }}{{ setting.num.selected.length }}{{ setting.num.miniTitT }}
+              {{ setting.num.miniTitO }}
+              <span style="font-size: 18px; color: rgba(27, 83, 244, 1)">
+                {{ setting.num.selected.length }}
+              </span>
+              {{ zone == 1 ? setting.num.miniTitT1 : setting.num.miniTitT2 }}
             </span>
             <!--启动分层渲染-->
             <div class="switchLayered">
@@ -163,16 +136,17 @@
                           effect="dark"
                           content="如果您需要将场景文件的毎一层都可以作为一个子任务单独进行渲染，请启用此项。"
                           placement="bottom-end">
-                <img src="@/icons/question-mark-icon.png" alt="" class="mark">
+                <img src="@/icons/question-mark-icon.png" class="mark">
               </el-tooltip>
             </div>
           </div>
-          <!--table-->
+          <!--影视 tab-->
           <el-table
             :data="setting.num.tableData"
-            class="mini-table"
             :row-class-name="tableRowClassName"
             @selection-change="settingTableItemChange"
+            v-if="zone == 1"
+            class="mini-table"
             ref="renderTable"
             style="width: calc(42vw - 34px);min-width: 766px;margin-left: -30px;">
 
@@ -180,11 +154,11 @@
               type="selection"
               align="right"
               width="55"/>
-
+            <!--层名-->
             <el-table-column
               prop="name"
-              :label="zone == 1 ? '层名' : '图像名称'"
-              width="180"/>
+              label="层名"
+              width="160"/>
             <!--帧范围-->
             <el-table-column
               label="帧范围"
@@ -278,7 +252,7 @@
             <!--输出格式-->
             <el-table-column
               label="输出格式"
-              width="160">
+              width="120">
               <template slot-scope="scope">
                 <el-select v-model="scope.row.format">
                   <el-option
@@ -293,7 +267,7 @@
             <!--相机-->
             <el-table-column
               label="相机"
-              width="180">
+              width="160">
               <template slot-scope="scope">
                 <el-select v-model="scope.row.camera">
                   <el-option
@@ -307,20 +281,116 @@
             </el-table-column>
 
           </el-table>
+          <!--效果图 tab-->
+          <el-table
+            :data="setting.num.tableData"
+            :row-class-name="tableRowClassName"
+            @selection-change="settingTableItemChange"
+            v-if="zone == 2"
+            class="mini-table"
+            ref="renderTable"
+            style="width: calc(42vw - 34px);min-width: 766px;margin-left: -30px;">
+
+            <el-table-column
+              type="selection"
+              align="right"
+              width="55"/>
+            <!--相机名称-->
+            <el-table-column
+              label="相机名称"
+              width="140">
+              <template slot-scope="scope">
+                <el-select v-model="scope.row.camera">
+                  <el-option
+                    v-for="(item,index) in scope.row.cameraList"
+                    :key="index"
+                    :label="item.label"
+                    :value="item.val">
+                  </el-option>
+                </el-select>
+              </template>
+            </el-table-column>
+            <!--图像宽度-->
+            <el-table-column
+              label="图像宽度"
+              width="88">
+              <template slot-scope="scope">
+                <span :class="[{'show': scope.row.wEdit == false}]"
+                      class="farm-table-td-span">
+                  {{ scope.row.w }}
+                </span>
+                <input type="text"
+                       v-model="scope.row.w"
+                       :class="[{'show': scope.row.wEdit == true}]"
+                       @focus="scope.row.wEdit = true"
+                       @blur="wChange($event,scope.$index)"
+                       class="farm-table-td-input">
+              </template>
+            </el-table-column>
+            <!--图像高度-->
+            <el-table-column
+              label="图像高度"
+              width="88">
+              <template slot-scope="scope">
+                <span :class="[{'show': scope.row.hEdit == false}]"
+                      class="farm-table-td-span">
+                  {{ scope.row.h }}
+                </span>
+                <input type="text"
+                       v-model="scope.row.h"
+                       :class="[{'show': scope.row.hEdit == true}]"
+                       @focus="scope.row.hEdit = true"
+                       @blur="hChange($event,scope.$index)"
+                       class="farm-table-td-input">
+              </template>
+            </el-table-column>
+            <!--图像比例-->
+            <el-table-column
+              label="图像比例"
+              width="100">
+              <template slot-scope="scope">
+                <div class="ratio">
+                  <span class="farm-table-td-span show">{{ scope.row.ratio }}</span>
+                  <!--锁住状态-->
+                  <img src="@/icons/lock.png" v-show="scope.row.lock" @click="changeLock(scope.$index)">
+                  <!--解锁状态-->
+                  <img src="@/icons/unLock.png" v-show="!scope.row.lock" @click="changeLock(scope.$index)">
+                </div>
+              </template>
+            </el-table-column>
+            <!--输出格式-->
+            <el-table-column
+              label="输出格式"
+              width="120">
+              <template slot-scope="scope">
+                <el-select v-model="scope.row.format">
+                  <el-option
+                    v-for="(item,index) in scope.row.formatList"
+                    :key="index"
+                    :label="item.label"
+                    :value="item.val">
+                  </el-option>
+                </el-select>
+              </template>
+            </el-table-column>
+            <!--图像名称-->
+            <el-table-column
+              prop="name"
+              label="图像名称"/>
+
+          </el-table>
         </div>
         <!--优先渲染-->
         <div class="farm-drawer-body-item" v-show="zone == 1">
           <!--标题-->
           <div class="farm-drawer-body-item-header">
-            <span class="farm-drawer-body-item-header-main">
-              {{ setting.priority.title }}
-            </span>
+            <span class="farm-drawer-body-item-header-main">{{ setting.priority.title }}</span>
+            <!--提示-->
+            <span class="info">{{ setting.priority.info }}</span>
           </div>
           <!--开关-->
-          <div class="farm-drawer-body-item-d addPadding">
-            <div class="item-label">
-              {{ setting.priority.label }}：
-            </div>
+          <div class="farm-drawer-body-item-d">
+            <div class="item-label">{{ setting.priority.label }}：</div>
             <!--首帧-->
             <div class="item-switch">
               <el-switch
@@ -330,7 +400,7 @@
                 active-color="rgba(10, 98, 241, 1)"
                 active-value='1'
                 inactive-value='0'/>
-              <span class="item-switch-label" :class="[{'active': setting.priority.topVal}]">
+              <span :class="['item-switch-label', {'active': setting.priority.topVal}]">
                 {{ setting.priority.topLabel }}
               </span>
             </div>
@@ -343,7 +413,7 @@
                 active-color="rgba(10, 98, 241, 1)"
                 active-value='1'
                 inactive-value='0'/>
-              <span class="item-switch-label" :class="[{'active': setting.priority.middleVal}]">
+              <span :class="['item-switch-label', {'active': setting.priority.middleVal}]">
                 {{ setting.priority.middleLabel }}
               </span>
             </div>
@@ -356,7 +426,7 @@
                 active-color="rgba(10, 98, 241, 1)"
                 active-value='1'
                 inactive-value='0'/>
-              <span class="item-switch-label" :class="[{'active': setting.priority.bottomVal}]">
+              <span :class="['item-switch-label', {'active': setting.priority.bottomVal}]">
                 {{ setting.priority.bottomLabel }}
               </span>
             </div>
@@ -370,13 +440,11 @@
                 active-color="rgba(10, 98, 241, 1)"
                 active-value='1'
                 inactive-value='0'/>
-              <span class="item-switch-label"
-                    :class="[{'active': setting.priority.selfVal}]"
+              <span :class="['item-switch-label', {'active': setting.priority.selfVal}]"
                     style="vertical-align: inherit">
                 {{ setting.priority.selfLabel }}
               </span>
-              <el-input class='customizeInput'
-                        :class="[{customizeInputError: setting.priority.customizeInputError}]"
+              <el-input :class="['customizeInput', {customizeInputError: setting.priority.customizeInputError}]"
                         v-show="setting.priority.selfVal == 1"
                         v-model="setting.priority.customize"
                         @blur="verifFormat"
@@ -384,11 +452,6 @@
                         :placeholder="setting.priority.inputPlaceholder"/>
             </div>
           </div>
-          <!--提示-->
-          <span class="info">
-            <img src="@/icons/warningIcon.png" alt="">
-            {{ setting.priority.info }}
-          </span>
         </div>
         <!--渲染模式-->
         <div class="farm-drawer-body-item ">
@@ -421,69 +484,42 @@
             </span>
           </div>
           <div class="farm-drawer-body">
-            <!--所属项目-->
-            <div class="farm-drawer-item">
-              <span class="farm-drawer-item-label star">
-                {{ setting.other.viewLabel }}
-              </span>
-              <el-select v-model="setting.other.view"
-                         placeholder="选择已有项目名称"
-                         class="workBench-optionBase haveBorder">
-                <el-option
-                  v-for="(item,index) in setting.other.viewList"
-                  :key="index"
-                  :label="item.label"
-                  :value="item.value">
-                </el-option>
-              </el-select>
-              <!--新建项目-->
-              <span class="createBtn" @click="createItem">
-                <img src="@/icons/createIcon.png"
-                     alt=""
-                     class="createIcon">
-                {{ setting.other.btn }}
-              </span>
-            </div>
             <!--超时提醒-->
             <div class="farm-drawer-item">
-              <span class="farm-drawer-item-label">
-                {{ setting.other.remindLabel }}
-              </span>
-              <el-slider v-model="setting.other.remindVal"
+              <span class="farm-drawer-item-label">{{ setting.other.remindLabel }}</span>
+              <el-slider v-model="setting.other.frameTimeoutWarn"
                          class="slider"
                          :min="1"
                          :max="72"/>
               <input type="text"
                      class="sliderVal"
                      @blur="changeSliderVal"
-                     v-model="setting.other.remindVal">
+                     v-model="setting.other.frameTimeoutWarn">
               <el-tooltip class="item"
                           popper-class="t mini"
                           effect="dark"
                           content="单帧渲染时长超过设定，系统发送提醒消息给联系人，具体通知方式可在“消息设置”中完成"
                           placement="right">
-                <img src="@/icons/question-mark-icon.png" alt="" class="mark">
+                <img src="@/icons/question-mark-icon.png" class="mark">
               </el-tooltip>
             </div>
             <!--超时提醒-->
             <div class="farm-drawer-item">
-              <span class="farm-drawer-item-label">
-                {{ setting.other.stopLabel }}
-              </span>
-              <el-slider v-model="setting.other.stopVal"
+              <span class="farm-drawer-item-label">{{ setting.other.stopLabel }}</span>
+              <el-slider v-model="setting.other.frameTimeoutStop"
                          class="slider"
                          :min="1"
                          :max="72"/>
               <input type="text"
                      class="sliderVal"
                      @blur="changeStopVal"
-                     v-model="setting.other.stopVal">
+                     v-model="setting.other.frameTimeoutStop">
               <el-tooltip class="item"
                           popper-class="t mini"
                           effect="dark"
                           content="单帧渲染时长超过设定，系统停止当前帧的渲染并发送消息给联系人"
                           placement="right">
-                <img src="@/icons/question-mark-icon.png" alt="" class="mark">
+                <img src="@/icons/question-mark-icon.png" class="mark">
               </el-tooltip>
             </div>
           </div>
@@ -491,53 +527,40 @@
         <!--按钮-->
         <div class="b">
           <!--返回-->
-          <div class="btn" @click="settingBack">
-            {{ setting.btn.returnBtn }}
-          </div>
+          <div v-show="!isCopy" class="btn" @click="settingBack">{{ setting.btn.returnBtn }}</div>
           <!--开始渲染-->
-          <div class="btn" @click="startRenderFun">
-            {{ setting.btn.startBtn }}
-          </div>
+          <div class="btn" @click="startRenderFun">{{ setting.btn.startBtn }}</div>
         </div>
       </div>
     </div>
     <!--渲染结果-->
-    <div class="farm-drawer r" :class="[{'active': showDrawer}]" v-show="typeInfo == 'result'">
+    <div :class="['farm-drawer', 'r', {'active': showDrawer}]"
+         v-show="typeInfo == 'result'"
+         v-loading="loading"
+         element-loading-background="rgba(0, 0, 0, 0.49)"
+         element-loading-spinner="el-icon-loading"
+         element-loading-text="拼命加载中...">
       <!--表头-->
       <div class="farm-drawer-title">
         <div class="drawer-t">
-          <span class="drawer-text">
-            {{ result.t }}
-          </span>
+          <span class="drawer-text">{{ result.t }}</span>
         </div>
         <div class="dataList">
           <div class="li cost">
-            <span class="label">
-              {{ result.dataO.costLabel }}：
-            </span>
-            <span class="val">
-              {{ result.dataO.costVal }}
-            </span>
+            <span class="label">{{ result.dataO.costLabel }}：</span>
+            <span class="val">{{ result.dataO.costVal }}</span>
           </div>
           <div class="li total">
-            <span class="label">
-              {{ result.dataO.totalLabel }}：
-            </span>
-            <span class="val">
-              {{ result.dataO.totalVal }}
-            </span>
+            <span class="label">{{ result.dataO.totalLabel }}：</span>
+            <span class="val">{{ result.dataO.totalVal }}</span>
           </div>
           <div class="li average">
-            <span class="label">
-              {{ result.dataO.averageLabel }}：
-            </span>
-            <span class="val">
-              {{ result.dataO.averageVal }}
-            </span>
+            <span class="label">{{ result.dataO.averageLabel }}：</span>
+            <span class="val">{{ result.dataO.averageVal }}</span>
           </div>
         </div>
         <div class="closeIcon">
-          <img src="@/icons/icon_ close1.png" alt="" @click="closeDrawer">
+          <img src="@/icons/icon_ close1.png" @click="closeDrawer">
         </div>
       </div>
       <!--表体-->
@@ -550,14 +573,14 @@
                  class="img"
                  @click="$store.commit('setShowThumb', true)">
             <img src="@/assets/no_thumb.png" v-show="!result.miniImgHref">
-            <span class="status"
-                  :class="[
+            <span :class="[
+                   'status',
                   {'wait': result.statusData == '等待' || result.statusData == '暂停'},
                   {'ing': result.statusData == '渲染中'},
                   {'done': result.statusData == '渲染成功'},
                   {'pause': result.statusData == '暂无'},
                   {'giveUp': result.statusData == '渲染放弃' || result.statusData == '暂停（欠费）'||  result.statusData == '暂停（超时）'}
-                  ]">
+                ]">
               {{ result.statusData }}
             </span>
           </div>
@@ -565,99 +588,61 @@
 
             <!--任务ID-->
             <div class="item">
-              <span class="label">
-                {{ result.statusList.taskIdLabel }}：
-              </span>
-              <span class="val">
-                {{ result.statusList.taskIdVal }}
-              </span>
+              <span class="label">{{ result.statusList.taskIdLabel }}：</span>
+              <span class="val">{{ result.statusList.taskIdVal }}</span>
             </div>
 
             <!--场景名-->
             <div class="item">
-              <span class="label">
-                {{ result.statusList.scenesNameLabel }}：
-              </span>
-              <span class="val">
-                {{ result.statusList.scenesNameVal }}
-              </span>
+              <span class="label">{{ result.statusList.scenesNameLabel }}：</span>
+              <span class="val">{{ result.statusList.scenesNameVal }}</span>
             </div>
 
             <!--所属项目-->
             <div class="item">
-              <span class="label">
-                {{ result.statusList.projectLabel }}：
-              </span>
-              <span class="val">
-                {{ result.statusList.projectVal }}
-              </span>
+              <span class="label">{{ result.statusList.projectLabel }}：</span>
+              <span class="val">{{ result.statusList.projectVal }}</span>
             </div>
 
             <!--渲染软件-->
             <div class="item">
-              <span class="label">
-                {{ result.statusList.softwareLabel }}：
-              </span>
-              <span class="val">
-                {{ result.statusList.softwareVal }}
-              </span>
+              <span class="label">{{ result.statusList.softwareLabel }}：</span>
+              <span class="val">{{ result.statusList.softwareVal }}</span>
             </div>
 
             <!--渲染插件-->
             <div class="item">
-              <span class="label">
-                {{ result.statusList.pluginLabel }}：
-              </span>
-              <span class="val">
-                {{ result.statusList.pluginVal }}
-              </span>
+              <span class="label">{{ result.statusList.pluginLabel }}：</span>
+              <span class="val">{{ result.statusList.pluginVal }}</span>
             </div>
 
             <!--层名-->
             <div class="item">
-              <span class="label">
-                {{ result.statusList.layerLabel }}：
-              </span>
-              <span class="val">
-                {{ result.statusList.layerVal }}
-              </span>
+              <span class="label">{{ result.statusList.layerLabel }}：</span>
+              <span class="val">{{ result.statusList.layerVal }}</span>
             </div>
 
             <!--分辨率-->
             <div class="item">
-              <span class="label">
-                {{ result.statusList.resolutionLabel }}：
-              </span>
-              <span class="val">
-                {{ result.statusList.resolutionVal }}
-              </span>
+              <span class="label">{{ result.statusList.resolutionLabel }}：</span>
+              <span class="val">{{ result.statusList.resolutionVal }}</span>
             </div>
 
             <!--输出格式-->
             <div class="item">
-              <span class="label">
-                {{ result.statusList.formatLabel }}：
-              </span>
-              <span class="val">
-                {{ result.statusList.formatVal }}
-              </span>
+              <span class="label">{{ result.statusList.formatLabel }}：</span>
+              <span class="val">{{ result.statusList.formatVal }}</span>
             </div>
 
             <!--相机-->
             <div class="item">
-              <span class="label">
-                {{ result.statusList.cameraLabel }}：
-              </span>
-              <span class="val">
-                {{ result.statusList.cameraVal }}
-              </span>
+              <span class="label">{{ result.statusList.cameraLabel }}：</span>
+              <span class="val">{{ result.statusList.cameraVal }}</span>
             </div>
 
             <!--渲染模式-->
             <div class="item">
-              <span class="label">
-                {{ result.statusList.modeLabel }}：
-              </span>
+              <span class="label">{{ result.statusList.modeLabel }}：</span>
               <span class="val" :title="result.statusList.modeVal">
                 {{ result.statusList.modeVal }}
               </span>
@@ -665,9 +650,7 @@
 
             <!--创建人-->
             <div class="item">
-              <span class="label">
-                {{ result.statusList.founderLabel }}：
-              </span>
+              <span class="label">{{ result.statusList.founderLabel }}：</span>
               <span class="val" :title="result.statusList.founderVal">
                 {{ result.statusList.founderVal }}
               </span>
@@ -675,9 +658,7 @@
 
             <!--创建时间-->
             <div class="item">
-              <span class="label">
-                {{ result.statusList.creationTimeLabel }}：
-              </span>
+              <span class="label">{{ result.statusList.creationTimeLabel }}：</span>
 
               <el-tooltip class="item"
                           effect="dark"
@@ -696,21 +677,18 @@
           <div class="table">
             <!--主-操作-->
             <div class="operateBtnBase" v-show="!result.showDetails">
-              <div class="operateBtn"
-                   :class="[{'cannotTrigger': item.classState}]"
+              <div :class="['operateBtn', {'cannotTrigger': item.classState}]"
                    @click="operateFun(item.text)"
                    v-for="(item,index) in result.operateBtnList"
-                   :key="index">
-                <img :src="item.imgUrlR" alt="" v-if="item.imgUrlR" class="r">
-                <img :src="item.imgUrlH" alt="" v-if="item.imgUrlH" class="h">
-                <span class="text">
-                {{ item.text }}
-              </span>
+                   :key="'mainOperatorBtn_' + index">
+                <img :src="item.imgUrlR" v-if="item.imgUrlR" class="r">
+                <img :src="item.imgUrlH" v-if="item.imgUrlH" class="h">
+                <span class="text">{{ item.text }}</span>
               </div>
               <div class="searchBase">
-                <img src="@/icons/global-search-icon.png" alt="" class="i" @click="getRenderItemMoreTableF">
+                <img src="@/icons/global-search-icon.png" class="i" @click="getRenderItemMoreTableF">
                 <input type="text"
-                       v-model="result.searchInpVal"
+                       v-model="result.keyword"
                        class="search"
                        placeholder="搜索帧"
                        @keyup.enter="getRenderItemMoreTableF">
@@ -721,16 +699,13 @@
               <div class="operateBtn"
                    @click="moreOperateFun(item.text)"
                    v-for="(item,index) in result.operateMoreBtnList"
-                   :key="index">
+                   :key="'detailsOperatorBtn_' + index">
                 <img :src="item.imgUrl" v-if="item.imgUrl" class="b">
                 <img :src="item.imgUrlW" v-if="item.imgUrlW" class="w">
-                <span class="text">
-                {{ item.text }}
-              </span>
+                <span class="text">{{ item.text }}</span>
               </div>
               <div class="searchBase">
                 <img src="@/icons/global-search-icon.png"
-                     alt=""
                      class="i"
                      @click="">
                 <input type="text"
@@ -741,18 +716,17 @@
             </div>
             <!--主-table-->
             <div class="tableBase task-table-seeMore" v-show="!result.showDetails">
-              <!--v-el-table-infinite-scroll="mainTableAddMoreItem" 无限滚动 -->
               <el-table
                 :data="result.tableData"
+                :border=true
                 @selection-change="handleSelectionChange"
-                @filter-change="filterHandler"
+                @filter-change="filterChange"
+                @sort-change="mainTabSortChange"
                 @row-click="showMiniImg"
                 ref="mainTable"
                 class="vv"
-                :border=true
                 height="auto"
                 style="width: 100%">
-
                 <el-table-column
                   type="selection"
                   align="right"
@@ -762,16 +736,19 @@
                 <!--帧数-->
                 <el-table-column
                   label="帧数"
-                  sortable
+                  prop="frameNo"
+                  sortable="custom"
                   show-overflow-tooltip
                   width="120">
                   <template slot-scope="scope">
-                    {{ scope.row.num }}
+                    {{ scope.row.frameNo }}
                   </template>
                 </el-table-column>
                 <!--帧状态-->
                 <el-table-column
                   label="帧状态"
+                  column-key="status"
+                  :filters="result.framesStatusList"
                   show-overflow-tooltip
                   min-width="120">
                   <template slot-scope="scope">
@@ -788,28 +765,30 @@
                 </el-table-column>
                 <!--渲染费用（金币）-->
                 <el-table-column
-                  prop="prices"
+                  prop="cost"
                   label="渲染费用（金币）"
+                  sortable="custom"
                   show-overflow-tooltip
                   width="142"/>
                 <!--渲染时长-->
                 <el-table-column
-                  prop="direction"
+                  prop="useTime"
                   label="渲染时长"
+                  sortable="custom"
                   show-overflow-tooltip
-                  width="150"/>
+                  width="160"/>
                 <!--渲染开始时间-->
                 <el-table-column
-                  prop="startDate"
+                  prop="startTime"
                   label="渲染开始时间"
-                  sortable
+                  sortable="custom"
                   show-overflow-tooltip
                   width="180"/>
                 <!--渲染完成时间-->
                 <el-table-column
-                  prop="endDate"
+                  prop="endTime"
                   label="渲染完成时间"
-                  sortable
+                  sortable="custom"
                   show-overflow-tooltip
                   width="180"/>
                 <!--CPU利用率-->
@@ -837,16 +816,15 @@
                 <el-table-column
                   prop="log"
                   label="日志"
-                  sortable
                   show-overflow-tooltip
                   width="80">
                   <template slot-scope="scope">
-                  <span class="seeMore" @click="showMore(scope.row)">
-                    查看
-                  </span>
+                    <span class="seeMore"
+                          @click="showMore(scope.row)">
+                      查看
+                    </span>
                   </template>
                 </el-table-column>
-
               </el-table>
             </div>
             <!--详情-table-->
@@ -953,15 +931,10 @@
           </div>
           <div class="happen">
             <div class="happen-item" v-for="(item,index) in result.happen" :key="index">
-              <span class="label">
-                {{ item.text }}：
-              </span>
-              <span class="val">
-                {{ item.num }}
-              </span>
+              <span class="label">{{ item.text }}：</span>
+              <span class="val">{{ item.num }}</span>
             </div>
           </div>
-
         </div>
       </div>
     </div>
@@ -984,6 +957,9 @@
     analyseAgain,
   } from '@/api/api'
   import {
+    getSetData
+  } from '@/api/setting-api'
+  import {
     getThumbnail,
     setCopySetData,
     downloadCompleteFrameMini
@@ -998,8 +974,11 @@
     exportDownloadFun,
     messageFun,
     itemDownloadStatus,
-    sortF
-  } from '@/assets/common.js'
+    sortF,
+    updateBalance,
+    createThrowInfo,
+    pFConversion
+  } from '@/assets/common'
   import elTableInfiniteScroll from 'el-table-infinite-scroll'
   import {mapState} from 'vuex'
 
@@ -1052,7 +1031,8 @@
             title1: '渲染层数',
             title2: '渲染相机',
             miniTitO: '（已选择',
-            miniTitT: '个层）',
+            miniTitT1: '个层）',
+            miniTitT2: '个摄像机）',
             val: '2',
             singleChoice1: '启动分层渲染',
             singleChoice2: '启动分相机渲染',
@@ -1126,19 +1106,10 @@
           // 其它设置
           other: {
             title: '其他设置',
-            btn: '新建项目',
-            viewLabel: '所属项目',
-            viewList: [
-              // {
-              //   value: '选项1',
-              //   label: '黄金糕'
-              // }
-            ],
-            view: '',
             remindLabel: '单帧超时提醒 (h)',
-            remindVal: 12,
+            frameTimeoutWarn: 12,
             stopLabel: '单帧超时停止 (h)',
-            stopVal: 24
+            frameTimeoutStop: 24
           },
           btn: {
             returnBtn: '返回',
@@ -1182,7 +1153,7 @@
             creationTimeLabel: '创建时间',
             creationTimeVal: ''
           },
-          // 主 table 操作
+          // 主 tab 操作
           operateBtnList: [
             {
               imgUrlR: require('@/icons/playIcon-black.png'),
@@ -1205,7 +1176,7 @@
               classState: true
             },
           ],
-          // 详情 table 操作
+          // 详情 tab 操作
           operateMoreBtnList: [
             {
               imgUrl: require('@/icons/back_icon-black.png'),
@@ -1217,41 +1188,27 @@
             //   text: '下载日志'
             // }
           ],
-          // 主 table 数据
-          tableData: [
-            // {
-            //   num: null,      // 帧数
-            //   status: '',     // 帧状态
-            //   prices: null,   // 渲染费用（金币）
-            //   direction: '',  // 渲染时长
-            //   startDate: '',  // 渲染开始时间
-            //   endDate: '',    // 渲染完成时间
-            //   percent: '',    // CPU利用率
-            //   RAM: '',        // 内存峰值
-            //   times: null,    // 已下载次数
-            //   log: ''         // 日志
-            // },
-          ],
-          // 详情 table 数据
-          detailsTableData: [
-            // {
-            // num: null,      // 帧数
-            // cost: null,     // 渲染费用
-            // duration: '',   // 渲染时长
-            // startDate: '',  // 渲染开始时间
-            // endDate: '',    // 渲染完成时间
-            // price: '',      // 单价
-            // percent: '',    // CPU利用率
-            // peak: ''        // 内存峰值
-            // time: null       // 下载次数
-            // },
-          ],
-          // 主 table 多选结果
+          // 详情 tab 数据
+          detailsTableData: [],
+          // 主 tab 多选结果
           selectionResult: [],
-          // 详情 table 多选结果
+          // 详情 tab 多选结果
           detailsSelectionResult: [],
-          // 主 table 页码
-          mainTableIndex: 0,
+          tableData: [],               // 主 tab data
+          framesStatus: [],            // 主 tab 帧状态筛选
+          framesStatusList: [
+            {text: '渲染中', value: 2},
+            {text: '等待中', value: 1},
+            {text: '暂停', value: 5},
+            {text: '渲染成功', value: 3},
+            {text: '渲染失败', value: 4}
+          ],     // 主 tab 帧状态集合
+          pageIndex: 1,                // 主 tab 页码
+          pageSize: 999,               // 主 tab 当页条数
+          total: 0,                    // 主 tab 总数
+          keyword: '',                 // 主 tab 关键帧
+          sortBy: 'frameNo',
+          sortType: 1,                 // 主 tab 排序 0递减 1递增
           // 主 渲染状态
           happen: [
             {
@@ -1277,12 +1234,12 @@
           ],
           x: '暂无数据',
           showDetails: false,
-          searchInpVal: '',            // 渲染结果 - 主table 操作 关键帧查询
+          detailsKeyword: '',          // 渲染结果 - 详情tab 操作 关键帧查询
           miniImgHref: null,           // 渲染结果 - 缩略图
-          lock: true,                  // 渲染提交事件锁
+          lock: true                   // 渲染提交事件锁
         },
         demo: ``,
-        loading: null
+        loading: false
       }
     },
     props: {
@@ -1304,8 +1261,9 @@
       }
     },
     watch: {
-      taskData: function (val) {
-        if (val.rowId != null || this.typeInfo == 'upload-table') this.getData()
+      taskData: function () {
+        if (this.typeInfo == 'setting' && !this.isCopy) this.turnPage('upload-table')
+        this.$nextTick(() => this.getData())
       },
       'setting.priority.selfVal': function (val) {
         // 选中【单选】时取消【首帧】【中间帧】【末帧】，反之复原
@@ -1332,6 +1290,7 @@
       },
       'zoneId': {
         handler: function (id) {
+          if (!id) return false
           this.getRenderModeF(id)
         },
         immediate: true
@@ -1340,15 +1299,17 @@
     methods: {
       // 获取渲染模式
       async getRenderModeF(id) {
-        let data = await getRenderMode(id)
-        this.setting.mode.modeList = data.data.data.map(item => {
+        if (!id) return false
+        let {mode} = this.setting,
+          {data} = await getRenderMode(id)
+        mode.modeList = data.data.map(item => {
           return {
             val: item.patternCode,
             label: item.patternName,
             id: item.patternUuid
           }
         })
-        if (this.setting.mode.modeList.length) this.setting.mode.mode = this.setting.mode.modeList[0]['val']
+        if (mode.modeList.length) mode.mode = mode.modeList[0]['val']
       },
       // 上传分析 - 重新分析BTN
       async renderAgainBtnFun() {
@@ -1361,84 +1322,65 @@
       },
       // 进入 - 获取详情
       getData() {
-        this.loading = this.$loading({
-          lock: true,
-          text: '拼命加载中...',
-          spinner: 'el-icon-loading',
-          background: 'rgba(0, 0, 0, 0.7)'
-        })
+        this.loading = true
         if (this.typeInfo == 'upload-table') this.getUpTopItemMore()
-        else this.getRenderItemMoreF()
+        else this.getRenderItemMoreTableF()
       },
       // 上传分析 -  获取详情
       async getUpTopItemMore() {
-        this.details.errorList = []
-        this.details.warningList = []
-        this.details.status = null
+        let {details, taskData} = this
+        details.errorList = []
+        details.warningList = []
+        details.status = null
 
-        Object.assign(this.details, {
-          valId: this.taskData.id,
-          valName: this.taskData.scenesName,
-          valCreateTime: this.taskData.creationTime,
-          valState: this.taskData.status
+        Object.assign(details, {
+          valId: taskData.taskNo,
+          valName: taskData.scenesName,
+          valCreateTime: taskData.createTime,
+          valState: taskData.status
         })
-        this.details.showProgress = false
-        if (this.taskData.status) switch (this.taskData.status) {
+        details.showProgress = false
+        if (taskData.status) switch (taskData.status) {
           case '上传中...':
-            this.details.valProgress = '上传中，请稍后……'
-            this.details.showProgress = true
+            details.valProgress = '上传中，请稍后……'
+            details.showProgress = true
             break
           case '上传暂停':
-            this.details.valProgress = '上传暂停，您可点击下方【传输列表】，启动插件后，查看详情。'
-            this.details.showProgress = true
+            details.valProgress = '上传暂停，您可点击下方【传输列表】，启动插件后，查看详情。'
+            details.showProgress = true
             break
           case '上传失败':
-            this.details.valProgress = '上传失败，您可点击下方【传输列表】，启动插件后，查看详情。'
-            this.details.showProgress = true
+            details.valProgress = '上传失败，您可点击下方【传输列表】，启动插件后，查看详情。'
+            details.showProgress = true
             break
           case '分析中...':
-            this.details.valProgress = '分析中，请稍后……'
-            this.details.showProgress = true
+            details.valProgress = '分析中，请稍后……'
+            details.showProgress = true
             break
           case '待设置参数':
-            this.details.valProgress = '分析成功，未发现问题，您可以点击下方按钮设置参数。'
-            this.details.showProgress = true
+            details.valProgress = '分析成功，未发现问题，您可以点击下方按钮设置参数。'
+            details.showProgress = true
             break
         }
-        this.loading.close()
-        // } else {
-        // 分析状态
-        // this.details.showProgress = false
-        let data = await upTopTableSeeMore(`taskUuid=${this.taskData.taskUuid}`)
-        this.loading.close()
-        if (data.data.data.status) this.details.status = data.data.data.status
-        this.getItemList()
-        if (data.data.data.warningMessage)
-          this.details.warningList = data.data.data.warningMessage.map(curr => {
-            return {
-              title: curr,
-              content: ''
-            }
-          })
-        if (data.data.data.errorMessage)
-          this.details.errorList = data.data.data.errorMessage.map(curr => {
-            return {
-              title: curr,
-              content: ''
-            }
-          })
-        // }
+        let {data} = await upTopTableSeeMore(`taskUuid=${taskData.taskUuid}`)
+        if (data.data && data.data.status) details.status = data.data.status
+        if (data.data && data.data.warningMessage)
+          details.warningList = data.data.warningMessage.map(curr => ({
+            title: curr,
+            content: ''
+          }))
+        if (data.data && data.data.errorMessage)
+          details.errorList = data.data.errorMessage.map(curr => ({
+            title: curr,
+            content: ''
+          }))
+        this.loading = false
       },
-      // 渲染下载 - 获取详情 - 渲染结果
-      getRenderItemMoreF() {
-        this.loading.close()
-        this.getRenderItemMoreTableF()
-      },
-      // 渲染下载 - 详情 mainTable more
-      mainTableAddMoreItem() {
-        this.getRenderItemMoreTableF()
-      },
-      // 渲染下载 - 详情 - 缩略图
+      // // 渲染下载 - 获取详情 - 渲染结果
+      // getRenderItemMoreF() {
+      //   this.getRenderItemMoreTableF()
+      // },
+      // 渲染结果 - 详情 - 缩略图
       async showMiniImg(row, column, event) {
         try {
           this.result.statusData = row['status']
@@ -1453,20 +1395,24 @@
         } catch (err) {
         }
       },
-      // 渲染下载 - 详情 - 主table 获取列表
+      // 渲染结果 - 详情 - 主table 获取列表
       async getRenderItemMoreTableF() {
-        // {
-        //   TaskUuid: '',
-        //   layerTaskUuid: '',
-        //   keyword: '',
-        //   pageIndex: '',
-        //   pageSize: ''
-        // }
         this.result.miniImgHref = null
-        let parameter = `taskUuid=${this.taskData.FatherTaskUuId}&layerTaskUuid=${this.taskData.taskUuid}&keyword=${this.result.searchInpVal}&pageIndex=1&pageSize=999`,
-          data = await getRenderTSeeMore(parameter),
-          data_ = data.data.data
-        this.result.tableData = data_.frameList.map(curr => {
+        let {result, taskData} = this,
+          {keyword, pageIndex, pageSize, sortType, sortBy, framesStatus} = result,
+          {data} = await getRenderTSeeMore({
+            'taskUuid': taskData.FatherTaskUuId,
+            'layerTaskUuid': taskData.taskUuid,
+            framesStatus,
+            keyword,
+            pageIndex,
+            pageSize,
+            sortType,
+            sortBy
+          }),
+          {frameList, taskInfo, frameCount, topInfo} = data.data
+        result.total = data.total
+        result.tableData = frameList.map(curr => {
           let s = null
           switch (curr.frameTaskStatus) {
             case 1:
@@ -1489,12 +1435,12 @@
               break
           }
           return {
-            num: curr.isTest == 1 ? curr.frameNo + '（优先）' : curr.frameNo,      // 帧数
+            frameNo: curr.isTest == 1 ? curr.frameNo + '（优先）' : curr.frameNo,      // 帧数
             status: s,                                            // 帧状态
-            prices: curr.cost,                                    // 渲染费用（金币）
-            direction: consum(curr.useTime),                      // 渲染时长
-            startDate: createDateFun(new Date(curr.startTime)),   // 渲染开始时间
-            endDate: createDateFun(new Date(curr.endTime)),       // 渲染完成时间
+            cost: curr.cost,                                      // 渲染费用（金币）
+            useTime: consum(curr.useTime),                        // 渲染时长
+            startTime: createDateFun(curr.startTime),             // 渲染开始时间
+            endTime: createDateFun(curr.endTime),                 // 渲染完成时间
             percent: '-',                                         // CPU利用率
             RAM: '-',                                             // 内存峰值
             times: curr.downloadCount,                            // 已下载次数
@@ -1503,70 +1449,75 @@
             taskTaskUuid: curr.taskUuid,                          // 主uuid
             inFilePath: curr.inFilePath,
             outFilePath: curr.outFilePath,
-            layerName: data_.taskInfo.layerName,
+            layerName: taskInfo.layerName,
             fileName: curr.fileName,
-            taskID: data_.taskInfo.taskNo,
-            sceneName: data_.taskInfo.fileName
+            taskID: taskInfo.taskNo,
+            sceneName: taskInfo.fileName
           }
         })
-        this.result.happen[0]['num'] = data_.frameCount['running']
-        this.result.happen[1]['num'] = data_.frameCount['wait']
-        this.result.happen[2]['num'] = data_.frameCount['pause']
-        this.result.happen[3]['num'] = data_.frameCount['done']
-        this.result.happen[4]['num'] = data_.frameCount['fail']
-        Object.assign(this.result.dataO, {
-          costVal: data_.topInfo['allCost'].toFixed(3),
-          totalVal: consum(data_.topInfo['allTime']),
-          averageVal: consum(data_.topInfo['useTime'])
+        result.happen[0]['num'] = frameCount['running']
+        result.happen[1]['num'] = frameCount['wait']
+        result.happen[2]['num'] = frameCount['pause']
+        result.happen[3]['num'] = frameCount['done']
+        result.happen[4]['num'] = frameCount['fail']
+        Object.assign(result.dataO, {
+          costVal: topInfo['allCost'].toFixed(3),
+          totalVal: consum(topInfo['allTime']),
+          averageVal: consum(topInfo['useTime'])
         })
-
-        Object.assign(this.result.statusList, {
-          taskIdVal: data_.taskInfo.taskNo,                                            // 任务ID
-          scenesNameVal: data_.taskInfo.fileName,                                      // 场景名
-          projectVal: data_.taskInfo.projectName,                                      // 所属项目
-          softwareVal: data_.taskInfo.softName + ' ' + data_.taskInfo.softVer,         // 渲染软件
-          pluginVal: data_.taskInfo.pluginName + ' ' + data_.taskInfo.pluginVersion,   // 渲染插件
-          layerVal: data_.taskInfo.layerName,                                          // 层名
-          resolutionVal: data_.taskInfo.width + '*' + data_.taskInfo.height,           // 分辨率
-          formatVal: data_.taskInfo.formatName,                                        // 输出格式
-          cameraVal: data_.taskInfo.camera,                                            // 相机
-          modeVal: data_.taskInfo.patternName,                                         // 渲染模式
-          founderVal: data_.taskInfo.account,                                          // 创建人
-          creationTimeVal: createDateFun(new Date(data_.taskInfo.createTime))          // 创建时间
+        Object.assign(result.statusList, {
+          taskIdVal: taskInfo.taskNo,                                            // 任务ID
+          scenesNameVal: taskInfo.fileName,                                      // 场景名
+          projectVal: taskInfo.projectName,                                      // 所属项目
+          softwareVal: taskInfo.softName + ' ' + taskInfo.softVer,               // 渲染软件
+          pluginVal: taskInfo.pluginName + ' ' + taskInfo.pluginVersion,         // 渲染插件
+          layerVal: taskInfo.layerName,                                          // 层名
+          resolutionVal: taskInfo.width + '*' + taskInfo.height,                 // 分辨率
+          formatVal: taskInfo.formatName,                                        // 输出格式
+          cameraVal: taskInfo.camera,                                            // 相机
+          modeVal: taskInfo.patternName,                                         // 渲染模式
+          founderVal: taskInfo.account,                                          // 创建人
+          creationTimeVal: createDateFun(new Date(taskInfo.createTime))          // 创建时间
         })
-        this.showMiniImg(this.result.tableData[0])
+        await this.showMiniImg(result.tableData[0])
+        this.loading = false
+      },
+      // 渲染结果 - mainTab - 排序
+      mainTabSortChange({column, prop, order}) {
+        let {result} = this
+        if (order == 'descending') result.sortType = 0
+        else result.sortType = 1
+        if (!order) result.sortBy = 'frameNo'
+        else result.sortBy = prop
+        result.pageIndex = 1
+        this.getRenderItemMoreTableF()
       },
       //关闭抽屉 复位
       closeDrawer() {
         this.settingBack()
-        Object.assign(this.setting.priority, {  // 优先渲染初始化
+        let {setting, result} = this
+        Object.assign(setting.priority, {  // 优先渲染初始化
           topVal: '1',
           middleVal: '1',
           bottomVal: '1',
           selfVal: '0',
           customize: ''
         })
-        this.setting.num.singleChoiceVal = '0'        // 启动分层渲染
-        Object.assign(this.setting.other, {    // 其它设置初始化
-          remindVal: 12,
-          stopVal: 24,
-          view: ''
-        })
-        this.result.mainTableIndex = 0
-        this.result.showDetails = false
+        setting.num.singleChoiceVal = '0'        // 启动分层渲染
+        result.showDetails = false
         this.$emit('closeDrawer')
       },
       // 超时提醒改变
       changeSliderVal(e) {
         let n = Number(e.target.value)
-        if (n >= 1 && 72 >= n) this.setting.other.remindVal = n
-        else this.setting.other.remindVal = 12
+        if (n >= 1 && 72 >= n) this.setting.other.frameTimeoutWarn = n
+        else this.setting.other.frameTimeoutWarn = 12
       },
       // 超时停止改变
       changeStopVal(e) {
         let n = Number(e.target.value)
-        if (n >= 1 && 72 >= n) this.setting.other.stopVal = n
-        else this.setting.other.stopVal = 24
+        if (n >= 1 && 72 >= n) this.setting.other.frameTimeoutStop = n
+        else this.setting.other.frameTimeoutStop = 24
       },
       // 样式 勿改动
       tableRowClassName({row, rowIndex}) {
@@ -1678,50 +1629,76 @@
       },
       // 设置参数 - 改变比例锁状态
       changeLock(index) {
-        this.setting.num.tableData[index]['lock'] = !this.setting.num.tableData[index]['lock']
+        let {tableData} = this.setting.num
+        tableData[index]['lock'] = !tableData[index]['lock']
       },
       // 主table多选事件
       handleSelectionChange(val) {
-        this.result.selectionResult = val
-        let t = val.map(curr => curr.status)
-        let s = this.result.operateBtnList[0], // 开始
-          p = this.result.operateBtnList[1],   // 暂停
-          d = this.result.operateBtnList[2],   // 下载完成帧
-          a = this.result.operateBtnList[3]    // 重新渲染
+        let {result} = this
+        result.selectionResult = val
+        let statusList = val.map(curr => curr.status)
+        let start_ = result.operateBtnList[0], // 开始
+          pause_ = result.operateBtnList[1],   // 暂停
+          download_ = result.operateBtnList[2],   // 下载完成帧
+          again_ = result.operateBtnList[3]    // 重新渲染
 
-        if (t.length > 0 && t.every(item => ['暂停', '暂停（超时）', '暂停（欠费）'].includes(item))) {
-          s['classState'] = false
-        } else s['classState'] = true
+        if (statusList.length > 0 && statusList.every(item => ['暂停', '暂停（超时）', '暂停（欠费）'].includes(item))) {
+          start_['classState'] = false
+        } else start_['classState'] = true
 
-        if (t.length > 0 && t.every(item => ['渲染成功', '渲染中', '渲染失败'].includes(item))) {
-          a['classState'] = false
-        } else a['classState'] = true
+        if (statusList.length > 0 && statusList.every(item => ['渲染成功', '渲染失败'].includes(item))) {
+          again_['classState'] = false
+        } else again_['classState'] = true
 
-        if (t.length > 0 && t.every(item => ['渲染中', '等待中'].includes(item))) {
-          p['classState'] = false
-        } else p['classState'] = true
+        if (statusList.length > 0 && statusList.every(item => ['渲染中', '等待中'].includes(item))) {
+          pause_['classState'] = false
+        } else pause_['classState'] = true
 
-        if (t.length > 0 && t.every(item => '渲染成功' == item)) {
-          d['classState'] = false
-        } else d['classState'] = true
+        if (statusList.length > 0 && statusList.every(item => '渲染成功' == item)) {
+          download_['classState'] = false
+        } else download_['classState'] = true
 
       },
       // 详情table多选事件
       handleDetailsSelectionChange(val) {
         this.result.detailsSelectionResult = val
       },
-      // 主table筛选条件改变
-      filterHandler() {
-
+      // 主 tab 筛选条件改变
+      filterChange(val) {
+        let arr = [...val.status]
+        if (arr.some(curr => curr == 2)) arr.push(9)
+        this.result.framesStatus = arr
+        this.getRenderItemMoreTableF()
       },
       // 查看详情
       async showMore(row) {
         this.result.showDetails = true
-        let data = await getFrameHistoryTable(`layerTaskUuid=${row.layerTaskUuid}&frameTaskUuid=${row.frameTaskUuid}`)
-        this.result.detailsTableData = data.data.data.frameTaskList.map(item => {
+        let {data} = await getFrameHistoryTable(`layerTaskUuid=${row.layerTaskUuid}&frameTaskUuid=${row.frameTaskUuid}`)
+        this.result.detailsTableData = data.data.frameTaskList.map(item => {
+          let status
+          switch (item.frameTaskStatus) {
+            case 1:
+              status = '等待中'
+              break
+            case 2:
+            case 9:
+              status = '渲染中'
+              break
+            case 3:
+              status = '渲染成功'
+              break
+            case 4:
+              status = '渲染失败'
+              break
+            case 5:
+              if (item.result == 7) status = '暂停（欠费）'
+              else if (item.result == 6) status = '暂停（超时）'
+              else status = '暂停'
+              break
+          }
           return Object.assign(item, {
             num: item.frameNo,                   // 帧数
-            status: itemDownloadStatus(item.frameTaskStatus),                  // 帧状态
+            status,                              // 帧状态
             prices: item.cost,                   // 渲染费用
             direction: consum(item.useTime),     // 渲染时长
             startDate: createDateFun(new Date(item.startTime)),   // 渲染开始时间
@@ -1735,52 +1712,36 @@
             unitPrice: item.unitPrice ? item.unitPrice : '-'
           })
         })
-        this.demo = data.data.data.log.reduce((total, curr) => {
+        this.demo = data.data.log.reduce((total, curr) => {
           return total + `<p class="p">${curr}</p>`
         }, '')
-      },
-      // 设置参数 - 其他设置 - 新建项目
-      createItem() {
-        let newItemName = ''
-        this.$prompt('', '新建项目', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          inputPlaceholder: '请输入项目名称',
-          inputPattern: /[^ ]+/,
-          inputErrorMessage: '项目名格式不正确',
-          closeOnClickModal: false
-        })
-          .then(
-            value => {
-              newItemName = value.value
-              return addNewItem({
-                projectName: value.value,
-                isDefault: 1
-              })
-            },
-            () => {
-              messageFun('info', '取消创建')
-              return Promise.reject()
-            }
-          )
-          .then(data => {
-              if (data.data.code == '201') {
-                messageFun('success', '创建项目成功')
-                this.getItemList(newItemName)   // 刷新并选中新创建的项目
-              } else if (data.data.code == '101') messageFun('error', '创建失败，项目名已存在')
-            }
-          )
-          .catch(() => null)
       },
       // 设置参数 - table - 多选
       settingTableItemChange(val) {
         this.setting.num.selected = val
       },
       // 设置参数 - 开始渲染
-      async startRenderFun() {
-        if (!this.result.lock) return false
-        let tt = this.setting
-        if (this.zone == 1 && tt.priority.customizeInputError) {
+      startRenderFun() {
+        // 判断余额是否充足
+        updateBalance('开始渲染')
+          .then(data => {
+            if (data) this.startRenderFunReal()
+          })
+          .catch(() => createThrowInfo({
+            type: 'error',
+            title: '获取余额情况失败',
+            info: '在上传分析【开始渲染】操作前判断',
+            site: 'components/task/farm-drawer:1691'
+          }))
+      },
+      // 设置参数 - 开始渲染
+      async startRenderFunReal() {
+        let {result, setting, zone, zoneId, isCopy, isGpu} = this,
+          {priority, num, mode, other} = setting,
+          {frameTimeoutWarn, frameTimeoutStop} = other,
+          {taskUuid} = this.taskData
+        if (!result.lock) return false
+        if (zone == 1 && priority.customizeInputError) {
           messageFun('error', '自定义帧错误')
           return false
         }
@@ -1788,18 +1749,18 @@
         //   messageFun('error', '帧范围设定存在错误')
         //   return false
         // }
-        if (this.zone == 1 && tt.num.numError) {
+        if (zone == 1 && num.numError) {
           messageFun('error', '帧间隔设定存在错误')
           return false
         }
-        if (!tt.num.selected.length) {
-          this.zone == 1 ? messageFun('info', '未选中层') : messageFun('info', '未选中相机')
+        if (!num.selected.length) {
+          zone == 1 ? messageFun('info', '未选中层') : messageFun('info', '未选中相机')
           return false
         }
 
-        this.result.lock = false
+        result.lock = false
 
-        let layerSettingsList = tt.num.selected.map(curr => {
+        let layerSettingsList = num.selected.map(curr => {
           // id: '1',
           // name: '默认层',
           // range: '1-24',
@@ -1809,83 +1770,79 @@
           // format: 'cin',
           // camera: '相机二',
           return {
-            layerName: this.zone == 1 ? curr.name : '',           // 层名
-            imageName: this.zone == 1 ? '' : curr.name,           // 图像名称
+            layerName: zone == 1 ? curr.name : '',           // 层名
+            imageName: zone == 1 ? '' : curr.name,           // 图像名称
             // layerUuid: curr.id,                                // 层ID
             // frameStart: Number(curr.range.split('-')[0]),      // 帧范围起始帧
             // frameEnd: Number(curr.range.split('-')[1]),        // 帧范围结束帧
-            frameRange: this.zone == 1 ? curr.range : '',         // 帧范围
-            frameIterval: this.zone == 1 ? Number(curr.num) : '', // 间隔帧数
+            frameRange: zone == 1 ? curr.range : '',         // 帧范围
+            frameIterval: zone == 1 ? Number(curr.num) : '', // 间隔帧数
             camera: curr.camera,                                  // 相机
             width: curr.w,                                        // 图像宽度
             height: curr.h,                                       // 图像高度
             formatName: curr.format.split('-')[1],                // 输出格式Val
             // codeUuid: curr.format.split('-')[2],               // 输出格式Uuid
-            ratio: this.zone == 1 ? 0 : curr.ratio                // 宽高比
+            ratio: zone == 1 ? 0 : curr.ratio                // 宽高比
           }
         })
-        let v = this.isCopy ? {
-          taskUuid: this.taskData.taskUuid,                        // 项目Uuid
+        let v = isCopy ? {
+          taskUuid,                        // 项目Uuid
           source: 1,                                               // 是否为web端
-          zoneUuid: this.zoneId,
+          zoneUuid: zoneId,
           commitTaskDTO: {
-            layer: Number(tt.num.singleChoiceVal),                  // 启动分层渲染
-            frameCustomNo: tt.priority.customize.match(/\d/g) || [],// 自定义帧
+            layer: Number(num.singleChoiceVal),                  // 启动分层渲染
+            frameCustomNo: priority.customize.match(/\d/g) || [],// 自定义帧
             layerSettingsList,
-            isGpu: this.isGup,                                       // 是否为gpu，分区信息对象可找到
-            taskType: this.zone,                                     // 任务类型 1，影视版；2，效果图.
+            isGpu,                                       // 是否为gpu，分区信息对象可找到
+            taskType: zone,                                     // 任务类型 1，影视版；2，效果图.
             taskSource: 1,                                           // 任务来源 ，网页端 1
-            frameCustom: Number(tt.priority.selfVal),                // 是否开启自定义帧1是，0否
-            colorChannel: this.zone == 1 ? 0 : 0,                    // 颜色通道。影视版固定值0
-            aoChannel: this.zone == 1 ? 0 : 0,                       // AO通道。影视版固定值0
-            renderPattern: tt.mode.modeList.find(curr => curr.val == tt.mode.mode).id,   // 选中的配置编号 渲染模式
-            testRender: this.zone == 1 ? {                                               // 测试帧对象
-              testRendering: tt.priority.topVal == '1' || tt.priority.middleVal == '1' || tt.priority.bottomVal == '1' || tt.priority.selfVal == '1' ? '1' : '0',        // 是否开启测试帧（优先渲染）1是0否
-              frameFirst: tt.priority.topVal,                        // 首帧 1是 0否
-              frameMiddle: tt.priority.middleVal,                    // 中间帧
-              frameFinally: tt.priority.bottomVal                    // 末帧
+            frameCustom: Number(priority.selfVal),                // 是否开启自定义帧1是，0否
+            colorChannel: zone == 1 ? 0 : 0,                    // 颜色通道。影视版固定值0
+            aoChannel: zone == 1 ? 0 : 0,                       // AO通道。影视版固定值0
+            renderPattern: mode.modeList.find(curr => curr.val == mode.mode).id,   // 选中的配置编号 渲染模式
+            testRender: zone == 1 ? {                                               // 测试帧对象
+              testRendering: priority.topVal == '1' || priority.middleVal == '1' || priority.bottomVal == '1' || priority.selfVal == '1' ? '1' : '0',        // 是否开启测试帧（优先渲染）1是0否
+              frameFirst: priority.topVal,                        // 首帧 1是 0否
+              frameMiddle: priority.middleVal,                    // 中间帧
+              frameFinally: priority.bottomVal                    // 末帧
             } : null,
             otherSettings: {                                         // 其他设置
-              projectName: tt.other.view.split('-/-')[1],            // 项目名称
-              projectUuid: tt.other.view.split('-/-')[0],            // 项目uuid
-              frameTimeoutWarn: tt.other.remindVal,                  // 超时警告
-              frameTimeoutStop: tt.other.stopVal                     // 超时停止
+              frameTimeoutWarn,           // 超时警告
+              frameTimeoutStop            // 超时停止
             }
           }
         } : {
-          taskUuid: this.taskData.taskUuid,                       // 项目Uuid
-          layer: Number(tt.num.singleChoiceVal),                  // 启动分层渲染
-          frameCustomNo: tt.priority.customize.match(/\d/g) || [],// 自定义帧
+          taskUuid,                       // 项目Uuid
+          layer: Number(num.singleChoiceVal),                  // 启动分层渲染
+          frameCustomNo: priority.customize.match(/\d/g) || [],// 自定义帧
           layerSettingsList,
           source: 1,                                               // 是否为web端
-          isGpu: this.isGup,                                       // 是否为gpu，分区信息对象可找到
-          taskType: this.zone,                                     // 任务类型 1，影视版；2，效果图.
+          isGpu,                                       // 是否为gpu，分区信息对象可找到
+          taskType: zone,                                     // 任务类型 1，影视版；2，效果图.
           taskSource: 1,                                           // 任务来源 ，网页端 1
-          frameCustom: Number(tt.priority.selfVal),                // 是否开启自定义帧1是，0否
-          colorChannel: this.zone == 1 ? 0 : 0,                 // 颜色通道。影视版固定值0
-          aoChannel: this.zone == 1 ? 0 : 0,                    // AO通道。影视版固定值0
-          renderPattern: tt.mode.modeList.find(curr => curr.val == tt.mode.mode).id,   // 选中的配置编号 渲染模式
-          testRender: this.zone == 1 ? {                                            // 测试帧对象
-            testRendering: tt.priority.topVal == '1' || tt.priority.middleVal == '1' || tt.priority.bottomVal == '1' || tt.priority.selfVal == '1' ? '1' : '0',        // 是否开启测试帧（优先渲染）1是0否
-            frameFirst: tt.priority.topVal,                        // 首帧 1是 0否
-            frameMiddle: tt.priority.middleVal,                    // 中间帧
-            frameFinally: tt.priority.bottomVal                    // 末帧
+          frameCustom: Number(priority.selfVal),                // 是否开启自定义帧1是，0否
+          colorChannel: zone == 1 ? 0 : 0,                 // 颜色通道。影视版固定值0
+          aoChannel: zone == 1 ? 0 : 0,                    // AO通道。影视版固定值0
+          renderPattern: mode.modeList.find(curr => curr.val == mode.mode).id,   // 选中的配置编号 渲染模式
+          testRender: zone == 1 ? {                                            // 测试帧对象
+            testRendering: priority.topVal == '1' || priority.middleVal == '1' || priority.bottomVal == '1' || priority.selfVal == '1' ? '1' : '0',        // 是否开启测试帧（优先渲染）1是0否
+            frameFirst: priority.topVal,                        // 首帧 1是 0否
+            frameMiddle: priority.middleVal,                    // 中间帧
+            frameFinally: priority.bottomVal                    // 末帧
           } : null,
           otherSettings: {                                         // 其他设置
-            projectName: tt.other.view.split('-/-')[1],            // 项目名称
-            projectUuid: tt.other.view.split('-/-')[0],            // 项目uuid
-            frameTimeoutWarn: tt.other.remindVal,                  // 超时警告
-            frameTimeoutStop: tt.other.stopVal                     // 超时停止
+            frameTimeoutWarn,           // 超时警告
+            frameTimeoutStop           // 超时停止
           }
         }
-        let data = this.isCopy ? await setCopySetData(v) : await startRender(v)
-        if (data.data.code == 200) {
+        let {data} = isCopy ? await setCopySetData(v) : await startRender(v)
+        if (data.code == 200) {
           this.closeDrawer()
           this.$emit('toRenderTable')
           this.$emit('getListAgain')
           this.isCopy = false
         } else messageFun('error', '提交失败，错误行【1842】')
-        this.result.lock = true
+        result.lock = true
       },
       // 渲染结果 - 主 - 操作
       operateFun(action) {
@@ -1918,6 +1875,18 @@
       // 渲染结果 - 主 - 操作 - 开始
       async operateStart() {
         if (this.result.operateBtnList[0]['classState']) return false
+        // 判断余额是否充足
+        updateBalance('开始')
+          .then(data => data ? this.operateStartReal() : null)
+          .catch(() => createThrowInfo({
+            type: 'error',
+            title: '获取余额情况失败',
+            info: '在层任务【开始】操作前判断',
+            site: 'components/task/farm-drawer:1918'
+          }))
+      },
+      // 渲染结果 - 主 - 操作 - 开始
+      async operateStartReal() {
         let data = await itemStart({
           "instructType": 11,
           "frameUuidList": this.result.selectionResult.map(curr => curr.frameTaskUuid)
@@ -1942,19 +1911,27 @@
           messageFun('error', '报错，操作失败')
         }
       },
-      // 渲染结果 - 主 - 操作 - 下载完成帧 - 前期预判
+      // 渲染结果 - 主 - 操作 - 【下载完成帧】前预判
       async operateDownloadFrame() {
         if (!this.result.selectionResult.length || this.result.operateBtnList[2]['classState']) return false
-        else if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.operateDownloadFrameing())
-        else this.operateDownloadFrameing()
-        // let data = await seeBalance()
-        // if (data.data.code == 1001) {
-        //   messageFun('error', `当前账户余额为${data.data.data}，请先进行充值！`);
-        //   return false
-        // }
+        this.next = function () {
+          // 判断余额是否充足
+          updateBalance('下载完成帧')
+            .then(data => {
+              if (data) this.operateDownloadFrameReal()
+            })
+            .catch(() => createThrowInfo({
+              type: 'error',
+              title: '获取余额情况失败',
+              info: '在层任务【下载完成帧】操作前判断',
+              site: 'components/task/farm-drawer:1957'
+            }))
+        }
+        if (!this.socket_plugin) this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.next())
+        else this.next()
       },
-      // 渲染结果 - 主 - 操作 - 下载完成帧 - ing
-      operateDownloadFrameing() {
+      // 渲染结果 - 主 - 操作 - 下载完成帧
+      operateDownloadFrameReal() {
         this.$confirm('将下载选中选, 是否继续?', '提示信息', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -1977,9 +1954,21 @@
             () => messageFun('info', '已取消下载')
           )
       },
-      // 渲染结果 - 主 - 操作 - 重新渲染
+      // 渲染结果 - 主 - 操作 - 【重新渲染】前预判
       operateRenderAgain() {
-        if (this.result.operateBtnList[3]['classState']) return false
+        if (!this.result.selectionResult.length || this.result.operateBtnList[3]['classState']) return false
+        // 判断余额是否充足
+        updateBalance('重新渲染')
+          .then(data => data ? this.operateRenderAgainReal() : null)
+          .catch(() => createThrowInfo({
+            type: 'error',
+            title: '获取余额情况失败',
+            info: '在层任务【重新渲染】操作前判断',
+            site: 'components/task/farm-drawer:2000'
+          }))
+      },
+      // 渲染结果 - 主 - 操作 - 重新渲染
+      operateRenderAgainReal() {
         this.$confirm('此操作将重新渲染选中项, 是否继续?', '提示信息', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -2016,20 +2005,24 @@
       },
       // 分析结果 - 进入设置参数 - 获取预设信息
       async setParameter() {
-        const loading = this.$loading({
-          lock: true,
-          text: 'Loading',
-          spinner: 'el-icon-loading',
-          background: 'rgba(0, 0, 0, 0.7)'
+        this.loading = true
+        let {data} = await upTopTableSet(this.taskData.taskUuid)
+        this.loading = false
+        if (data.code != 200) createThrowInfo({
+          type: 'error',
+          title: '报错，数据请求失败',
+          info: '【分析结果】进入【设置参数】 获取预设信息报错',
+          site: 'components/task/farm-drawer:1964'
         })
-        let data_ = await upTopTableSet(this.taskData.taskUuid)
-        loading.close()
-        let data = data_.data
-        if (data.code != 200) {
-          messageFun('error', '报错，数据请求失败')
-          return false
+        else {
+          this.setParameterNext(data)
+          let presetVal = await getSetData(),
+            {frameTimeoutStop, frameTimeoutWarn} = presetVal.data.data
+          Object.assign(this.setting.other, {
+            frameTimeoutWarn,
+            frameTimeoutStop
+          })
         }
-        this.setParameterNext(data)
       },
       // 翻到指定页 【分析结果-details】【设置参数-setting】【渲染结果-result】
       turnPage(path) {
@@ -2041,6 +2034,12 @@
         this.turnPage('setting')
         // 【设置参数】-【渲染层数】- 启动分层渲染时的table
         // this.zone  1影视区 2效果图区
+        if (data.code == 1000) {
+          messageFun('info', '任务已过期')
+          return {
+            code: 1000
+          }
+        }
         this.setting.num.tableDataAll = data.data.layerSettingList.map(curr => {
           let formatList = [],
             cameraList = []
@@ -2090,21 +2089,6 @@
       // 设置参数 - 返回分析结果
       settingBack() {
         this.$emit('changeTypeInfo', 'upload-table')
-      },
-      // 设置参数 项目列表
-      getItemList(name) {
-        getConsumptionSelectList()
-          .then(data => {
-            let other = this.setting.other
-            other.viewList = data.data.data.map(curr => Object.assign(curr, {
-                value: curr.taskProjectUuid + '-/-' + curr.projectName,
-                label: curr.projectName,
-                id: curr.taskProjectUuid
-              })
-            )
-            if (!name) other.view = other.viewList.find(item => item.isDefault == 1)['value']
-            else other.view = other.viewList.find(curr => curr.label == name)['value']
-          })
       },
       // 设置参数 启动分层渲染按钮 改变
       h() {
@@ -2175,7 +2159,7 @@
       }
     },
     computed: {
-      ...mapState(['zone', 'isGup', 'user', 'socket_plugin_msg', 'socket_backS_msg', 'zoneId', 'socket_plugin'])
+      ...mapState(['zone', 'isGpu', 'user', 'socket_plugin_msg', 'socket_backS_msg', 'zoneId', 'socket_plugin'])
     }
   }
 </script>
@@ -2247,10 +2231,6 @@
         }
       }
     }
-
-    &.addPadding {
-      padding-bottom: 15px;
-    }
   }
 
   .s {
@@ -2259,16 +2239,9 @@
     }
 
     .info {
-      margin-left: 122px;
+      margin-left: 10px;
       font-size: 12px;
-      color: rgba(255, 191, 0, 1);
-
-      img {
-        width: 13px;
-        opacity: 0.59;
-        vertical-align: middle;
-        margin-right: 2px;
-      }
+      color: rgba(22, 29, 37, 0.29);
     }
 
     .set {
@@ -2292,20 +2265,6 @@
             vertical-align: middle;
           }
 
-          .createBtn {
-            display: inline-block;
-            margin-left: 4px;
-            font-size: 14px;
-            color: rgba(10, 98, 241, 1);
-            cursor: pointer;
-
-            .createIcon {
-              width: 18px;
-              vertical-align: middle;
-              margin-left: 20px;
-            }
-          }
-
           &:nth-of-type(1) {
             margin-top: 15px;
           }
@@ -2319,7 +2278,7 @@
       height: 32px;
       box-sizing: border-box;
       position: absolute;
-      bottom: 60px;
+      bottom: 20px;
       width: calc(100% - 40px);
 
       .btn {
@@ -2380,7 +2339,7 @@
     border: 0px;
     color: rgba(22, 29, 37, 0.79);
     font-size: 14px;
-    font-family: 'SourceHanSansCN', 'Arial Bold';
+    font-family: PingFangSC-Medium, PingFang SC;
 
     &.show {
       opacity: 1;
@@ -2523,10 +2482,11 @@
       height: calc(100% - 20px);
 
       .table {
+        position: relative;
         padding: 10px;
         box-sizing: border-box;
         border-radius: 4px;
-        height: calc(100vh - 234px);
+        height: calc(100% - 60px);
         background-color: rgba(255, 255, 255, 0.05);
         border-radius: 4px;
         box-shadow: 0px 0px 1px 1px rgba(22, 29, 37, 0.15);
@@ -2634,7 +2594,7 @@
 
         .tableBase {
           width: 100%;
-          height: calc(100vh - 290px);
+          height: calc(100% - 27px);
           display: flex;
           flex-direction: column;
           /*日志详情*/
@@ -2642,16 +2602,20 @@
           .log {
             display: flex;
             justify-content: center;
-            margin-top: -316px;
+            margin-top: -230px;
 
             .tableDataNull {
               .tableDataNullText {
                 font-size: 14px;
                 font-weight: 400;
-                color: rgba(255, 255, 255, 0.29);
+                color: rgba(22, 29, 37, 0.29);
                 text-align: center;
               }
             }
+          }
+
+          /deep/ .el-table {
+            height: 100% !important;
           }
 
           /*日志*/
@@ -2782,17 +2746,6 @@
     height: 120px;
   }
 
-  .set {
-    .haveBorder {
-      border: 1px solid rgba(22, 29, 37, 0.3);
-      border-radius: 6px;
-
-      /deep/ .el-input__inner {
-        width: 317px;
-      }
-    }
-  }
-
   /deep/ .cell {
     height: 23px;
 
@@ -2807,4 +2760,28 @@
     }
   }
 
+  .farm-drawer-body-item {
+    &.one {
+      height: 165px;
+    }
+
+    &.two {
+      height: calc(100vh - 360px);
+    }
+
+    &.three {
+      height: 254px;
+      overflow: hidden;
+    }
+  }
+
+  /deep/ .el-table__body-wrapper {
+    height: auto !important;
+  }
+
+  .task-table-seeMore {
+    /deep/ .el-table__body-wrapper {
+      height: calc(100% - 45px) !important;
+    }
+  }
 </style>

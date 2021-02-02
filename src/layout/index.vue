@@ -8,14 +8,9 @@
     <div class="mm" v-show="inHome">
       <iv/>
     </div>
-    <div class="gz" v-show="showGZ" @click="openPlugin">
-      <img src="@/icons/gz-black.png" alt="" class="d">
-      <img src="@/icons/gz-blue.png" alt="" class="h">
-      <span>{{ $t('transportBtn') }}</span>
-    </div>
     <!--帧大图-->
     <div class="thumb" v-show="thumb.showLargeThumbWin" @click="$store.commit('setShowThumb', false)">
-      <img :src="thumb.LargeImgHref" alt="">
+      <img :src="thumb.LargeImgHref">
     </div>
     <!--打开插件窗口-->
     <el-dialog :visible.sync="pluginDialog"
@@ -23,7 +18,7 @@
                top="34vh"
                width="360px">
       <header class="dl_header">
-        <span>{{ pluginDialog_.title }}</span>
+        <span class="title">{{ pluginDialog_.title }}</span>
         <img src="@/icons/shutDialogIcon.png" class="closeIcon" @click="$store.commit('openPluginDialog', false)">
       </header>
       <div class="dl_wrapper">
@@ -43,7 +38,7 @@
                top="30vh"
                width="520px">
       <header class="dl_header">
-        <span>{{ remoteLoginDialog.title }}</span>
+        <span class="title">{{ remoteLoginDialog.title }}</span>
         <img src="@/icons/shutDialogIcon.png" class="closeIcon" @click="shutRemoteLogin(false)">
       </header>
       <div class="dl_wrapper">
@@ -62,6 +57,45 @@
           <div class="download_btn z" @click="shutRemoteLogin(false)"><span>{{ remoteLoginDialog.btn }}</span></div>
         </div>
       </div>
+    </el-dialog>
+    <!--金币余额不足通知-->
+    <el-dialog :visible.sync="rechargeDialog.show"
+               :show-close=false
+               :destroy-on-close=true
+               top="30vh"
+               width="548px">
+      <section>
+        <header class="dl_header">
+          <span class="title">{{ rechargeDialog.title }}</span>
+          <img src="@/icons/shutDialogIcon.png"
+               class="closeIcon"
+               @click="rechargeDialog.show = false">
+        </header>
+        <div class="dl_wrapper">
+          <div class="body">
+            <p class="header">{{ rechargeDialog.header1 }}{{ user.account }}{{ rechargeDialog.header2 }}</p>
+            <!--欠费-->
+            <p class="contant" v-if="rechargeDialog.state == 'overdue'">
+              {{ rechargeDialog.contant1 }}
+              <span class="balanceOverdue">{{ user.balance }}</span>
+              {{ rechargeDialog.contant2 }}
+              {{ rechargeDialog.action }}
+              {{ rechargeDialog.contant3 }}
+            </p>
+            <!--余额为零-->
+            <p class="contant" v-if="rechargeDialog.state == 'empty'">
+              {{ rechargeDialog.contant4 }}
+              <span class="balanceEmpty">{{ user.balance }}</span>
+              {{ rechargeDialog.contant2 }}
+              {{ rechargeDialog.action }}
+              {{ rechargeDialog.contant3 }}
+            </p>
+            <div class="download_btn z" @click="goToUpTopPage">
+              <span>{{ rechargeDialog.btn }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
     </el-dialog>
   </div>
 </template>
@@ -88,13 +122,15 @@
       return {
         inHome: false,
         showGZ: false,
+        // 下载或启动插件win
         pluginDialog_: {
           title: '提示信息',
           dialogMainText: '需要安装传输插件才能进行文件传输若已安装过插件，请点此',
           triggerText: '启动传输插件',
           downloadText: '下载传输插件',
-          warnInfo: '若已启用，依然无法传输，\n' + '请联系24小时在线客服18560651927',
+          warnInfo: '若已启用，依然无法传输，\n' + '请联系24小时在线客服15610503237',
         },
+        // 下线通知win
         remoteLoginDialog: {
           show: false,
           title: '下线通知',
@@ -107,6 +143,20 @@
           contant4: '修改密码',
           contant5: '。',
           btn: '重新登录'
+        },
+        // 金币余额不足win
+        rechargeDialog: {
+          show: false,
+          state: null,
+          action: null,    // 触发验证的动作
+          title: '充值通知',
+          header1: '亲爱的',
+          header2: '，您好！',
+          contant1: '您当前账户已欠费',
+          contant4: '您当前账户余额为',
+          contant2: '金币，烦请您先充值后在进行【',
+          contant3: '】操作。',
+          btn: '立即充值'
         }
       }
     },
@@ -117,7 +167,18 @@
       iv
     },
     computed: {
-      ...mapState(['login', 'user', 'thumb', 'socket_plugin', 'pluginDialog', 'remoteLoginDate', 'socket_backS_msg'])
+      ...mapState([
+        'login',
+        'user',
+        'thumb',
+        'socket_plugin',
+        'pluginDialog',
+        'remoteLoginDate',
+        'socket_backS_msg',
+        'openOverdueBillsWin',    // 打开已欠费窗口
+        'openBalanceIsEmptyWin',  // 打开余额为零窗口
+        'openCapacityIsLessWin'   // 打开容量不足窗口
+      ])
     },
     watch: {
       '$route': {
@@ -130,7 +191,7 @@
         immediate: true
       },
       'remoteLoginDate': function (date) {
-        if(!date) return false
+        if (!date) return false
         this.remoteLoginDialog.date = createDateFun(new Date(date), null, true)
         this.remoteLoginDialog.show = true
       },
@@ -140,11 +201,38 @@
           if (data.code == 858) setTimeout(() => getInfo(), 1000)
         },
       },
+      'openOverdueBillsWin': function (obj) {
+        if (!obj.bool) return false
+        this.rechargeDialog.show = true
+        this.rechargeDialog.state = 'overdue'
+        this.rechargeDialog.action = obj.action
+        this.$store.commit('hasBeenOverdueBills', false)
+      },
+      'openBalanceIsEmptyWin': function (obj) {
+        if (!obj.bool) return false
+        this.rechargeDialog.show = true
+        this.rechargeDialog.state = 'empty'
+        this.rechargeDialog.action = obj.action
+        this.$store.commit('theBalanceIsZero', false)
+      },
+      'openCapacityIsLessWin': function (obj) {
+        if (!obj.bool) return false
+        this.rechargeDialog.show = true
+        this.$store.commit('theCapacityIsLess', false)
+      },
     },
     methods: {
-      shutRemoteLogin(editPS){
+      // 转到充值页面
+      goToUpTopPage() {
+        this.rechargeDialog.show = false
+        this.$router.push({name: 'upTop'})
+      },
+      shutRemoteLogin(editPS) {
         this.remoteLoginDialog.show = false
-        editPS ? this.$router.push({name: 'login', params: {modify: true}}) : this.$router.push({name: 'login', params: {modify: false}})
+        editPS ? this.$router.push({name: 'login', params: {modify: true}}) : this.$router.push({
+          name: 'login',
+          params: {modify: false}
+        })
       },
       // 跳转到下载
       w() {
@@ -153,15 +241,12 @@
       // 触发插件
       triggerPlugin() {
         let son = document.createElement('IFRAME')
+        son.style.width = '0px'
+        son.style.height = '0px'
         document.body.appendChild(son)
         // son.src = 'jhzy://'
-        son.src= 'cloudtransfer://'
+        son.src = 'cloudtransfer://'
         son.contentDocument.open()
-      },
-      // 打开【传输列表】
-      openPlugin() {
-        if (this.socket_plugin) this.$store.commit('WEBSOCKET_PLUGIN_SEND', 'open')
-        else this.$store.dispatch('WEBSOCKET_PLUGIN_INIT', true).then(() => this.$store.commit('WEBSOCKET_PLUGIN_SEND', 'open'))
       }
     }
   }
@@ -173,9 +258,10 @@
     background-color: rgba(241, 244, 249, 1);
     display: flex;
     flex-wrap: nowrap;
-    height: 100vh;
-    min-height: 810px;
-    width: 100vw;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: PingFangSC-Medium, PingFang SC;
 
     .navbar {
       flex-shrink: 0;
@@ -184,7 +270,7 @@
     .main {
       flex-grow: 1;
       flex-shrink: 1;
-      width: calc(100vw - 120px);
+      width: calc(100% - 120px);
     }
 
     .mm {
@@ -192,47 +278,6 @@
       width: 366px;
       height: 100%;
       padding: 20px 20px 0px 0px;
-    }
-
-    .gz {
-      position: fixed;
-      bottom: 34px;
-      right: 34px;
-      width: 86px;
-      height: 24px;
-      border-radius: 2px;
-      border: 1px solid rgba(22, 29, 37, 0.19);
-      background-color: rgba(255, 255, 255, 1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-
-      span {
-        font-size: 12px;
-        font-family: PingFangSC-Regular, PingFang SC;
-        color: rgba(22, 29, 37, 0.8);
-      }
-
-      .h {
-        display: none;
-      }
-
-      &:hover {
-        border: 1px solid rgba(27, 83, 244, 0.19);
-
-        span {
-          color: rgba(27, 83, 244, 1);
-        }
-
-        .d {
-          display: none;
-        }
-
-        .h {
-          display: inline-block;
-        }
-      }
     }
   }
 
@@ -256,25 +301,9 @@
   }
 
   .dl_header {
-    height: 36px;
     text-align: center;
-    background-color: rgba(241, 244, 249, 1);
-    box-shadow: 0px 1px 6px 0px rgba(27, 83, 244, 0.3);
     padding: 0px 30px;
     box-sizing: border-box;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-
-    span {
-      font-size: 14px;
-      font-weight: 600;
-      color: rgba(22, 29, 37, 1);
-    }
-
-    img {
-      cursor: pointer;
-    }
   }
 
   .dl_wrapper {
@@ -354,6 +383,23 @@
         cursor: pointer;
         text-decoration: underline;
       }
+    }
+
+    .balanceOverdue {
+
+    }
+
+    .balanceEmpty,
+    .balanceOverdue {
+      display: inline-block;
+      padding: 0px 4px;
+      font-size: 18px;
+    }
+    .balanceEmpty {
+      color: RGBA(255, 191, 0, 1);
+    }
+    .balanceOverdue {
+      color: RGBA(255, 62, 77, 1);
     }
   }
 

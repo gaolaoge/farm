@@ -143,7 +143,7 @@
     </div>
     <!--添加发票抬头-->
     <el-dialog
-      title="添加发票抬头"
+      :title="editHeader ? '编辑发票抬头' : '添加发票抬头'"
       :visible.sync="dialogData.visible"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
@@ -159,10 +159,9 @@
           <input type="text"
                  :id="item.id"
                  :placeholder="item.Placeholder"
-                 :class="[{'errorVal': item.errInfo ? item.errInfo : null}, 'farm-form-input']"
+                 :class="[{'errorVal': item.status === false}, 'farm-form-input']"
                  v-model="item.Val"
-                 @input="instantVerif(item.id)"
-                 @blur="VerifType(item.id)">
+                 @input="instantVerif(item.id)">
         </div>
         <div class="sw">
           <el-switch
@@ -176,11 +175,12 @@
       </div>
       <div class="btnList">
         <div class="farm-form-btn cancel" @click="closeDialog"><span>取消</span></div>
-        <div :class="[{'cannotBe': !dialogData.list[0]['errInfo'] || !dialogData.list[1]['errInfo'] || !dialogData.list[2]['errInfo'] || !dialogData.list[4]['errInfo']},
-                      'farm-form-btn']"
-             @click="addHeader" v-show="!editHeader"><span>确定</span></div>
-        <div :class="[{'cannotBe': !dialogData.list[0]['errInfo'] || !dialogData.list[1]['errInfo'] || !dialogData.list[2]['errInfo'] || !dialogData.list[4]['errInfo']}, 'farm-form-btn']"
-             @click="editHeaderF" v-show="editHeader"><span>确定</span></div>
+        <div
+          :class="[{'cannotBe': !dialogData.list[0]['status'] || !dialogData.list[1]['status'] || !dialogData.list[2]['status'] || !dialogData.list[4]['status']}, 'farm-form-btn']"
+          @click="addHeader" v-show="!editHeader"><span>确定</span></div>
+        <div
+          :class="[{'cannotBe': !dialogData.list[0]['status'] || !dialogData.list[1]['status'] || !dialogData.list[2]['status'] || !dialogData.list[4]['status']}, 'farm-form-btn']"
+          @click="editHeaderF" v-show="editHeader"><span>确定</span></div>
       </div>
     </el-dialog>
   </div>
@@ -198,9 +198,10 @@
     invoicing
   } from '@/api/bill-api'
   import {
-    createDateFun
+    createDateFun,
+    messageFun,
+    createThrowInfo
   } from '@/assets/common'
-  import {messageFun} from "../../assets/common"
   import {
     mapState
   } from 'vuex'
@@ -232,34 +233,8 @@
         typeV: '增值税普票',
         invoiceLabel: '开票抬头',
         btn: '立即开票',
-        recordingTableData: [
-          // {
-          //   rechargeUuid: '',
-          //   paymentStatus: '',
-          //   actualPayment: '',          // 实际支付金额
-          //   arrivalAmount: '',
-          //   rechargeExplain: '',
-          //   paymentTitle: '',           // 支付方式1:支付宝 2:微信
-          //   outTradeNo: '',             // 交易id
-          //   productOrderUuid: '',       // 支付单号
-          //   updateTime: '',             // 支付时间
-          //   invoice: ''
-          // }
-        ],   // 充值记录table
-        invoiceTableData: [
-          // {
-          //    invoiceSettingUuid: '',    // 发票抬头uuid
-          //    invoiceTitle: '',          // 发票抬头
-          //    taxpayerId: '',            // 纳税人识别号
-          //    email: '',                 // 邮箱
-          //    isDefault: '',             // 是否默认0:非默认 1:默认
-          //    customerUuid: '',          //
-          //    companyAddress: '',        // 公司地址
-          //    companyTelephone: '',      // 公司电话
-          //    companyBank: '',           // 开户行
-          //    bankAccount: ''            // 开户行账号
-          // },
-        ],     // 发票抬头table
+        recordingTableData: [],   // 充值记录table
+        invoiceTableData: [],     // 发票抬头table
         recordingSelection: Array(), // 充值记录table多选
         operatingBtn: ['设为默认', '编辑', '删除'],
         addMoreBtn: '添加发票抬头',
@@ -272,7 +247,7 @@
               Placeholder: '请输入发票抬头',
               id: 'header',
               required: true,
-              errInfo: null
+              status: null
             },
             {
               Label: '纳税人识别号',
@@ -280,7 +255,7 @@
               Placeholder: '请输入纳税人识别号',
               id: 'number',
               required: true,
-              errInfo: null
+              status: null
             },
             {
               Label: '邮箱',
@@ -288,7 +263,7 @@
               Placeholder: '请输入邮箱',
               id: 'email',
               required: true,
-              errInfo: null
+              status: null
             },
             {
               Label: '注册地址',
@@ -301,7 +276,7 @@
               Val: '',
               Placeholder: '请输入公司电话',
               id: 'phone',
-              errInfo: null
+              status: true
             },
             {
               Label: '开户银行',
@@ -322,50 +297,17 @@
         },
         editHeader: false,          // 添加默认抬头 确认btn 切换
         checked: null,              // 开票抬头索引
+        lock: false                 // 编辑 or 添加【抬头】锁
       }
     },
     methods: {
-      // 验证格式
-      VerifType(type) {
-        let list = this.dialogData.list
-        if (type == 'email' && list[2]['Val']) {
-          // 邮箱
-          if (!this.regExp.email.test(list[2]['Val'])) {
-            messageFun('error', '请输入正确的邮箱')
-            list[2]['errInfo'] = true
-          } else list[2]['errInfo'] = false
-        } else if (type == 'header' && list[0]['Val']) {
-          // 发票抬头
-          if (!this.regExp.header.test(list[0]['Val'])) {
-            messageFun('error', '输入内容不能包含空格或特殊字符')
-            list[0]['errInfo'] = true
-          } else list[0]['errInfo'] = false
-        } else if (type == 'number' && list[1]['Val']) {
-          // 纳税人识别号
-          if (!this.regExp.identificationNumber.test(list[1]['Val'])) {
-            messageFun('error', '请输入15-20位数字或字母')
-            list[1]['errInfo'] = true
-          } else list[1]['errInfo'] = false
-        } else if (type == 'phone' && list[4]['Val']) {
-          // 纳税人识别号
-          if (!this.regExp.phone.test(list[4]['Val'])) {
-            messageFun('error', '请输入正确的手机号')
-            list[4]['errInfo'] = true
-          } else list[4]['errInfo'] = false
-        }
-      },
       // 即时验证
       instantVerif(type) {
         let list = this.dialogData.list
-        if (type == 'email' && list[2]['Val'].trim()) {  // 邮箱
-          if (this.regExp.email.test(list[2]['Val'])) list[2]['errInfo'] = false
-        } else if (type == 'header' && list[0]['Val']) {  // 发票抬头
-          if (this.regExp.header.test(list[0]['Val'])) list[0]['errInfo'] = false
-        } else if (type == 'number' && list[1]['Val']) {  // 纳税人识别号
-          if (this.regExp.identificationNumber.test(list[1]['Val'])) list[1]['errInfo'] = false
-        } else if (type == 'phone' && list[4]['Val']) {  // 纳税人识别号
-          if (this.regExp.phone.test(list[4]['Val'])) list[4]['errInfo'] = false
-        }
+        if (type == 'email' && list[2]['Val'].trim()) list[2]['status'] = true
+        else if (type == 'header' && list[0]['Val']) list[0]['status'] = true
+        else if (type == 'number' && list[1]['Val']) list[1]['status'] = true
+        else if (type == 'phone' && list[4]['Val']) list[4]['status'] = true
       },
       // 添加发票抬头
       addNewHeader() {
@@ -389,14 +331,14 @@
       },
       // 获取户开票抬头信息
       async getInvoiceHeaderList() {
-        let data = await getInvoiceHeaderListF()
-        if (data.data.code == 200) {
-          let index = data.data.data.findIndex(item => item.isDefault == 1)
+        let {data} = await getInvoiceHeaderListF()
+        if (data.code == 200) {
+          let index = data.data.findIndex(item => item.isDefault == 1)
           if (index) {
-            data.data.data.unshift(data.data.data[index])
-            data.data.data.splice(index + 1, 1)
+            data.data.unshift(data.data[index])
+            data.data.splice(index + 1, 1)
           }
-          this.invoiceTableData = data.data.data
+          this.invoiceTableData = data.data
         }
       },
       // 充值记录tab 多选
@@ -412,42 +354,66 @@
       },
       // 添加发票抬头
       async addHeader() {
-        let list = this.dialogData.list
+        if (this.lock) return false
+        this.lock = true
+        let list = this.dialogData.list,
+          {regExp} = this
         if (!list[0]['Val']) {
+          list[0]['status'] = false
           messageFun('info', '【发票抬头】为必填项')
-          return false
         } else if (!list[1]['Val']) {
+          list[1]['status'] = false
           messageFun('info', '【纳税人识别号】为必填项')
-          return false
         } else if (!list[2]['Val']) {
+          list[2]['status'] = false
           messageFun('info', '【邮箱】为必填项')
-          return false
-        } else if (list[0]['errInfo'] || list[1]['errInfo'] || list[2]['errInfo'] || list[4]['errInfo']) {
-          messageFun('info', '已填项存在错误')
-          return false
-        }
-        let data = await addInvoiceHeader({
-          invoiceTitle: list[0]['Val'],                 // 发票抬头
-          taxpayerId: list[1]['Val'],                   // 纳税人识别号
-          email: list[2]['Val'],                        // 邮箱
-          companyAddress: list[3]['Val'],               // 公司地址
-          companyTelephone: list[4]['Val'],             // 公司电话
-          companyBank: list[5]['Val'],                  // 公司开户行地址
-          bankAccount: list[6]['Val'],                  // 公司开户行账号
-          isDefault: this.dialogData.isDefault          // 0:非默认 1:默认
-        })
-        if (data.data.code == 200) {
-          messageFun('success', '操作成功')
-          this.getInvoiceHeaderList()
-          this.dialogData.visible = false
-          this.reset()
+        } else if (!regExp.header.test(list[0]['Val'])) {
+          messageFun('error', '输入内容不能包含空格或特殊字符')
+          list[0]['status'] = false
+        } else if (!regExp.identificationNumber.test(list[1]['Val'])) {
+          messageFun('error', '请输入15-20位数字或字母')
+          list[1]['status'] = false
+        } else if (!regExp.email.test(list[2]['Val'])) {
+          messageFun('error', '请输入正确的邮箱')
+          list[2]['status'] = false
+        } else if (list[4]['Val'] && !regExp.phone.test(list[4]['Val'])) {
+          messageFun('error', '请输入正确的手机号')
+          list[4]['status'] = false
+        } else {
+          try {
+            let {data} = await addInvoiceHeader({
+              invoiceTitle: list[0]['Val'],                 // 发票抬头
+              taxpayerId: list[1]['Val'],                   // 纳税人识别号
+              email: list[2]['Val'],                        // 邮箱
+              companyAddress: list[3]['Val'],               // 公司地址
+              companyTelephone: list[4]['Val'],             // 公司电话
+              companyBank: list[5]['Val'],                  // 公司开户行地址
+              bankAccount: list[6]['Val'],                  // 公司开户行账号
+              isDefault: this.dialogData.isDefault          // 0:非默认 1:默认
+            })
+            if (data.code == 200) {
+              messageFun('success', '操作成功')
+              await this.getInvoiceHeaderList()
+              this.dialogData.visible = false
+              this.reset()
+            } else messageFun('error', '操作失败')
+            this.lock = false
+          } catch (err) {
+            createThrowInfo({
+              'type': 'error',
+              'title': '添加发票抬头意外失败',
+              'info': err,
+              'site': 'components/bill/invoiceImmediately-355'
+            })
+            this.lock = false
+          }
         }
       },
       // 发票抬头 - 编辑 - 打开
       editItem(index) {
         this.editHeader = true
         this.dialogData.visible = true
-        let list = this.dialogData.list,
+        let {list} = this.dialogData,
           item = this.invoiceTableData[index]
         list[0]['Val'] = item['invoiceTitle']
         list[1]['Val'] = item['taxpayerId']
@@ -456,40 +422,70 @@
         list[4]['Val'] = item['companyTelephone']
         list[5]['Val'] = item['companyBank']
         list[6]['Val'] = item['bankAccount']
+        list[0]['status'] = true
+        list[1]['status'] = true
+        list[2]['status'] = true
+        list[4]['status'] = true
         this.Uuid = item['invoiceSettingUuid']
         this.dialogData.isDefault = item['isDefault']
       },
       // 发票抬头 - 编辑 - 发送
       async editHeaderF() {
-        let list = this.dialogData.list
+        if (this.lock) return false
+        this.lock = true
+        let list = this.dialogData.list,
+          {regExp} = this
         if (!list[0]['Val']) {
+          list[0]['status'] = false
           messageFun('info', '【发票抬头】为必填项')
-          return false
-        }
-        if (!list[1]['Val']) {
+        } else if (!list[1]['Val']) {
+          list[1]['status'] = false
           messageFun('info', '【纳税人识别号】为必填项')
-          return false
-        }
-        if (!list[2]['Val']) {
+        } else if (!list[2]['Val']) {
+          list[2]['status'] = false
           messageFun('info', '【邮箱】为必填项')
-          return false
-        }
-        let data = await editItemIn({
-          invoiceSettingUuid: this.Uuid,
-          invoiceTitle: list[0]['Val'],                 // 发票抬头
-          taxpayerId: list[1]['Val'],                   // 纳税人识别号
-          email: list[2]['Val'],                        // 邮箱
-          companyAddress: list[3]['Val'],               // 公司地址
-          companyTelephone: list[4]['Val'],             // 公司电话
-          companyBank: list[5]['Val'],                  // 公司开户行地址
-          bankAccount: list[6]['Val'],                  // 公司开户行账号
-          isDefault: this.dialogData.isDefault          // 0:非默认 1:默认
-        })
-        if (data.data.code == 200) {
-          this.editHeader = false
-          messageFun('success', '操作成功')
-          this.dialogData.visible = false
-          this.getInvoiceHeaderList()
+        } else if (!regExp.header.test(list[0]['Val'])) {
+          messageFun('error', '输入内容不能包含空格或特殊字符')
+          list[0]['status'] = false
+        } else if (!regExp.identificationNumber.test(list[1]['Val'])) {
+          messageFun('error', '请输入15-20位数字或字母')
+          list[1]['status'] = false
+        } else if (!regExp.email.test(list[2]['Val'])) {
+          messageFun('error', '请输入正确的邮箱')
+          list[2]['status'] = false
+        } else if (list[4]['Val'] && !regExp.phone.test(list[4]['Val'])) {
+          messageFun('error', '请输入正确的手机号')
+          list[4]['status'] = false
+        } else {
+          try {
+            let {data} = await editItemIn({
+              invoiceSettingUuid: this.Uuid,
+              invoiceTitle: list[0]['Val'],                 // 发票抬头
+              taxpayerId: list[1]['Val'],                   // 纳税人识别号
+              email: list[2]['Val'],                        // 邮箱
+              companyAddress: list[3]['Val'],               // 公司地址
+              companyTelephone: list[4]['Val'],             // 公司电话
+              companyBank: list[5]['Val'],                  // 公司开户行地址
+              bankAccount: list[6]['Val'],                  // 公司开户行账号
+              isDefault: this.dialogData.isDefault          // 0:非默认 1:默认
+            })
+            if (data.code == 200) {
+              this.editHeader = false
+              messageFun('success', '操作成功')
+              this.dialogData.visible = false
+              await this.getInvoiceHeaderList()
+              this.reset()
+            } else messageFun('error', '操作失败')
+            this.lock = false
+          } catch (err) {
+            createThrowInfo({
+              'type': 'error',
+              'title': '编辑发票抬头意外失败',
+              'info': err,
+              'site': 'components/bill/invoiceImmediately-433'
+            })
+            this.lock = false
+          }
         }
       },
       // 发票抬头 - 设为默认
@@ -533,15 +529,15 @@
         })
         if (data.data.code == 200) {
           messageFun('success', '发票申请已经提交到管理员，我们将会在5个工作日内给您回复，请耐心等待！')
-          this.getRechargeList()
+          await this.getRechargeList()
           this.checked = null
           this.recordingSelection = []
-          this.$router.push({name: 'bill', params: {index: 2}})
+          await this.$router.push({name: 'bill', params: {index: 2}})
         }
       },
       // 复位
       reset() {
-        let list = this.dialogData.list
+        let {list} = this.dialogData
         list[0]['Val'] = ''
         list[1]['Val'] = ''
         list[2]['Val'] = ''
@@ -549,6 +545,10 @@
         list[4]['Val'] = ''
         list[5]['Val'] = ''
         list[6]['Val'] = ''
+        list[0]['status'] = null
+        list[1]['status'] = null
+        list[2]['status'] = null
+        list[4]['status'] = null
         this.dialogData.isDefault = 0
       }
     },
@@ -566,8 +566,12 @@
   .invoiceImmediately {
     width: 100%;
 
+    .tableGroup {
+      height: calc(100% - 20px);
+    }
+
     .t {
-      height: calc(100vh - 142px);
+      height: calc(100% - 46px);
       overflow-y: auto;
       padding: 46px 30px;
       box-sizing: border-box;
@@ -594,7 +598,6 @@
       .typeV {
         line-height: 24px;
         font-size: 14px;
-        font-family: PingFangSC-Semibold, PingFang SC;
       }
 
       .valTable {
@@ -668,7 +671,6 @@
         width: 114px;
         height: 20px;
         font-size: 14px;
-        font-family: PingFangSC-Regular, PingFang SC;
         color: rgba(22, 29, 37, 0.8);
         line-height: 36px;
         text-align: right;
@@ -688,7 +690,7 @@
         outline: none;
 
         &.errorVal {
-          color: rgba(255, 62, 77, 1);
+          border: 1px solid rgba(255, 62, 77, 1);
         }
       }
     }
@@ -713,7 +715,6 @@
 
       span {
         font-size: 14px;
-        font-family: PingFangSC-Medium, PingFang SC;
         font-weight: 500;
         color: rgba(255, 255, 255, 1);
       }
@@ -763,7 +764,6 @@
         margin-left: 30px;
         line-height: 36px;
         font-size: 14px;
-        font-family: PingFangSC-Semibold, PingFang SC;
         font-weight: 600;
         color: rgba(22, 29, 37, 1);
       }
@@ -789,7 +789,6 @@
       .s {
         display: inline-block;
         font-size: 14px;
-        font-family: PingFangSC-Regular, PingFang SC;
         color: rgba(22, 29, 37, 1);
         opacity: 0.6;
         line-height: 20px;

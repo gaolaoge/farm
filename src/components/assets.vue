@@ -25,9 +25,9 @@
              v-for="(item,index) in btnGroup.myUploadBtnGroup"
              :key="index"
              @click="operating('upload', item['text'])">
-          <img :src="item.initialIcon" alt="" v-if="item.initialIcon" class="btnIcon default"
+          <img :src="item.initialIcon" v-if="item.initialIcon" class="btnIcon default"
                :style="{'transform': item.css }">
-          <img :src="item.selectedIcon" alt="" v-if="item.selectedIcon" class="btnIcon hover"
+          <img :src="item.selectedIcon" v-if="item.selectedIcon" class="btnIcon hover"
                :style="{'transform': item.css }">
           <span>
             {{ item['text'] }}
@@ -83,7 +83,6 @@
                  @keyup.enter="searchFun('upload')"
                  placeholder="文件名">
           <img src="@/icons/global-search-icon.png"
-               alt=""
                class="searchIcon"
                @click="searchFun('upload')">
         </div>
@@ -94,7 +93,6 @@
                  @keyup.enter="searchFun('render')"
                  placeholder="文件名">
           <img src="@/icons/global-search-icon.png"
-               alt=""
                class="searchIcon"
                @click="searchFun('render')">
         </div>
@@ -130,7 +128,7 @@
                           @renderSelectionF="renderSelectionF"
                           @clearInput="clearInput"
                           @showJump="showJump"
-                          :searchInputVal="renderSearchInputVal"/>
+                          :keyword="renderSearchInputVal"/>
         </div>
       </div>
     </div>
@@ -194,10 +192,10 @@
           ],
           moreBtnText: this.$t('assets.moreBtnText'),
           moreBtnIcon: require('@/icons/more-btn.png'),
-          moreBtnList: this.$t('assets.moreBtnList'),    // ['移动到', '复制到', '重命名', '解压']
+          moreBtnList: this.$t('assets.moreBtnList'),    // ['移动到', '复制到', '解压']
           showMoreBtnList: false,
           howToCreateBtn: this.$t('assets.howToCreateBtn'),  // ['手动创建资产目录', '自动创建资产目录']
-          howToCreateIindex: '0'
+          howToCreateIindex: '1'
         },
         info: this.$t('assets.info'),
         table: {
@@ -300,7 +298,7 @@
       },
       // 根据关键字进行筛选
       searchFun(type) {
-        if (type == 'render') this.$refs.outPutTable.refreshF(true)
+        if (type == 'render') this.$refs.outPutTable.refreshF(false)
         else this.$refs.myUploadTable.refreshF(true)
       },
       // 清空关键字筛选输入框
@@ -418,7 +416,7 @@
 
     .tableList {
       /*min-height: 700px;*/
-      /*height: calc(100vh - 80px - 72px - 42px - 40px);*/
+      height: calc(100% - 42px);
       /*渲染下载*/
 
       .outPutTable {
@@ -591,10 +589,21 @@
       }
     }
   }
+
+  .tableGroup {
+    height: calc(100% - 72px - 20px);
+
+    .myUploadTable,
+    .outPutTable {
+      height: calc(100%);
+    }
+  }
+
 </style>
 
 <style lang="less">
   .outPut-table {
+    position: relative;
     overflow: hidden;
 
     .bread {
@@ -633,9 +642,18 @@
 
   .outPut-wrapper {
     overflow: hidden;
+    height: 100%;
 
-    .el-table__body-wrapper {
-      height: calc(100vh - 360px);
+    .outPut-table {
+      height: calc(100% - 52px);
+    }
+
+    .el-table {
+      height: calc(100% - 47px);
+
+      .el-table__body-wrapper {
+        height: calc(100% - 47px);
+      }
 
       tr {
         cursor: pointer;
@@ -643,6 +661,8 @@
     }
 
     .page {
+      position: relative;
+      width: calc(100% - 20px);
       margin: 10px;
       display: inline-flex;
       flex-wrap: nowrap;
@@ -652,11 +672,5 @@
         margin-left: 20px;
       }
     }
-
-    /*@media screen and (orientation: portrait) {*/
-    /*  /deep/ .el-table__body-wrapper {*/
-    /*    height: calc(100vw - 375px);*/
-    /*  }*/
-    /*}*/
   }
 </style>

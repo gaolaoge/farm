@@ -4,11 +4,11 @@
     <div class="container g-popup-box">
       <p class="title">
         <span>{{ title }}</span>
-        <img src="@/icons/shutDialogIcon.png" alt="" class="shutImg" @click="onCancel">
+        <img src="@/icons/shutDialogIcon.png" class="shutImg" @click="onCancel">
       </p>
       <div class="content">
         <!--左侧-->
-        <div class="c-left" :class="{'c-left--doing':imgURL}">
+        <div :class="['c-left', {'c-left--doing':imgURL}]">
           <div class="container-box" :style="{
             width:`${containerBoxData.width}px`,
             height:`${containerBoxData.height}px`,
@@ -365,6 +365,7 @@
             this.$emit('enter', this.$refs.$canvas.toDataURL()) // 返回链接
           } else if (this.returnType === 'file') {
             this.$emit('enter', this.base64ToFile(this.$refs.$canvas.toDataURL(), 'avatar.png')) // 返回文件
+            // this.$emit('enter', this.$refs.$canvas.toDataURL()) // 返回文件
           }
         } else {
           this.$message('请上传图片', 'error')

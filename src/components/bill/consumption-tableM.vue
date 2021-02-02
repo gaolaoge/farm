@@ -79,12 +79,6 @@
         :border=true
         style="width: 100%">
 
-        <el-table-column
-          type="selection"
-          align="right"
-          show-overflow-tooltip
-          min-width="58"
-          width="58"/>
         <!--任务ID-->
         <el-table-column
           prop="id"
@@ -174,7 +168,7 @@
         :total="table.outPutTableTotal">
       </el-pagination>
       <div class="farm-primary-form-btn btn" @click="getList">
-        <span>{{ refresh }}</span>
+        <span>{{ $t('public_text.refresh') }}</span>
       </div>
     </div>
     <!--详情-->
@@ -252,9 +246,7 @@
         dialogVisible: false,
         dialogTableType: '',
         renderDialogTableData: [],
-        downloadDialogTableData: [],
-        // pageInfo: {}
-        refresh: '刷新'
+        downloadDialogTableData: []
       }
     },
     components: {

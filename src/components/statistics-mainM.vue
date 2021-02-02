@@ -328,7 +328,6 @@
 
             span {
               font-size: 12px;
-              font-family: PingFangSC-Regular, PingFang SC;
               color: rgba(22, 29, 37, 1);
               max-width: 50px;
               width: 70%;

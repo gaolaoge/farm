@@ -1,5 +1,5 @@
 <template>
-  <div class="header-wrapper" :class="[{'non-home': !inHome}]">
+  <div :class="['header-wrapper', {'non-home': !inHome}]">
     <div class="wrapper">
       <!--公告-->
       <div class="bulletin">
@@ -12,10 +12,10 @@
         </div>
       </div>
       <!--操作-->
-      <div class="oper" :class="[{'inhome': inHome}]">
+      <div :class="['oper', {'inhome': inHome}]">
         <!--选择分区-->
         <div class="workbench">
-          <div class="switch"><img src="@/icons/switch-icon.png" alt=""></div>
+          <div class="switch"><img src="@/icons/switch-icon.png"></div>
           <el-select v-model="workBenchVal" class="workBench-optionBase">
             <el-option
               v-for="(item,index) in workBenchList"
@@ -27,24 +27,23 @@
         </div>
         <div class="r">
           <!--消息-->
-          <div class="messageE"
-               :class="[{'active': showMessageList},{'isHome': inHome},{'haveNewMS': haveNewMS}]"
+          <div :class="['messageE', {'active': showMessageList, 'isHome': inHome, 'haveNewMS': haveNewMS}]"
                @click.self="showMessageList = !showMessageList"
                v-operating3>
             <img src="@/icons/messageIconheaderM2.png" v-show="!showMessageList" @click.self="showMessageList = true">
             <img src="@/icons/messageIconheaderM-hover.png" v-show="showMessageList"
                  @click.self="showMessageList = false">
             <!--下拉框-->
-            <div class="messageBase" :class="[{'inHome': !inHome}]">
+            <div :class="['messageBase', {'inHome': !inHome}]">
               <message-table v-show="showMessageList"
                              ref="messageTable"
-                             @noMessage="haveNewMS = false"
-                             @shutMe="showMessageList = !showMessageList" />
+                             @refreshStatus="haveUnread"
+                             @changeNewsStatus="changeNewsStatus"
+                             @shutMe="showMessageList = !showMessageList"/>
             </div>
           </div>
           <!--问号-->
-          <div class="problemE"
-               :class="[{'active': showProblemList},{'isHome': inHome}]"
+          <div :class="['problemE', {'active': showProblemList},{'isHome': inHome}]"
                @click="showProblemList = !showProblemList"
                v-operating2>
             <img src="@/icons/problem2.png">
@@ -53,23 +52,19 @@
               <ul class="userOperate" v-show="showProblemList">
                 <!--渲染指引-->
                 <li class="operateLi" @click="guide">
-                <span class="con">
-                  <span class="t">
-                     <span class="sb">
-                       {{ problemOperateList[0]['text'] }}
-                     </span>
+                  <span class="con">
+                    <span class="t">
+                       <span class="sb">{{ problemOperateList[0]['text'] }}</span>
+                    </span>
                   </span>
-                </span>
                 </li>
                 <!--帮助中心-->
                 <li class="operateLi" @click="w">
-                <span class="con">
-                  <span class="t">
-                     <span class="sb">
-                       {{ problemOperateList[1]['text'] }}
-                     </span>
+                  <span class="con">
+                    <span class="t">
+                       <span class="sb">{{ problemOperateList[1]['text'] }}</span>
+                    </span>
                   </span>
-                </span>
                 </li>
               </ul>
             </div>
@@ -80,15 +75,12 @@
             <!--下拉框-->
             <div class="newsBase" :class="[{'show': showUserList}]">
               <ul class="userOperate" v-show="showUserList">
-
                 <!--帐号-->
                 <li class="operateLi userName">
                 <span class="con">
                   <span class="t">
-                     <span class="sb">
-                       {{ user.name }}
-                     </span>
-                      <img :src="userOperateList[0]['iconUrl']" alt="" class="iconUrl">
+                     <span class="sb">{{ user.name }}</span>
+                      <img :src="userOperateList[0]['iconUrl']" class="iconUrl">
                   </span>
                 </span>
                 </li>
@@ -96,13 +88,9 @@
                 <li class="operateLi balance" @click="$router.push('/upTop')">
                   <span class="con">
                     <span class="t">
-                       <span class="sb">
-                         {{ userOperateList[1]['text'] }}
-                       </span>
+                       <span class="sb">{{ userOperateList[1]['text'] }}</span>
                        <span class="balanceNow">
-                         <span class="amount">
-                            {{ user.balance }}
-                         </span>
+                         <span class="amount">{{ user.balance }}</span>
                        </span>
                     </span>
                   </span>
@@ -114,13 +102,9 @@
                 <li class="operateLi balance2">
                 <span class="con">
                   <span class="t">
-                     <span class="sb">
-                       {{ userOperateList[2]['text'] }}
-                     </span>
+                     <span class="sb">{{ userOperateList[2]['text'] }}</span>
                      <span class="balanceNow">
-                       <span class="amount">
-                          {{ user.haveCapacity }} GB
-                       </span>
+                       <span class="amount">{{ user.haveCapacity }} GB</span>
                      </span>
                   </span>
                 </span>
@@ -129,9 +113,7 @@
                 <li class="operateLi Pinfo" @click="$router.push('/Pinfo')">
                 <span class="con">
                   <span class="t">
-                     <span class="sb">
-                       {{ userOperateList[3]['text'] }}
-                     </span>
+                     <span class="sb">{{ userOperateList[3]['text'] }}</span>
                   </span>
                 </span>
                 </li>
@@ -139,9 +121,7 @@
                 <li class="operateLi quit" @click="quitFun">
                 <span class="con">
                   <span class="t">
-                     <span class="sb">
-                       {{ userOperateList[4]['text'] }}
-                     </span>
+                     <span class="sb">{{ userOperateList[4]['text'] }}</span>
                   </span>
                 </span>
                 </li>
@@ -154,78 +134,78 @@
       <div class="guide-wrapper" v-if="guideShow">
         <!--第一步-->
         <div class="guide-step step-one" v-show="guideShowStep == 1">
-          <img src="@/icons/step-jump-over.png" alt="" class="jump-btn" @click="showGuide">
+          <img src="@/icons/step-jump-over.png" class="jump-btn" @click="showGuide">
           <div class="step-content">
-            <img src="@/assets/step-one.png" alt="" class="welcome" @click="guideShowStep = 2">
+            <img src="@/assets/step-one.png" class="welcome" @click="guideShowStep = 2">
           </div>
         </div>
         <!--第二步-->
         <div class="guide-step step-two" v-show="guideShowStep == 2">
-          <img src="@/icons/step-jump-over.png" alt="" class="jump-btn" @click="showGuide">
+          <img src="@/icons/step-jump-over.png" class="jump-btn" @click="showGuide">
           <div class="step-content">
-            <img src="@/assets/step-two.png" class="newTesk" alt="">
+            <img src="@/assets/step-two.png" class="newTesk">
             <div class="step-btn">
-              <img src="@/icons/step-previous.png" alt="" class="previous first">
-              <img src="@/icons/step-next.png" alt="" class="next" @click="guideShowStep = 3">
+              <img src="@/icons/step-previous.png" class="previous first">
+              <img src="@/icons/step-next.png" class="next" @click="guideShowStep = 3">
             </div>
           </div>
         </div>
         <!--第三步-->
         <div class="guide-step step-three" v-show="guideShowStep == 3">
-          <img src="@/icons/step-jump-over.png" alt="" class="jump-btn" @click="showGuide">
+          <img src="@/icons/step-jump-over.png" class="jump-btn" @click="showGuide">
           <div class="step-content">
-            <img src="@/assets/step-three.png" alt="" class="newMode">
+            <img src="@/assets/step-three.png" class="newMode">
             <div class="step-btn">
-              <img src="@/icons/step-next.png" alt="" class="previous" style="transform: rotate(180deg)"
+              <img src="@/icons/step-next.png" class="previous" style="transform: rotate(180deg)"
                    @click="guideShowStep = 2">
-              <img src="@/icons/step-next.png" alt="" class="next" @click="guideShowStep = 4">
+              <img src="@/icons/step-next.png" class="next" @click="guideShowStep = 4">
             </div>
           </div>
         </div>
         <!--第四步-->
         <div class="guide-step step-four" v-show="guideShowStep == 4">
-          <img src="@/icons/step-jump-over.png" alt="" class="jump-btn" @click="showGuide">
+          <img src="@/icons/step-jump-over.png" class="jump-btn" @click="showGuide">
           <div class="step-content">
-            <img src="@/assets/step-four.png" alt="" class="set">
+            <img src="@/assets/step-four.png" class="set">
             <div class="step-btn">
-              <img src="@/icons/step-next.png" alt="" class="previous" style="transform: rotate(180deg)"
+              <img src="@/icons/step-next.png" class="previous" style="transform: rotate(180deg)"
                    @click="guideShowStep = 3">
-              <img src="@/icons/step-next.png" alt="" class="next" @click="guideShowStep = 5">
+              <img src="@/icons/step-next.png" class="next" @click="guideShowStep = 5">
             </div>
           </div>
         </div>
         <!--第五步-->
         <div class="guide-step step-five" v-show="guideShowStep == 5">
-          <img src="@/icons/step-jump-over.png" alt="" class="jump-btn" @click="showGuide">
+          <img src="@/icons/step-jump-over.png" class="jump-btn" @click="showGuide">
           <div class="step-content">
-            <img src="@/assets/step-five.png" alt="" class="down">
+            <img src="@/assets/step-five.png" class="down">
             <div class="step-btn">
-              <img src="@/icons/step-next.png" alt="" class="previous" style="transform: rotate(180deg)"
+              <img src="@/icons/step-next.png" class="previous" style="transform: rotate(180deg)"
                    @click="guideShowStep = 4">
-              <img src="@/icons/step-next.png" alt="" class="next" @click="guideShowStep = 6">
+              <img src="@/icons/step-next.png" class="next" @click="guideShowStep = 6">
             </div>
           </div>
         </div>
         <!--第六步 补加-->
         <div class="guide-step step-additional" v-show="guideShowStep == 6">
-          <img src="@/icons/step-jump-over.png" alt="" class="jump-btn" @click="showGuide">
+          <img src="@/icons/step-jump-over.png" class="jump-btn" @click="showGuide">
           <div class="step-content">
-            <img src="@/assets/step-six.png" alt="" class="additional">
+            <img src="@/assets/step-six.png" class="additional">
             <div class="step-btn">
-              <img src="@/icons/step-next.png" alt="" class="previous" style="transform: rotate(180deg)"
+              <img src="@/icons/step-next.png" class="previous" style="transform: rotate(180deg)"
                    @click="guideShowStep = 5">
-              <img src="@/icons/step-next.png" alt="" class="next" @click="guideShowStep = 7">
+              <img src="@/icons/step-next.png" class="next" @click="guideShowStep = 7">
             </div>
           </div>
         </div>
         <!--第7步-->
         <div class="guide-step step-six" v-show="guideShowStep == 7" @click="showGuide">
           <div class="step-content">
-            <img src="@/assets/six-main.png" alt="" class="main">
-            <img src="@/assets/six-top-left.png" alt="" class="tl">
-            <img src="@/assets/six-top-right.png" alt="" class="tr">
-            <img src="@/assets/six-bottom-left.png" alt="" class="bl">
-            <img src="@/assets/six-bottom-right.png" alt="" class="br">
+            <img src="@/assets/six-main.png" class="main">
+            <img src="@/assets/six-top-left.png" class="tl">
+            <img src="@/assets/six-top-right.png" class="tr">
+            <img src="@/assets/six-bottom-left.png" class="bl">
+            <img src="@/assets/six-bottom-right.png" class="br">
           </div>
         </div>
       </div>
@@ -253,7 +233,7 @@
     mapState
   } from 'vuex'
   import messageTable from '@/components/headerM/message-table'
-  import {messageFun} from "../../assets/common";
+  import {messageFun, pFConversion} from "../../assets/common";
 
   export default {
     name: 'headerM',
@@ -308,10 +288,12 @@
         guideShow: false,                       // 显示【渲染指引】
         guideShowStep: 1,                       // 【渲染指引】步骤
         uptop: this.$t('header.uptopBtn'),
-        bulletin: [{
-          'tit': null,
-          'detail': '暂无公告'
-        }],                           // 公告
+        bulletin: [
+          {
+            'tit': null,
+            'detail': '暂无公告'
+          }
+        ],                           // 公告
         bulletinRealLength: null,               // 公告真实长度
         bulletinIndex: 0                        // 显示的公告索引
       }
@@ -360,10 +342,11 @@
         immediate: true
       },
       zoneId: {
-        handler: function (val) {
+        handler: function (id) {
+          if (!id) return false
           this.getBulletinF()   // 获取公告
-          putNewZoneID({"zoneUuid": val})   // 传达切换分区事件
-          this.workBenchVal = val
+          putNewZoneID({"zoneUuid": id})   // 传达切换分区事件
+          this.workBenchVal = id
           this.changeIsGpu()
         },
       },
@@ -373,7 +356,7 @@
           if (!val) return false
           this.getBulletinF()   // 获取公告
           // this.$store.commit('WEBSOCKET_BACKS_INIT', val)
-          this.$refs.messageTable.getMessageListF()
+          this.$refs.messageTable.initialization()
           this.$store.commit('WEBSOCKET_BACKS_INIT', val)
         },
         immediate: true
@@ -387,17 +370,28 @@
       }
     },
     methods: {
+      //
+      changeNewsStatus(status) {
+        this.haveNewMS = status
+      },
       // 是否有未读
       async haveUnread() {
-        let v = `isRead=0&noticeType=1&keyword=&pageIndex=1&pageSize=10`,
-          vv = `isRead=0&noticeType=2&keyword=&pageIndex=1&pageSize=10`,
-          data2,
-          data = await getMessageList(v)
-        if (data.data.data.length) {
-          this.haveNewMS = true
-          return false
-        } else data2 = await getMessageList(vv)
-        if (data2.data.data.length) this.haveNewMS = true
+        let systemList = await getMessageList(pFConversion({
+            'isRead': 0,
+            'noticeType': 1,
+            'keyword': '',
+            'pageIndex': 1,
+            'pageSize': 10
+          })),
+          activityList = await getMessageList(pFConversion({
+            'isRead': 0,
+            'noticeType': 2,
+            'keyword': '',
+            'pageIndex': 1,
+            'pageSize': 10
+          }))
+        if (systemList.data.data.length || activityList.data.data.length) this.haveNewMS = true
+        else this.haveNewMS = false
       },
       // 公告滚动
       top() {
@@ -452,27 +446,24 @@
           .then(data => {
             let d = data.data
             if (d.code != 200) return false
-            this.workBenchList = d.data.map(curr => {
-              return {
-                name: curr.zoneName,
-                val: curr.zoneUuid,
-                isGpu: curr.isGpu,
-                zone: curr.zone
-              }
-            })
+            this.workBenchList = d.data.map(curr => ({
+              name: curr.zoneName,
+              val: curr.zoneUuid,
+              isGpu: curr.isGpu,
+              zone: curr.zone
+            }))
           })
           .catch(error => console.log(`工作台下拉框获取报错，${error}`))
       },
       changeIsGpu() {
-        this.$store.commit('changeIsGpu', this.workBenchList.find(curr => curr.val == this.workBenchVal)['isGpu'])
+        this.$store.commit('changeIsGpu', this.workBenchList.find(curr => curr.val == this.workBenchVal)['isGpu'] || null)
       },
       async getUserInfo() {
-        let data = await getInfo(),
-          d = data.data.data
-        if (data.data.code != 200) return false
-        setInfo(data.data.data)
-        this.userOperateList[0]['text'] = d.account
-        this.userOperateList[1]['balance'] = d.goldBalance
+        let {data} = await getInfo()
+        if (data.code != 200) return false
+        setInfo(data.data)
+        this.userOperateList[0]['text'] = data.data.account
+        this.userOperateList[1]['balance'] = data.data.goldBalance
       },
       // 渲染指引
       guide() {
@@ -877,7 +868,6 @@
           span {
             font-size: 14px;
             line-height: 44px;
-            font-family: PingFangSC-Semibold, PingFang SC;
             vertical-align: text-bottom;
 
             &.tit {

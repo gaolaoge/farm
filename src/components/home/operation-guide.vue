@@ -2,15 +2,15 @@
   <div class="operationGuide-wrapper">
     <header>
       <span> {{ headerText }} </span>
-      <img src="@/icons/mini-shutBtn.png" alt="" @click="$emit('shutMe')">
+      <img src="@/icons/mini-shutBtn.png" @click="$emit('shutMe')">
     </header>
     <section class="setScollBarStyle">
       <span class="stepText"> {{ stepText[0] }} </span>
-      <img src="@/assets/help-step1.png" alt="">
+      <img src="@/assets/help-step1.png">
       <span class="stepText"> {{ stepText[1] }} </span>
-      <img src="@/assets/help-step2.png" alt="">
+      <img src="@/assets/help-step2.png">
       <span class="stepText"> {{ stepText[2] }} </span>
-      <img src="@/assets/help-step3.png" alt="">
+      <img src="@/assets/help-step3.png">
     </section>
   </div>
 </template>

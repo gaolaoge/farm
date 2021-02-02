@@ -3,8 +3,8 @@
     <!--操作-->
     <div class="btnGroup">
       <!--上传分析操作-->
-      <div class="uploadBtnGroup"
-           :class="[
+      <div :class="[
+             'uploadBtnGroup',
             {'cannotDelete': !btnGroup.uploadTableBtnDelete},
             {'cannotAgain': !btnGroup.uploadTableBtnAgain}
            ]"
@@ -14,8 +14,8 @@
              v-for="(item,index) in btnGroup.uploadBtnGroup"
              @click="uploadOperating(item['text'])"
              :key="'uploadBtn-' + index">
-          <img :src="item.initialIcon" alt="" v-if="item.initialIcon" class="btnIcon default">
-          <img :src="item.selectedIcon" alt="" v-if="item.selectedIcon" class="btnIcon hover">
+          <img :src="item.initialIcon" v-if="item.initialIcon" class="btnIcon default">
+          <img :src="item.selectedIcon" v-if="item.selectedIcon" class="btnIcon hover">
           <span>
             {{ item['text'] }}
           </span>
@@ -75,7 +75,6 @@
                  placeholder="输入场景名、任务ID">
           <!--搜索按钮-->
           <img src="@/icons/global-search-icon.png"
-               alt=""
                class="searchIcon"
                @click="searchRenderInput">
         </div>
@@ -105,7 +104,7 @@
           <div class="statusS" v-if="item.task" v-show="item.task.length">
             <span class="label">{{ item.label[2] }}：</span>
             <span class="val">{{ item.task.join('、') }}</span>
-            <img src="@/icons/b.png" @click="cancelFilterTask">
+            <img src="@/icons/b.png" @click="cancelFilterTask(index)">
           </div>
           <!--下载情况-->
           <div class="statusS" v-if="item.download" v-show="item.download.length">
@@ -195,8 +194,9 @@
           filterList: [
             {
               status: [],
+              task: [],
               founder: [],
-              label: ['状态', '创建人']
+              label: ['状态', '创建人', '所属项目']
             },
             {
               status: [],
@@ -307,9 +307,10 @@
         this.table.filterList[1]['download'] = []
       },
       // tab 取消【所属项目】筛选
-      cancelFilterTask() {
-        this.$refs.renderMode.clearFilterF('task')
-        this.table.filterList[1]['task'] = []
+      cancelFilterTask(index) {
+        if (index == 0) this.$refs.uploadMode.clearFilterF('task')
+        else this.$refs.renderMode.clearFilterF('task')
+        this.table.filterList[index]['task'] = []
       },
       // tab 筛选条件改变
       changeTabFilter(data) {
@@ -363,16 +364,14 @@
         t.downloadTableBtnArchive = false       // 渲染下载 - 归档
         if (val.includes(this.$t('task.status.render_ing'))) {            // 渲染中
           t.downloadTableBtnDelete = false
+          t.downloadTableBtnRenderAgain = false
         }
-        if (val.includes(this.$t('task.status.render_timeOut'))) {        // 渲染暂停
-
-        }
-        if (val.includes(this.$t('task.status.render_all'))) {            // 待全部渲染
-
-        }
-        if (val.includes(this.$t('task.status.render_done'))) {           // 渲染完成
-
-        }
+        if (val.includes(this.$t('task.status.render_timeOut'))) {
+        }       // 渲染暂停
+        if (val.includes(this.$t('task.status.render_all'))) {
+        }           // 待全部渲染
+        if (val.includes(this.$t('task.status.render_done'))) {
+        }          // 渲染完成
         if (val.every(item => item == this.$t('task.status.render_timeOut'))) t.downloadTableBtnStart = true  // 全部为【暂停】可点击开始
         if (val.every(item => item == this.$t('task.status.render_ing'))) t.downloadTableBtnPause = true      // 全部为【渲染中】可点击暂停
         if (val.every(item => item == this.$t('task.status.render_all'))) t.downloadTableBtnRenderAll = true  // 全部为【待全部渲染】可点击全部渲染
@@ -386,7 +385,7 @@
       // 获取归档记录长度
       getArchiveNum(val) {
         this.btnGroup.archiveRecordsNum = val
-        this.$refs.archiveTable.getList(null)
+        // this.$refs.archiveTable.getList(null)
       },
       uploadTableTotalItem(val) {
         this.table.navList[0]['num'] = val
@@ -474,7 +473,6 @@
         } else if (val.type == 4) {
           // 归档记录
           this.dialogTable.status = true
-
         }
       }
     },
@@ -496,7 +494,7 @@
       // 站内信跳转
       'taskState': {
         handler: function (obj) {
-          if (!obj.taskUuid) return false
+          if (!obj || !obj.taskUuid) return false
           // idnex  页码
           // taskUuid
           // type: 0没查到，2分析列表，3渲染列表，4归档列表
@@ -515,30 +513,35 @@
             if (val.name) switch (val.name) {
               case this.$t('task.status.toBeSet'):          // 待设置参数
                 sessionStorage.setItem('taskListActive', '0')
+                this.table.filterList[0]['status'] = ['待设置参数']
                 this.table.navListActiveIndex = 0
                 this.$refs.uploadMode.specialJump = true
-                this.$refs.uploadMode.getList({parametersToBeSet: 1})
+                this.$refs.uploadMode.getList({type: 'waitSetUpParam'})
                 break
               case this.$t('task.status.render_ing'):       // 渲染中
                 sessionStorage.setItem('taskListActive', '1')
+                this.table.filterList[1]['status'] = ['渲染中']
                 this.table.navListActiveIndex = 1
                 this.$refs.renderMode.specialJump = true
                 this.$refs.renderMode.getList({renderStatus: 2})
                 break
               case this.$t('task.status.render_all'):       // 待全部渲染
                 sessionStorage.setItem('taskListActive', '1')
+                this.table.filterList[1]['status'] = ['待全部渲染']
                 this.table.navListActiveIndex = 1
                 this.$refs.renderMode.specialJump = true
                 this.$refs.renderMode.getList({renderStatus: 5})
                 break
               case this.$t('task.status.render_timeOut'):   // 渲染暂停
                 sessionStorage.setItem('taskListActive', '1')
+                this.table.filterList[1]['status'] = ['渲染暂停']
                 this.table.navListActiveIndex = 1
                 this.$refs.renderMode.specialJump = true
                 this.$refs.renderMode.getList({renderStatus: 4})
                 break
               case this.$t('task.status.render_done'):      // 渲染完成
                 sessionStorage.setItem('taskListActive', '1')
+                this.table.filterList[1]['status'] = ['渲染完成']
                 this.table.navListActiveIndex = 1
                 this.$refs.renderMode.specialJump = true
                 this.$refs.renderMode.getList({renderStatus: 3})
@@ -546,15 +549,16 @@
             }
             // home - 任务列表
             if (val.toHomeTaskList) {
-              this.table.navListActiveIndex = val.toHomeTaskList.tableIndex
-              val.toHomeTaskList.tableIndex == 0 ? this.$refs.uploadMode.getList({
-                uploadStatus: null,
-                type: val.toHomeTaskList.type,
-                projectUuid: val.toHomeTaskList.projectUuid
-              }) : this.$refs.renderMode.getList({
-                renderStatusFormHome: val.toHomeTaskList.type,
+              this.$refs.uploadMode.specialJump = true
+              this.$refs.uploadMode.getList({
                 projectUuid: val.toHomeTaskList.projectUuid
               })
+              this.$refs.renderMode.specialJump = true
+              this.$refs.renderMode.getList({
+                projectUuid: val.toHomeTaskList.projectUuid
+              })
+              this.table.filterList[0]['task'] = [val.toHomeTaskList.projectName]
+              this.table.filterList[1]['task'] = [val.toHomeTaskList.projectName]
             }
             // message - 站内信跳转
             if (val.from == 'stationLetter') this.stationLetter(val)
@@ -562,15 +566,20 @@
 
         },
         immediate: true
+      },
+      'taskIndex': function (index) {
+        if(!index) return false
+        this.table.navListActiveIndex = Number(index)
       }
     },
     mounted() {
       // 选择上次关闭时选中的Table
       if (sessionStorage.getItem('taskListActive') == '1') this.table.navListActiveIndex = 1
+      else this.table.navListActiveIndex = 0
       createTableIconList()  // 图标
     },
     computed: {
-      ...mapState(['socket_backS_msg', 'zone', 'taskState'])
+      ...mapState(['socket_backS_msg', 'zone', 'taskState', 'taskIndex'])
     }
   }
 </script>
@@ -586,12 +595,20 @@
       left: 10px;
       bottom: 10px;
       display: inline-flex;
+      width: calc(100% - 20px);
 
       .btn {
         margin-left: 20px;
       }
     }
 
+    /deep/ .el-table {
+      height: 100%;
+
+      .el-table__body-wrapper {
+        height: calc(100% - 47px - 52px);
+      }
+    }
   }
 </style>
 
@@ -682,7 +699,7 @@
     }
 
     .tableGroup {
-      flex-grow: 1;
+      height: calc(100% - 52px - 20px - 20px);
       margin: 0px 20px 20px 50px;
       display: flex;
       flex-direction: column;
@@ -692,6 +709,7 @@
         align-items: center;
 
         .tableFilterList {
+          margin-left: 20px;
           display: inline-flex;
 
           .statusS,
@@ -727,6 +745,7 @@
 
     .tableList {
       flex-grow: 1;
+      height: calc(100% - 42px);
       /*渲染下载*/
 
       .progressBar {
@@ -771,12 +790,5 @@
   /deep/ .el-dialog__body {
     padding: 0px;
   }
-
-  /*@media screen and (orientation: portrait) {*/
-  /*  .task-wrapper .tableGroup .tableList {*/
-  /*    min-height: 0px;*/
-  /*    height: calc(100vw - 80px - 73px - 42px - 40px);*/
-  /*  }*/
-  /*}*/
 </style>
 

@@ -60,31 +60,26 @@
       <div class="l"/>
       <!--table-->
       <el-table
-        :data="table.invoicingData"
+        :data="table.tableData"
         @selection-change="handleSelectionChange"
         @filter-change="filterHandler"
-        class="o"
+        @sort-change="sortChangeHandle"
         :border=true
+        class="o"
         style="width: 100%">
 
-        <el-table-column
-          type="selection"
-          align="right"
-          show-overflow-tooltip
-          min-width="58"
-          width="58"/>
         <!--发票抬头-->
         <el-table-column
           prop="invoice"
           label="发票抬头"
-          sortable
+          sortable="custom"
           show-overflow-tooltip
           min-width="200"/>
         <!--纳税人标识号-->
         <el-table-column
           prop="invoiceNum"
           label="纳税人标识号"
-          sortable
+          sortable="custom"
           show-overflow-tooltip
           width="280">
         </el-table-column>
@@ -92,14 +87,14 @@
         <el-table-column
           prop="invoiceAmount"
           label="发票金额（元）"
-          sortable
+          sortable="custom"
           show-overflow-tooltip
           width="180"/>
         <!--发票类型 -->
         <el-table-column
           prop="invoiceType"
           label="发票类型"
-          sortable
+          sortable="custom"
           show-overflow-tooltip
           width="180"/>
         <!--发票状态-->
@@ -112,7 +107,7 @@
         <el-table-column
           prop="email"
           label="邮箱"
-          sortable
+          sortable="custom"
           show-overflow-tooltip
           width="240"/>
         <!--交易时间-->
@@ -134,7 +129,7 @@
         :current-page.sync="table.currentPage"
         :total="table.total"/>
       <div class="farm-primary-form-btn btn" @click="getList">
-        <span>{{ refresh }}</span>
+        <span>{{ $t('public_text.refresh') }}</span>
       </div>
     </div>
   </div>
@@ -159,21 +154,13 @@
     data() {
       return {
         table: {
-          invoicingData: [
-//             {
-//               invoice: '',          // 发票抬头
-//               invoiceNum: '',       // 纳税人标识号
-//               invoiceAmount: '',    // 发票金额（元）
-//               invoiceType: '',      // 发票类型
-//               invoiceState: '',     // 发票状态
-//               email: '',            // 邮箱
-//               date: '',             // 开票时间
-//             },
-          ],
+          tableData: [],
           total: 0,
           currentPage: 1,
           pageSize: 10,
           selectionList: [],            //渲染输出选中项
+          sortType: 0,
+          sortBy: 0
         },
         filter: {
           tradingtatusLabel: '发票抬头',
@@ -210,14 +197,39 @@
           iquireBtn: '查询',
           resetBtn: '重置',
           exportBtn: '导出记录'
-        },
-        refresh: '刷新'
+        }
       }
     },
     components: {
       modelCalendar
     },
     methods: {
+      // 排序
+      sortChangeHandle({column, prop, order}) {
+        let {table} = this
+        if (order == 'ascending') table.sortType = 1
+        else table.sortType = 0
+        // 排序字段:1:发票抬头,2:纳税人标识,3:发票金额,4:发票类型,5:发票状态,6:邮箱,0:交易时间
+        if (!order) table.sortBy = 1
+        else switch(prop) {
+          case 'invoice':
+            table.sortBy = 1
+            break
+          case 'invoiceNum':
+            table.sortBy = 2
+            break
+          case 'invoiceAmount':
+            table.sortBy = 3
+            break
+          case 'invoiceType':
+            table.sortBy = 4
+            break
+          case 'date':
+            table.sortBy = 0
+            break
+        }
+        this.getList()
+      },
       // 多选
       handleSelectionChange(val) {
         this.table.selectionList = val
@@ -242,10 +254,10 @@
       async getList() {
         let t = this.table,
           f = this.filter,
-          d = `pageSize=${t.pageSize}&pageIndex=${t.currentPage}&invoiceTitle=${f.tradingtatusVal}&beginTime=${f.date ? f.date[0].getTime() : 0}&endTime=${f.date ? f.date[1].getTime() : new Date().getTime()}&invoiceStatus=${f.paymentMethodVal}&sortColumn=0&sortBy=0`
+          d = `pageSize=${t.pageSize}&pageIndex=${t.currentPage}&invoiceTitle=${f.tradingtatusVal}&beginTime=${f.date ? f.date[0].getTime() : 0}&endTime=${f.date ? f.date[1].getTime() : new Date().getTime()}&invoiceStatus=${f.paymentMethodVal}&sortBy=${t.sortType}&sortColumn=${t.sortBy}`
         let data = await getInvoiceList(d)
         this.table.total = data.data.total
-        this.table.invoicingData = data.data.data.map(curr => {
+        this.table.tableData = data.data.data.map(curr => {
           let {year, month, day, hour, minutes, seconds} = createCalendar(new Date(curr.updateTime)),
             status
           switch (curr.invoiceStatus) {
@@ -299,7 +311,7 @@
         //   sortBy: ''         // 排序方式:0降序,1升序
         // }
         let f = this.filter,
-          t = `invoiceTitle=${f.tradingtatusVal}&invoiceStatus=${f.paymentMethodVal}&beginTime=${f.date ? f.date[0].getTime() : 0}&endTime=${f.date ? f.date[1].getTime() : new Date().getTime()}&sortColumn=2&sortBy=1`,
+          t = `invoiceTitle=${f.tradingtatusVal}&invoiceStatus=${f.paymentMethodVal}&beginTime=${f.date ? f.date[0].getTime() : 0}&endTime=${f.date ? f.date[1].getTime() : new Date().getTime()}&sortBy=${this.table.sortType}&sortColumn=${this.table.sortBy}`,
           data = await exportInvoiceTable(t)
         // 导出下载
         exportDownloadFun(data, '开票记录', 'xlsx')

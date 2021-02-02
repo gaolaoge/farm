@@ -46,12 +46,13 @@ export default new Vuex.Store({
     zoneId: null,           // 所在区ID
     zone: null,             // 分区 1影视区 2效果图区
     taskType: 'profession', // 渲染模式 「profession」专业版 「easy」一键版
-    isGup: null,
+    isGpu: null,
     socket_plugin: null,    // 与插件关联的websocket
     socket_plugin_msg: null,// 与插件关联的websocket接收的参数
     socket_plugin_time: 0,  // 重连次数
     socket_backS: null,     // 与后台关联的websocket
     socket_backS_msg: null, // 与后台关联的websocket接收的参数
+    socket_backs_status: false, // 与后台关联的websocket的状态
     socket_backS_time: 0,
     thumb: {
       showLargeThumbWin: false,
@@ -60,6 +61,10 @@ export default new Vuex.Store({
     pluginDialog: false,    // 打开插件窗口
     remoteLoginDate: null,  // 异地登录事件触发时间
     taskState: null,        // 站内信选中项目
+    openOverdueBillsWin: {bool: false, action: null},     // 打开已欠费窗口
+    openBalanceIsEmptyWin: {bool: false, action: null},   // 打开余额为零窗口
+    openCapacityIsLessWin: {bool: false, action: null},   // 打开容量不足窗口
+    taskIndex: null         // 切换 taskTab 显示
   },
   getter: {},
   mutations: {
@@ -69,6 +74,7 @@ export default new Vuex.Store({
       state.socket_backS.addEventListener('open', () => {
         console.log('--与后台连接成功--')
         this.commit('toZore', 'socket_backS_time')
+        this.commit('websocketConnectonSuc', 'backs')
       })
       state.socket_backS.addEventListener('error', () => {
         if (state.socket_backS_time >= 5) {
@@ -80,7 +86,7 @@ export default new Vuex.Store({
           this.WEBSOCKET_BACKS_INIT(state, account)
         }
       })
-      state.socket_backS.addEventListener('message', data => state.socket_backS_msg = data)
+      state.socket_backS.addEventListener('message', data => this.commit('WEBSOCKET_BACKS_NEWMSG', data))
       state.socket_backS.addEventListener('close', e => {
         console.log(`--与后台连接断开，code码为${e.code},尝试重新连接--` + new Date().toLocaleString())
         this.WEBSOCKET_BACKS_INIT(state, account)
@@ -93,7 +99,6 @@ export default new Vuex.Store({
     },
     // 创建与插件的websocket
     WEBSOCKET_PLUGIN_INIT(state, triggerPlugin) {
-      // console.log(triggerPlugin)
       if(triggerPlugin && state.socket_plugin_time == 0) messageFun('info', '正在启动传输插件，请稍后…')
       state.socket_plugin = new WebSocket(process.env.PLUGIN_WS_API)
       state.socket_plugin.addEventListener('open', () => {
@@ -112,7 +117,12 @@ export default new Vuex.Store({
           this.commit('WEBSOCKET_PLUGIN_INIT', triggerPlugin)
         }
       })
-      state.socket_plugin.addEventListener('message', data => state.socket_plugin_msg = data)
+      state.socket_plugin.addEventListener('message', data => this.commit('WEBSOCKET_PLUGIN_NEWMSG', data))
+      state.socket_plugin.addEventListener('close', e => {
+        state.socket_plugin = null
+        // console.log(`--与插件连接断开，code码为${e.code},尝试重新连接--` + new Date().toLocaleString())
+        // this.WEBSOCKET_BACKS_INIT(state, account)
+      })
     },
     // 对与插件的websocket发送消息
     WEBSOCKET_PLUGIN_SEND(state, data) {
@@ -130,6 +140,34 @@ export default new Vuex.Store({
       if (!state.socket_backS) return false
       state.socket_backS.close()
       state.socket_backS = null
+    },
+    // 与后台的websocket获取新消息
+    WEBSOCKET_BACKS_NEWMSG(state, data) {
+      state.socket_backS_msg = data
+    },
+    // 与插件的websocket获取新消息
+    WEBSOCKET_PLUGIN_NEWMSG(state, data) {
+      state.socket_plugin_msg = data
+    },
+    // task 切换 tab
+    switchTaskTab(state, index) {
+      state.taskIndex = index
+    },
+    // websocket连接成功
+    websocketConnectonSuc(state, type) {
+      if(type == 'backs') state.socket_backs_status = true
+    },
+    // 打开已欠费窗口
+    hasBeenOverdueBills(state, obj) {
+      state.openOverdueBillsWin = obj
+    },
+    // 打开余额为零窗口
+    theBalanceIsZero(state, obj) {
+      state.openBalanceIsEmptyWin = obj
+    },
+    // 打开容量不足窗口
+    theCapacityIsLess(state, obj) {
+      state.openCapacityIsLessWin = obj
     },
     // 下载插件
     downloadPlugin() {
@@ -209,7 +247,7 @@ export default new Vuex.Store({
       s.taskType = val
     },
     changeIsGpu(s, val) {
-      s.isGup = val
+      s.isGpu = val
     },
     changeSocket_Plugin(s, val) {
       s.socket_Plugin = val
@@ -298,7 +336,7 @@ export default new Vuex.Store({
             context.dispatch('WEBSOCKET_PLUGIN_INIT', triggerPlugin)
           }
         })
-        context.state.socket_plugin.addEventListener('message', data => context.state.socket_plugin_msg = data)
+        context.state.socket_plugin.addEventListener('message', data => context.commit('WEBSOCKET_PLUGIN_NEWMSG', data))
       })
     }
 
