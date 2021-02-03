@@ -486,8 +486,8 @@
       'socket_backS_msg': {
         handler: function (e) {
           let data = JSON.parse(e.data)
-          if (data.code == 852) this.$refs.renderMode.getList(null)           // 渲染列表
-          else if (data.code == 854) this.$refs.uploadMode.getList(null)      // 分析列表
+          if (data.code == 852) this.$refs.renderMode.getList(null, false, true)           // 渲染列表
+          else if (data.code == 854) this.$refs.uploadMode.getList(null, false, true)      // 分析列表
           else return false
         },
       },
@@ -513,7 +513,7 @@
             if (val.name) switch (val.name) {
               case this.$t('task.status.toBeSet'):          // 待设置参数
                 sessionStorage.setItem('taskListActive', '0')
-                this.table.filterList[0]['status'] = ['待设置参数']
+                this.table.filterList[0]['status'] = ['待设置参数', '分析警告']
                 this.table.navListActiveIndex = 0
                 this.$refs.uploadMode.specialJump = true
                 this.$refs.uploadMode.getList({type: 'waitSetUpParam'})

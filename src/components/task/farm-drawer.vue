@@ -289,7 +289,7 @@
             v-if="zone == 2"
             class="mini-table"
             ref="renderTable"
-            style="width: calc(42vw - 34px);min-width: 766px;margin-left: -30px;">
+            style="width: calc(42vw - 40px);min-width: 760px;margin-left: -30px; overflow: hidden">
 
             <el-table-column
               type="selection"
@@ -1262,7 +1262,10 @@
     },
     watch: {
       taskData: function () {
-        if (this.typeInfo == 'setting' && !this.isCopy) this.turnPage('upload-table')
+        if (this.typeInfo == 'setting' && !this.isCopy) {
+          this.turnPage('upload-table')
+          this.reset()
+        }
         this.$nextTick(() => this.getData())
       },
       'setting.priority.selfVal': function (val) {
@@ -1492,9 +1495,14 @@
         result.pageIndex = 1
         this.getRenderItemMoreTableF()
       },
-      //关闭抽屉 复位
+      //关闭抽屉
       closeDrawer() {
         this.settingBack()
+        this.reset()
+        this.$emit('closeDrawer')
+      },
+      // 复位
+      reset() {
         let {setting, result} = this
         Object.assign(setting.priority, {  // 优先渲染初始化
           topVal: '1',
@@ -1505,7 +1513,6 @@
         })
         setting.num.singleChoiceVal = '0'        // 启动分层渲染
         result.showDetails = false
-        this.$emit('closeDrawer')
       },
       // 超时提醒改变
       changeSliderVal(e) {
@@ -1893,7 +1900,7 @@
         })
         if (data.data.code == 200) {
           messageFun('success', '操作成功');
-          this.getRenderItemMoreTableF()
+          await this.getRenderItemMoreTableF()
         } else if (data.data.code == 1001) messageFun('info', '余额不足')
         else messageFun('error', '报错，操作失败')
       },
@@ -1906,7 +1913,7 @@
         })
         if (data.data.code == 200) {
           messageFun('success', '操作成功');
-          this.getRenderItemMoreTableF()
+          await this.getRenderItemMoreTableF()
         } else {
           messageFun('error', '报错，操作失败')
         }
