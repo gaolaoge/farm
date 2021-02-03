@@ -56,7 +56,7 @@
           "nickname": this.name,
           "headImg": null,
           "sex": null,
-          "birthday": null,
+          "birthday": null
         })
         if (data.data.code == 200) {
           this.$store.commit('changeName', this.name)
@@ -67,6 +67,7 @@
       // 取消 && 关闭
       cancelFun() {
         this.name = null
+        this.status = null
         this.$emit('cancel')
       }
     }
