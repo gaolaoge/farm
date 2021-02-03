@@ -307,7 +307,6 @@
           text: curr.projectName
         }))
         if (!this.specialJump) await this.getList()
-        else this.specialJump = false
       },
       // 获取 table 列表
       async getList(obj, reset, updateStatus) {
@@ -425,7 +424,7 @@
         if (obj && obj.taskUuid) this.$nextTick(() => {
           this.$refs.uploadTableImportant.toggleRowSelection(table.tableData.find(item => item['taskUuid'] == obj['taskUuid']), true)
         })
-        if (this.specialJump) this.specialJump = false
+        if (this.specialJump) setTimeout(() => this.specialJump = false, 1000)
         if (!updateStatus) loading.close()   // 非状态变更自动更新tab
       },
       // 排序
