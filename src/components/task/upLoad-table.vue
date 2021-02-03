@@ -310,14 +310,15 @@
         else this.specialJump = false
       },
       // 获取 table 列表
-      async getList(obj, reset) {
+      async getList(obj, reset, updateStatus) {
         if (reset) this.closeDrawer()
-        const loading = this.$loading({
+        let loading
+        if (!updateStatus) loading = this.$loading({
           lock: true,
           text: '拼命加载中...',
           spinner: 'el-icon-loading',
           background: 'rgba(0, 0, 0, 0.49)'
-        })
+        })      // 非状态变更自动更新tab
         let {table, keyword, zoneId} = this,
           projectUuid = (obj && obj.projectUuid) ? [obj.projectUuid] : table.projectUuidList
         if (obj && obj.setParameters) table.analyseStatus = [3, 4]  // 待设置参数(+分析警告)
@@ -425,7 +426,7 @@
           this.$refs.uploadTableImportant.toggleRowSelection(table.tableData.find(item => item['taskUuid'] == obj['taskUuid']), true)
         })
         if (this.specialJump) this.specialJump = false
-        loading.close()
+        if (!updateStatus) loading.close()   // 非状态变更自动更新tab
       },
       // 排序
       sortChangeHandle({column, prop, order}) {
