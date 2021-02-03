@@ -559,6 +559,7 @@
               })
               this.table.filterList[0]['task'] = [val.toHomeTaskList.projectName]
               this.table.filterList[1]['task'] = [val.toHomeTaskList.projectName]
+              this.table.navListActiveIndex = val.tabIndex
             }
             // message - 站内信跳转
             if (val.from == 'stationLetter') this.stationLetter(val)
