@@ -456,13 +456,13 @@
         </div>
         <!--下一步-->
         <div :class="[{'cannotTrigger': stepTwoBase.renderListActive == -1}, 'btnGroup-btn', 'confirm']"
-             @click="stepTwoBase.renderListActive == -1 ? null : stepBtnActive = 3"
+             @click="setTemplateNext('next')"
              v-show="taskType != 'profession'">
           <span>{{ btn.next }}</span>
         </div>
         <!--确定-->
         <div :class="[{'cannotTrigger': stepTwoBase.renderListActive == -1}, 'btnGroup-btn', 'confirm']"
-             @click="confirmFun"
+             @click="setTemplateNext('confirm')"
              v-show="taskType == 'profession'">
           <span>{{ btn.confirm }}</span>
         </div>
@@ -1200,10 +1200,10 @@
           // 新建模板
           case 'addMore':
             let {data} = await createTaskSetNewPlugin({
-                templateName: form.valName,        //模板名称
-                softUuid: form.valSoftware[1],     //软件uuid
-                pluginUuids: nList.map(curr => curr.pluginUuid)
-              })
+              templateName: form.valName,        //模板名称
+              softUuid: form.valSoftware[1],     //软件uuid
+              pluginUuids: nList.map(curr => curr.pluginUuid)
+            })
             if (data.code == 201) {
               messageFun('success', '创建模板成功')
               this.innerVisible = false
@@ -1238,6 +1238,12 @@
               form.valName = ''
             }
         }
+      },
+      // 2.设置渲染模板 - 下一步
+      setTemplateNext(step) {
+        if (!this.stepThreeBase.other.view) messageFun('info', '请选择所属项目')
+        else if (step == 'next') this.stepTwoBase.renderListActive === -1 ? null : this.stepBtnActive = 3
+        else if (step == 'confirm') this.confirmFun()
       },
       // 1.选择渲染文件 - 我的电脑 - table多选
       handleSelectionChange(val) {
@@ -1295,12 +1301,12 @@
             patternNorm: fir.index == 0 ? 2 : 1,               // 提交模式
             source: 1,                                         // 任务来源
             filePathList: fir.index == 1 ? fir.local.filelist.map(item => ({
-                filePath: {
-                  pathResource: [],                        // 工程路径
-                  pathScene: '',
-                  fileName: item.sceneFile
-                }
-              })) : fir.netdisc.sceneFileSelection.map(item => {
+              filePath: {
+                pathResource: [],                        // 工程路径
+                pathScene: '',
+                fileName: item.sceneFile
+              }
+            })) : fir.netdisc.sceneFileSelection.map(item => {
               let task = fir.netdisc.treeData.find(curr => curr.id == item)
               return {
                 filePath: {
@@ -1356,11 +1362,10 @@
       },
       // 4.创建成功
       createSuc() {
-        console.log('vvvvvvvvvvvv')
         messageFun('success', '新建成功，请等待上传分析完成！')
         this.closeDialogFun()
         sessionStorage.setItem('taskListActive', '0')
-        if(this.$route.name != 'task') this.$router.push('/task')
+        if (this.$route.name != 'task') this.$router.push('/task')
         else this.$store.commit('switchTaskTab', '0')
       },
       // 0.选择渲染文件 - 我的资产 - 创建网盘目录
@@ -1374,6 +1379,7 @@
             }
             return children
           }
+
           this.stepOneBase.netdisc.catalogData = this.stepOneBase.netdisc.catalogData.concat(g(JSON.parse(item)))
         })
       },
@@ -1444,8 +1450,11 @@
           'id': curr.taskProjectUuid,
           'isDefault': curr.isDefault
         }))
-        if (!name) other.view = other.viewList.find(item => item.isDefault == 1)['value']
-        else {
+        if (!name) {
+          let project_ = other.viewList.find(item => item.isDefault == 1)
+          if (project_) other.view = project_['value']
+          else messageFun('info', '请选择所属项目')
+        } else {
           let obj = other.viewList.find(curr => curr.label == name)
           this.setting.other.view = obj['value']
         }

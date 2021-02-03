@@ -553,9 +553,10 @@
         if (d) d.classList.remove('farmTableSelected')
       },
       // 获取列表
-      async getList(obj, reset) {
+      async getList(obj, reset, updateStatus) {
         if (reset) this.closeDrawer()
-        const loading = this.$loading({
+        let loading
+        if (!updateStatus) loading = this.$loading({
           lock: true,
           text: '拼命加载中...',
           spinner: 'el-icon-loading',
@@ -756,7 +757,7 @@
           this.$refs.renderTableImportant.toggleRowSelection(table.tableData.find(item => item['taskUuid'] == obj['taskUuid']), true)
         })
         if (this.specialJump) this.specialJump = false
-        loading.close()
+        if (!updateStatus) loading.close()   // 非状态变更自动更新tab
       },
       // 排序
       sortChangeHandle({column, prop, order}) {
