@@ -685,7 +685,7 @@
             return {
               taskNo: item.layerNo,                                  // 任务ID
               FatherSceneName: curr.fileName,                        // 主任务场景名
-              sceneName: curr.isExpire == 1 ? '(过期)' + curr.fileName : curr.fileName,      // 场景名
+              sceneName: curr.isExpire == 1 ? '(过期)' + item.fileName : item.fileName,      // 场景名
               status,                                                // 状态
               renderingProgress: item.win + '/' + itemTotal,         //渲染进度
               percent: itemTotal == null ? 0 : Math.floor(item.win / itemTotal * 100),

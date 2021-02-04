@@ -28,10 +28,10 @@ export function registerTelephone(data){
   })
 }
 
-// 登录页 - 注册 验证帐号
-export function registerAccount(data){
+// 登录页 - 注册 验证帐号 1注册 2登录
+export function registerAccount(type, data){
   return businessServer({
-    url: `/auth/checkAccount/${data}`,
+    url: `/auth/checkAccount/${type}/${data}`,
     method: 'GET',
   })
 }

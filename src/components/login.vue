@@ -284,8 +284,10 @@
                      @input="accouVerif('register', true)"
                      @focus="inputGetFocus('account')"
                      ref="accountRegister"
-                     class="farm-input"
-                     :class="[{'inputError': registered.status.account === false && !registered.status.accountInit}]"/>
+                     :class="[
+                       'farm-input',
+                       {'inputError': registered.status.account === false && !registered.status.accountInit}
+                     ]"/>
               <span class="warnInfo" v-show="registered.status.account === false && !registered.status.accountInit">{{ registered.warnInfo.account }}</span>
               <img src="@/icons/login-success.png" class="i"
                    v-show="registered.status.account === true && !registered.status.accountInit">
@@ -296,13 +298,15 @@
             <!--密码-->
             <div class="u">
               <input v-model="registered.form.password" type="password"
-                     :placeholder="$t('login_page.register.ps_placeholder')"
                      @blur="passwVerif('register')"
                      @input="passwVerif('register', true)"
                      @focus="inputGetFocus('password')"
                      ref="passwordRegister"
-                     class="farm-input"
-                     :class="[{'inputError': registered.status.password === false && !registered.status.passwordInit}]"/>
+                     :placeholder="$t('login_page.register.ps_placeholder')"
+                     :class="[
+                       'farm-input',
+                       {'inputError': registered.status.password === false && !registered.status.passwordInit}
+                     ]"/>
               <div class="swicthPWI">
                 <img src="@/icons/openPW.png" v-show="registered.passwordEye" @click="changePSType(false)">
                 <img src="@/icons/shuPW.png" v-show="!registered.passwordEye" @click="changePSType(true)">
@@ -322,8 +326,10 @@
                      @input="phoneVerif(true)"
                      @focus="inputGetFocus('phone')"
                      ref="phoneRegister"
-                     class="farm-input"
-                     :class="[{'inputError': registered.status.phone === false && !registered.status.phoneInit}]"/>
+                     :class="[
+                       'farm-input',
+                       {'inputError': registered.status.phone === false && !registered.status.phoneInit}
+                     ]"/>
               <span class="warnInfo" v-show="registered.status.phone === false && !registered.status.phoneInit">{{ registered.warnInfo.phone }}</span>
               <img src="@/icons/login-success.png" class="i"
                    v-show="registered.status.phone === true && !registered.status.phoneInit">
@@ -339,15 +345,17 @@
                      @input="codeVerif(true)"
                      @focus="registered.status.code === false ? registered.status.code = null : null"
                      ref="codeRegister"
-                     class="farm-input farm-cord-input"
-                     :class="[{'inputError': registered.status.code === false}]"/>
+                     :class="[
+                       'farm-input',
+                       'farm-cord-input',
+                       {'inputError': registered.status.code === false}
+                     ]"/>
               <span class="warnInfo" v-show="registered.status.code === false">{{ registered.warnInfo.code }}</span>
               <img src="@/icons/login-success.png" class="i" v-show="registered.status.code === true">
               <img src="@/icons/login-error .png" class="i canClick" v-show="registered.status.code === false"
                    @click="deleteInput('code')">
               <div class="verif register">
-                <div class="btn"
-                     :class="[{'canClick': registered.status.phone}]"
+                <div :class="['btn', {'canClick': registered.status.phone}]"
                      @click="den"
                      v-show="registered.verifShow">
                   {{ registered.btnText }}
@@ -388,8 +396,10 @@
               </span>
             </div>
             <!--注册btn-->
-            <div class="btnLogin"
-                 :class="[{'canClick': this.registered.status.account && this.registered.status.password && this.registered.status.phone && this.registered.status.code }]"
+            <div :class="[
+                   'btnLogin',
+                   {'canClick': this.registered.status.account && this.registered.status.password && this.registered.status.phone && this.registered.status.code }
+                 ]"
                  @click="registerFun">
               <span>{{ $t('login_page.register.label') }}</span>
             </div>
@@ -397,8 +407,8 @@
         </aside>
       </section>
       <div class="promptList">
-        <span class="prompt" :class="[{show: registered.status.accountInit}]">{{ $t('login_page.register.prompt.account') }}</span>
-        <span class="prompt" :class="[{show: registered.status.passwordInit}]">{{ $t('login_page.register.prompt.password') }}</span>
+        <span :class="['prompt', {show: registered.status.accountInit}]">{{ $t('login_page.register.prompt.account') }}</span>
+        <span :class="['prompt', {show: registered.status.passwordInit}]">{{ $t('login_page.register.prompt.password') }}</span>
       </div>
     </div>
     <!--备案-->
@@ -710,8 +720,14 @@
           type ? rs.account = null : rs.account = false
           return false
         }
+        if(obj == 'register' && this.reg.phoneReg.test(rfa)) {
+          w.account = '请输入正确账号'
+          type ? rs.account = null : rs.account = false
+          return false
+        }
         // 验证帐号是否可用
-        let data = await registerAccount(rfa)
+        let type_ = obj == 'register' ? 1 : 2,
+          data = await registerAccount(type_, rfa)
         if (data.data.code == 4031) {
           // 账号未被注册
           if (obj == 'register') rs.account = true
@@ -1508,9 +1524,8 @@
 
     .promptList {
       position: fixed;
-      top: 0px;
-      left: calc(50% + 246px);
-      top: calc(50% - 218px);
+      left: calc(50% + 256px);
+      top: calc(50% - 176px);
 
       .prompt {
         display: block;

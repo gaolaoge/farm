@@ -174,12 +174,13 @@
   } from "../../api/header-api"
   import {
     createDateFun,
+    messageFun,
+    pFConversion
   } from '@/assets/common'
   import {
     mapState
   } from 'vuex'
-  import {messageFun, pFConversion} from "../../assets/common";
-  import task from "../task";
+  import task from "../task"
 
   export default {
     name: 'messageTable',
@@ -239,6 +240,7 @@
       },
       // 打开消息详情
       async tableClick(row, column, event) {
+        console.log(row)
         let taskUuid = JSON.parse(row.noticeParam)['taskUuid'],
           zoneUuid = row.noticeData.split('&').find(item => item.split('=')[0] == 'zoneUuid').split('=')[1],
           type = row.noticeUrl

@@ -843,6 +843,7 @@
     watch: {
       'socket_backS_msg': {
         handler: function (e) {
+          if(!e) return false
           let data = JSON.parse(e.data)
           if (data.code != 208) return false
           if (data.msg == '6022') {
@@ -907,6 +908,9 @@
           this.stepThreeBase.mode.mode = this.stepThreeBase.mode.modeList[0]['val']
         },
         immediate: true
+      },
+      'stepBtnActive': function (index) {
+        if(index === 2 && !this.stepThreeBase.other.view) messageFun('info', '请选择所属项目')
       }
     },
     methods: {
@@ -1097,38 +1101,42 @@
         this.stepTwoBase.renderListActive = data.data.findIndex(curr => curr.renderTemplate.isDefault == 1)
       },
       // 2.设置渲染模板 - 打开【新建模板】
-      async addTemplate(s, index) {
+      async addTemplate(type, index) {
         // 获取软件列表
-        let {data} = await createTaskSetSoftware()
-        this.dialogAdd.softwareList = data.data.map(curr => ({
-          value: curr.softName,      //软件名
-          label: curr.softName,
-          children: curr.softList.map(curr_ => ({
-            label: curr_.softName + '-' + curr_.version,
-            value: curr_.softUuid
+        let {data} = await createTaskSetSoftware(),
+          {dialogAdd, stepTwoBase} = this,
+          {form} = dialogAdd
+        dialogAdd.softwareList = data.data.map(curr => ({
+          'value': curr.softName,      //软件名
+          'label': curr.softName,
+          'children': curr.softList.map(curr_ => ({
+            'label': curr_.softName + '-' + curr_.version,
+            'value': curr_.softUuid
           }))
         }))
         // 打开弹窗
         this.innerVisible = true
         this.$nextTick(() => this.$refs.templateName.focus())
-        this.dialogAdd.editOrAdd = s
-        let v = this.dialogAdd
-        if (s == 'addMore') {
+        dialogAdd.editOrAdd = type
+        if (type == 'addMore') {
           // 新建模板
-          v.form.valSoftware = [v['softwareList'][0]['label'], v['softwareList'][0]['children'][0]['value']]
-          await this.changeSoftware([null, v['softwareList'][0]['children'][0]['value']])
-        } else if (s == 'editOne') {
+          dialogAdd.title = '新建模板'
+          form.valSoftware = [dialogAdd.softwareList[0]['label'], dialogAdd.softwareList[0]['children'][0]['value']]
+          await this.changeSoftware([null, dialogAdd.softwareList[0]['children'][0]['value']])
+        } else if (type == 'editOne') {
           // 编辑模板
-          this.dialogAdd.index = index
-          let t = this.stepTwoBase.renderList[index],   // 选中渲染模板data
-            f = v.softwareList.find(curr => curr.label == t.renderTemplate.softName)  // 软件选中记录
-          let b = f['children'].find(curr => curr.label == t.renderTemplate.softName + '-' + t.renderTemplate.softVer)   // 插件
-          v.nList = t.xxlPlugins                                                // 导入已选中插件记录
-          this.$data.dialogAdd.nList = t.xxlPlugins
-          v.form.valName = t['renderTemplate']['templateName']                  // 编辑窗口内模板名
+          dialogAdd.title = '编辑模板'
+          dialogAdd.index = index
+          let template_ = stepTwoBase.renderList[index],                              // 选中渲染模板 data
+            {renderTemplate, xxlPlugins} = template_,
+            f = dialogAdd.softwareList.find(curr => curr.label == renderTemplate.softName)      // 软件选中记录
+          let b = f['children'].find(curr => curr.label == renderTemplate.softName + '-' + renderTemplate.softVer)   // 插件
+          dialogAdd.nList = xxlPlugins                                                // 导入已选中插件记录
+          this.$data.dialogAdd.nList = xxlPlugins
+          form.valName = renderTemplate['templateName']                               // 编辑窗口内模板名
           if (!b) return false
-          v.form.valSoftware = [t['renderTemplate']['softName'], b.value]       // 编辑窗口内渲染软件
-          await this.changeSoftware([t['renderTemplate']['softName'], b.value])   // 获取对应插件下拉框List
+          form.valSoftware = [renderTemplate['softName'], b.value]                    // 编辑窗口内渲染软件
+          await this.changeSoftware([renderTemplate['softName'], b.value])        // 获取对应插件下拉框List
         }
       },
       // 2.设置渲染模板 - 删除模板
@@ -1140,7 +1148,7 @@
         })
           .then(() => {
             createTaskSetDeletePlugin(this.stepTwoBase.renderList[index]['renderTemplate']['templateUuid'])
-              .then(data => {
+              .then(() => {
                 this.getList()
                 messageFun('success', '删除成功')
               })
@@ -1151,26 +1159,26 @@
       async changeSoftware(val) {
         let {dialogAdd} = this,
           {data} = await createTaskSetPlugin(val[1])
-        dialogAdd.pluginList = data.data.map(curr => {
-          return {
-            label: curr.pluginName,
-            val: curr.pluginName,
-            list: curr.pluginList
-          }
-        })
-        dialogAdd.oList = []
+        dialogAdd.pluginList = data.data.map(curr => ({
+          'label': curr.pluginName,
+          'val': curr.pluginName,
+          'list': curr.pluginList
+        }))
+        dialogAdd.oList.length = 0
         dialogAdd.form.valPlugin = dialogAdd.pluginList[0]['label']
         this.changePlugin(dialogAdd.pluginList[0]['label'])
       },
       // 2.设置渲染模板 - 插件下拉框选中
       changePlugin(val) {
         //匹配项
-        let t = this.dialogAdd.pluginList.find(curr => curr.val == val)
-        this.dialogAdd.oList = t.list.map(curr => {
-          let r = this.dialogAdd.nList.findIndex(c => c.pluginName == curr.pluginName && c.version == curr.version)
+        let {dialogAdd} = this,
+          {pluginList, nList} = dialogAdd,
+          obj = pluginList.find(curr => curr.val == val)
+        dialogAdd.oList = obj.list.map(curr => {
+          let index_ = nList.findIndex(c => c.pluginName == curr.pluginName && c.version == curr.version)
           return {
             ...curr,
-            status: r == -1 ? false : true
+            status: index_ == -1 ? false : true
           }
         })
       },
@@ -1368,21 +1376,6 @@
         if (this.$route.name != 'task') this.$router.push('/task')
         else this.$store.commit('switchTaskTab', '0')
       },
-      // 0.选择渲染文件 - 我的资产 - 创建网盘目录
-      createCatalog(data) {
-        data.forEach(item => {
-          function g(item_) {
-            let children = []
-            for (let t in item_) {
-              if (item_[t] == '-') children.push({'label': t})
-              else children.push({'label': t, children: g(item_[t])})
-            }
-            return children
-          }
-
-          this.stepOneBase.netdisc.catalogData = this.stepOneBase.netdisc.catalogData.concat(g(JSON.parse(item)))
-        })
-      },
       // 4.复位
       dataReset() {
         this.stepBtnActive = 1    // 步骤退回到第一步
@@ -1440,7 +1433,7 @@
           )
           .catch(() => null)
       },
-      // 3.设置渲染参数 - 其它设置 - 项目列表
+      // 0.设置渲染参数 - 其它设置 - 项目列表
       async getItemList(name) {
         let {other} = this.stepThreeBase,
           {data} = await getConsumptionSelectList()
@@ -1453,7 +1446,6 @@
         if (!name) {
           let project_ = other.viewList.find(item => item.isDefault == 1)
           if (project_) other.view = project_['value']
-          else messageFun('info', '请选择所属项目')
         } else {
           let obj = other.viewList.find(curr => curr.label == name)
           this.setting.other.view = obj['value']
