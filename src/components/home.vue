@@ -59,10 +59,10 @@
                 :class="['itemLi', {'active': recentIndex == index}]"
                 @click="recentIndex = index">
               <div class="a">
-                <div class="avatarBox" @click="redirectToTask(item.projectUuid, item.projectName)">
+                <div class="avatarBox" @click="redirectToTask(item.projectUuid, item.projectName, 0)">
                   <img :src="item.thumbnail">
                 </div>
-                <div class="t" @click="redirectToTask(item.projectUuid, item.projectName)">
+                <div class="t" @click="redirectToTask(item.projectUuid, item.projectName, 0)">
                   <h6>{{ item.projectName || 'null'}}</h6>
                   <span class="date">{{ item.updateTime || 'null-null-null'}}</span>
                 </div>
