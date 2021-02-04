@@ -198,11 +198,11 @@
 </template>
 
 <script>
-  import modelCalendar from '@/components/farm-model/farm-calendar'
   import {
     createCalendar,
     getDate,
-    exportDownloadFun
+    exportDownloadFun,
+    pFConversion
   } from '@/assets/common.js'
   import {
     getUpTopTable,
@@ -295,9 +295,6 @@
         }
       }
     },
-    components: {
-      modelCalendar
-    },
     methods: {
       // 排序
       sortChangeHandle({column, prop, order}) {
@@ -337,26 +334,24 @@
       filterHandler(value, row, column) {
         console.log(value, row, column)
       },
-      // 时间筛选条件修改
-      changeFilterDate(val) {
-        [].forEach.call(val, (curr, index) => {
-          let [year, month, day] = curr.split('-'),
-            r = getDate(year, month, day)
-          if (index == 0) {
-            this.filter.inquireValS = r
-          } else {
-            this.filter.inquireValV = r
-          }
-        })
-      },
       // 获取table数据
       async getList() {
         let f = this.filter,
           {table, filter} = this,
           {tradingtatusVal, paymentMethodVal, markVal, singleNumberVal, date} = filter,
           {sortType, currentPage, pageSize, sortBy} = table,
-          t = `paymentStatus=${tradingtatusVal}&paymentTitle=${paymentMethodVal}&invoice=${markVal}&productOrderUuid=${singleNumberVal}&beginTime=${date ? date[0].getTime() : 0}&endTime=${date ? date[1].getTime() : new Date().getTime()}&pageIndex=${currentPage}&pageSize=${Number(pageSize)}&sortBy=${sortType}&sortColumn=${sortBy}`,
-          {data} = await getUpTopTable(t)
+          {data} = await getUpTopTable(pFConversion({
+            'paymentStatus': tradingtatusVal,
+            'paymentTitle': paymentMethodVal,
+            'invoice': markVal,
+            'productOrderUuid': singleNumberVal,
+            'beginTime': date ? date[0].getTime() : 0,
+            'endTime': date ? date[1].getTime() : new Date().getTime(),
+            'pageIndex': currentPage,
+            'pageSize': Number(pageSize),
+            'sortColumn': sortBy,
+            'sortBy': sortType
+          }))
         table.outPutTableTotal = data.total
         table.tableData = data.data.map(curr => {
           curr.operate = '-'
@@ -391,28 +386,28 @@
               break
           }
           return {
-            outTradeNo: curr.outTradeNo,          // 交易ID
-            state: curr.paymentStatus,            // 交易状态
-            actualPayment: curr.actualPayment,    // 实际支付金额（元）
-            arrivalAmount: curr.arrivalAmount,    // 充值到账（金币）
-            directions: curr.rechargeExplain,     // 充值说明
-            paymentMethod: curr.paymentTitle == '1' ? '支付宝' : '-',                      // 充值方式
-            singleNumber: curr.productOrderUuid ? curr.productOrderUuid : '-',  // 支付单号
-            date: `${year}-${month}-${day} ${hour}:${minutes}:${seconds}`,                // 交易时间
-            dateDefault: curr.updateTime,
-            invoice,                              // 开票标识
-            operate: curr.operate                 // 操作
+            'outTradeNo': curr.outTradeNo,          // 交易ID
+            'state': curr.paymentStatus,            // 交易状态
+            'actualPayment': curr.actualPayment,    // 实际支付金额（元）
+            'arrivalAmount': curr.arrivalAmount,    // 充值到账（金币）
+            'directions': curr.rechargeExplain,     // 充值说明
+            'paymentMethod': curr.paymentTitle == '1' ? '支付宝' : '-',                      // 充值方式
+            'singleNumber': curr.productOrderUuid ? curr.productOrderUuid : '-',            // 支付单号
+            'date': `${year}-${month}-${day} ${hour}:${minutes}:${seconds}`,                // 交易时间
+            'dateDefault': curr.updateTime,
+            'operate': curr.operate,                // 操作
+            invoice                                 // 开票标识
           }
         })
       },
       // table 筛选条件重置
       reset() {
         Object.assign(this.filter, {
-          tradingtatusVal: '-1',
-          paymentMethodVal: '-1',
-          markVal: '-1',
-          singleNumberVal: '',
-          date: null
+          'tradingtatusVal': '-1',
+          'paymentMethodVal': '-1',
+          'markVal': '-1',
+          'singleNumberVal': '',
+          'date': null
         })
         this.getList()
       },
@@ -432,28 +427,37 @@
         //   sortColumn: '',    // 排序字段:0:交易id, 1:交易状态,2:实际支付金额,3:充值到账金币,4:充值说明,5:支付方式,6:支付单号,7:修改时间
         //   sortBy: ''         // 排序方式:0降序,1升序
         // }
-        let f = this.filter,
-          t = `paymentStatus=${f.tradingtatusVal}&paymentTitle=${f.paymentMethodVal}&invoice=${f.markVal}&outTradeNo=${f.singleNumberVal}&beginTime=${f.date ? f.date[0].getTime() : 0}&endTime=${f.date ? f.date[1].getTime() : new Date().getTime()}&sortColumn=${this.table.sortBy}&sortBy=${this.table.sortType}&pageIndex=${this.table.currentPage}&pageSize=${Number(this.table.pageSize)}`,
-          data = await exportUpTopTable(t)
+        let {tradingtatusVal, paymentMethodVal, markVal, singleNumberVal, date} = this.filter,
+          {sortBy, sortType, currentPage, pageSize} = this.table,
+          data = await exportUpTopTable(pFConversion({
+            'paymentStatus': tradingtatusVal,
+            'paymentTitle': paymentMethodVal,
+            'invoice': markVal,
+            'outTradeNo': singleNumberVal,
+            'beginTime': date ? date[0].getTime() : 0,
+            'endTime': date ? date[1].getTime() : new Date().getTime(),
+            'sortColumn': sortBy,
+            'sortBy': sortType,
+            'pageIndex': currentPage,
+            'pageSize': Number(pageSize)
+          }))
         // 导出下载
         exportDownloadFun(data, '充值记录', 'xlsx')
       },
       // 操作
       async operateFun(item) {
-        let u = {
-          outTradeNo: item.singleNumber,
-          updateTime: item.dateDefault,
-          actualPayment: item.realPay,
-          paymentTitle: item.paymentMethod == '支付宝' ? '1' : '2',
-          account: JSON.parse(sessionStorage.getItem('info'))['account']
-        }
-        let t = `outTradeNo=${u['outTradeNo']}&updateTime=${u['updateTime']}&actualPayment=${u['actualPayment']}&paymentTitle=${u['paymentTitle']}&account=${u['account']}`
         if (item.operate == "下载收据") {
-          let data = await downloadReceipt(t)
+          let data = await downloadReceipt(pFConversion({
+            'outTradeNo': item.singleNumber,
+            'updateTime': item.dateDefault,
+            'actualPayment': item.actualPayment,
+            'paymentTitle': item.paymentMethod == '支付宝' ? '1' : '2',
+            'account': JSON.parse(sessionStorage.getItem('info'))['account']
+          }))
           exportDownloadFun(data, '收据', 'pdf')
         } else if (item.operate == "待付款") {
-          let data = await peddingPayment(item.id)
-          sessionStorage.setItem('aliPay', data.data.data)
+          let {data} = await peddingPayment(item.outTradeNo)
+          sessionStorage.setItem('aliPay', data.data)
           let routerData = this.$router.resolve({name: 'rechargePage'})
           window.open(routerData.href, '_blank')
         }
