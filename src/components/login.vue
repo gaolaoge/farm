@@ -10,14 +10,14 @@
           <div class="loginMode" v-show="login.mode == 'login'">
             <!--登录方式导航-->
             <div class="loginNav">
-            <span :class="['phone', {'active': login.nav.activeIndex == 1}]"
-                  @click="login.nav.activeIndex = 1">
-              {{ $t('login_page.nav_phoneText') }}
-            </span>
+              <span :class="['phone', {'active': login.nav.activeIndex == 1}]"
+                    @click="login.nav.activeIndex = 1">
+                {{ $t('login_page.nav_phoneText') }}
+              </span>
               <span :class="['account', {'active': login.nav.activeIndex == 2}]"
                     @click="login.nav.activeIndex = 2">
-              {{ $t('login_page.nav_accountText') }}
-            </span>
+                {{ $t('login_page.nav_accountText') }}
+              </span>
             </div>
             <!--短信验证登录模板-->
             <div class="phoneForm" v-show="login.nav.activeIndex == 1">
@@ -132,7 +132,7 @@
                 <span @click="navActive = 2">{{ $t('login_page.account_verif.register') }}</span>
               </span>
               <!--登录按钮-->
-              <div class="btnLogin" :class="[{'canBeClick': login.formStatus.account && login.formStatus.password}]"
+              <div :class="['btnLogin', {'canBeClick': login.formStatus.account && login.formStatus.password}]"
                    @click="accountloginFun">
                 <span>{{ $t('login_page.loginText') }}</span>
               </div>
@@ -150,13 +150,12 @@
               <div class="b">
                 <input v-model="login.forgetMode.phone"
                        autofocus
-                       :placeholder="$t('login_page.forgetMode.phone_placeholder')"
+                       ref="forgetMode_phone"
                        @blur="findBackPhoneVerif(false)"
                        @focus="login.forgetMode.phoneFormat = null"
                        @input="findBackPhoneVerif(true)"
-                       ref="forgetMode_phone"
-                       class="farm-input"
-                       :class="[{'inputError': login.forgetMode.phoneFormat === false}]"/>
+                       :placeholder="$t('login_page.forgetMode.phone_placeholder')"
+                       :class="['farm-input', {'inputError': login.forgetMode.phoneFormat === false}]"/>
                 <span class="warnInfo" v-show="login.forgetMode.phoneFormat === false">{{ login.forgetMode.warnInfo.phone }}</span>
                 <img src="@/icons/login-success.png" class="i"
                      v-show="login.forgetMode.phoneFormat === true">
@@ -167,13 +166,12 @@
               <!--验证码-->
               <div class="b">
                 <input v-model="login.forgetMode.code"
-                       :placeholder="$t('login_page.forgetMode.code_placeholder')"
                        ref="forgetMode_code"
                        @blur="findBackCodeVerif(false)"
                        @input="findBackCodeVerif(true)"
                        @focus="login.forgetMode.codeFormat = null"
-                       class="farm-input farm-cord-input"
-                       :class="[{'inputError': login.forgetMode.codeFormat === false}]"/>
+                       :placeholder="$t('login_page.forgetMode.code_placeholder')"
+                       :class="['farm-input', 'farm-cord-input', {'inputError': login.forgetMode.codeFormat === false}]"/>
                 <span class="warnInfo" v-show="login.forgetMode.codeFormat === false">{{ login.forgetMode.warnInfo.code }}</span>
                 <img src="@/icons/login-success.png" class="i"
                      v-show="login.forgetMode.codeFormat === true">
@@ -182,8 +180,7 @@
                      @click="loginDeleteInput('forgetMode','code')">
                 <!--验证-->
                 <div class="verif">
-                  <div class="btn"
-                       :class="[{'suc': login.forgetMode.phoneFormat}]"
+                  <div :class="['btn', {'suc': login.forgetMode.phoneFormat}]"
                        @click="findBackGetCode"
                        v-show="login.forgetMode.verifShow">
                     {{ login.forgetMode.btnText }}
@@ -194,8 +191,7 @@
                 </div>
               </div>
               <!--按钮-->
-              <div class="btnLogin"
-                   :class="[{'canBeClick': login.forgetMode.codeFormat && login.forgetMode.phoneFormat}]"
+              <div :class="['btnLogin', {'canBeClick': login.forgetMode.codeFormat && login.forgetMode.phoneFormat}]"
                    @click="verificationCode">
                 <span>{{ $t('login_page.forgetMode.confirm') }}</span>
               </div>
@@ -253,9 +249,9 @@
                      @click="loginDeleteInput('forgetMode','newPassWordAgain')">
               </div>
               <!--按钮-->
-              <div class="btnLogin"
-                   :class="[{'canBeClick': login.formStatus.newPassWord && login.formStatus.newPassWordAgain}]"
-                   @click="c">
+              <div
+                :class="['btnLogin', {'canBeClick': login.formStatus.newPassWord && login.formStatus.newPassWordAgain}]"
+                @click="c">
                 <span>{{ $t('login_page.forgetMode.btnAgain') }}</span>
               </div>
             </div>
@@ -407,13 +403,13 @@
         </aside>
       </section>
       <div class="promptList">
-        <span :class="['prompt', {show: registered.status.accountInit}]">{{ $t('login_page.register.prompt.account') }}</span>
+        <span
+          :class="['prompt', {show: registered.status.accountInit}]">{{ $t('login_page.register.prompt.account') }}</span>
         <span :class="['prompt', {show: registered.status.passwordInit}]">{{ $t('login_page.register.prompt.password') }}</span>
       </div>
     </div>
     <!--备案-->
     <div class="record_">
-<!--      <span>{{ $t('login_page.record.text1') }}</span>-->
       <span>{{ $t('login_page.record.text2') }}</span>
     </div>
   </div>
@@ -720,7 +716,7 @@
           type ? rs.account = null : rs.account = false
           return false
         }
-        if(obj == 'register' && this.reg.phoneReg.test(rfa)) {
+        if (obj == 'register' && this.reg.phoneReg.test(rfa)) {
           w.account = '请输入正确账号'
           type ? rs.account = null : rs.account = false
           return false
@@ -751,8 +747,8 @@
         }
       },
       loginPassVerif(ing) {
-        if(this.login.accountForm.password.length) this.login.formStatus.password = true
-        else if(ing) this.login.formStatus.password = null
+        if (this.login.accountForm.password.length) this.login.formStatus.password = true
+        else if (ing) this.login.formStatus.password = null
         else {
           this.login.formStatus.password = false
           this.login.warnInfo.password = "this.$t('login_page.message.ps_verif_two')"
@@ -903,40 +899,37 @@
         this.login.formStatus[item] = null
       },
       // 短信登录-验证验证码
-      phoneCodeVerif(type) {
-        let r = this.login.phoneForm
-        // 若未填写验证码 不做校验
-        if (!r.code) r.codeVerif = null
-        // 校验
-        else if (/^\d{6}$/.test(r.code)) r.codeVerif = true
-        else type ? r.codeVerif = null : r.codeVerif = false    // '请正确输入验证码'
+      phoneCodeVerif(ing) {
+        let {phoneForm: form} = this.login
+        if (!form.code) form.codeVerif = null   // 若未填写验证码 不做校验
+        else if (/^\d{6}$/.test(form.code)) form.codeVerif = true     // 校验
+        else ing ? form.codeVerif = null : form.codeVerif = false    // '请正确输入验证码'
       },
       // 帐号 登录
       async accountloginFun() {
-        let {account, password, isAutoLogin} = this.login.accountForm
-        if (this.login.formStatus.password === false || !account || !password) return false
+        let {account, password, isAutoLogin} = this.login.accountForm,
+          {account: accountS, password: passwordS} = this.login.formStatus
+        if (!accountS || !passwordS) return false
         try {
-          let data = await accountLogin({account, password, isAutoLogin})
-          if (data.data.code == '4032') {
-            this.login.formStatus.password = false
-
-          } else if (data.data.code == 200) this.loginSuc(isAutoLogin, '', account, data.data.data.token)
+          let {data} = await accountLogin({account, password, isAutoLogin})
+          if (data.code == '4032') this.login.formStatus.password = false
+          else if (data.code == 200) this.loginSuc(isAutoLogin, '', account, data.data.token)
         } catch (err) {
           console.log('登录连接失败, ' + err)
         }
       },
       // 登录 手机号验证
       async verifPhone() {
-        let f = this.login.phoneForm
-        if (!f.phoneVerif) return false
+        let {phoneForm: form} = this.login
+        if (!form.phoneVerif) return false
         this.delayFun('login')
-        let data = await phoneVerifFun(f.phone)
-        if (data.data.code == 200) {
-          f.v = true
+        let {data} = await phoneVerifFun(form.phone)
+        if (data.code == 200) {
+          form.v = true
           messageFun('info', this.$t('login_page.message.code_is_coming'))
-        } else if (data.data.code == 10001) {
+        } else if (data.code == 10001) {
           this.login.warnInfo.phone = this.$t('login_page.message.need_to_register')
-          f.phoneVerif = false
+          form.phoneVerif = false
         }
       },
       // 手机号验证事件60秒延迟

@@ -11,6 +11,7 @@
                @input="nameVerif(true)"
                @blur="nameVerif(false)"
                @focus="status === false ? status = null : null"
+               @keyup.enter="enterFun"
                v-model="name"
                :placeholder="placeHolder">
         <span class="warn" v-show="status === false">请输入2-18位字符，支持数字、字母、汉字、下划线、特殊字符</span>
