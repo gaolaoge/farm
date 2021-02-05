@@ -13,7 +13,7 @@
       class="r"
       row-key="rowId"
       ref="renderTableImportant"
-      style="width: 100%">
+      style="width: 100%; height: 100%">
 
       <el-table-column
         type="selection"
@@ -554,6 +554,7 @@
       },
       // 获取列表
       async getList(obj, reset, updateStatus) {
+        this.table.selectionList.length = 0    // 清空选中结果
         if (reset) this.closeDrawer()
         let loading
         if (!updateStatus) loading = this.$loading({
@@ -1278,5 +1279,9 @@
     display: block;
     margin-bottom: 32px;
     font-size: 14px;
+  }
+
+  /deep/.el-table__body-wrapper {
+    height: calc(100% - 47px - 52px);
   }
 </style>

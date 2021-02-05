@@ -16,7 +16,10 @@ const businessServer = new axios.create({
 
 businessServer.interceptors.request.use(config => {
   let token = null
-  if (document.cookie) token = document.cookie.split(';').find(curr => /token/.test(curr)).split('=')[1]
+  if (document.cookie) {
+    let obj = document.cookie.split(';').find(curr => /token/.test(curr))
+    token = obj ? obj.split('=')[1] : null
+  }
   if (sessionStorage.getItem('token')) token = sessionStorage.getItem('token')
   config.headers['token'] = token
   return config
@@ -34,6 +37,7 @@ businessServer.interceptors.response.use(
     // }
   },
   error => {
+    console.log(error)
     if (vue.$route.path == '/login') return false
     if (error.response.status == 401) error.response.data.msg == '异地登录' ? createEM(error.response.data.data) : createEM()
   })
@@ -43,7 +47,7 @@ function createEM(remoteLogin) {
   else lock = false
   if(remoteLogin) store.commit('remoteLoginFun', remoteLogin)  // 异地登录
   else {
-    messageFun('warning', 'Token过期，请重新登录。')
+    if(vue.$route.name) messageFun('warning', 'Token过期，请重新登录。')
     vue.$router.push('/login')
   }
   setTimeout(() => lock = true, 1000)

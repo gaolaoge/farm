@@ -268,9 +268,11 @@
     }
 
     .main {
-      flex-grow: 1;
-      flex-shrink: 1;
+      flex-grow: 0;
+      flex-shrink: 0;
       width: calc(100% - 120px);
+      height: 100%;
+      overflow: hidden;
     }
 
     .mm {
